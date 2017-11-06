@@ -1,0 +1,468 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>arma_v1 &#8212; HydPy 2.0.0 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="HydPy-H (HBV)" href="HydPy-H.html" />
+    <link rel="prev" title="arma" href="arma.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="HydPy-H.html" title="HydPy-H (HBV)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="arma.html" title="arma"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">HydPy 2.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modelcollection.html" >Model Collection</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="HydPy-A.html" accesskey="U">HydPy-A</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="arma-v1">
+<span id="id1"></span><h1>arma_v1<a class="headerlink" href="#arma-v1" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-hydpy.models.arma_v1"></span><p>Integration examples:</p>
+<blockquote>
+<div><p>The following tests are performed over a period of 20 hours:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">hydpy</span> <span class="k">import</span> <span class="n">pub</span><span class="p">,</span> <span class="n">Timegrid</span><span class="p">,</span> <span class="n">Timegrids</span><span class="p">,</span> <span class="n">Nodes</span><span class="p">,</span> <span class="n">Element</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pub</span><span class="o">.</span><span class="n">timegrids</span> <span class="o">=</span> <span class="n">Timegrids</span><span class="p">(</span><span class="n">Timegrid</span><span class="p">(</span><span class="s1">&#39;01.01.2000 00:00&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                                   <span class="s1">&#39;01.01.2000 20:00&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                                   <span class="s1">&#39;1h&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Import the model and define the time settings:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">hydpy.models.arma_v1</span> <span class="k">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parameterstep</span><span class="p">(</span><span class="s1">&#39;1h&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For testing purposes, the model input shall be retrieved from the nodes
+<cite>input1</cite> and <cite>input2</cite> and the model output shall be passed to node
+<cite>output</cite>.  Firstly, define all nodes:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">nodes</span> <span class="o">=</span> <span class="n">Nodes</span><span class="p">(</span><span class="s1">&#39;input1&#39;</span><span class="p">,</span> <span class="s1">&#39;input2&#39;</span><span class="p">,</span> <span class="s1">&#39;output&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Define the element “stream” and build the connections between
+the nodes defined above and the <cite>arma_v1</cite> model instance:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span> <span class="o">=</span> <span class="n">Element</span><span class="p">(</span><span class="s1">&#39;stream&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                 <span class="n">inlets</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;input1&#39;</span><span class="p">,</span> <span class="s1">&#39;input2&#39;</span><span class="p">],</span>
+<span class="gp">... </span>                 <span class="n">outlets</span><span class="o">=</span><span class="s1">&#39;output&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Prepare a test function object, which prints the respective values of
+the model sequences <cite>qin</cite>, <cite>qpin</cite>, <cite>qpout</cite>, and <cite>qout</cite>.  The node sequence
+<cite>sim</cite> is added in order to prove that the values calculated for <cite>qout</cite> are
+actually passed to <cite>sim</cite>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">hydpy.core.testtools</span> <span class="k">import</span> <span class="n">IntegrationTest</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">test</span> <span class="o">=</span> <span class="n">IntegrationTest</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span>
+<span class="gp">... </span>                       <span class="n">seqs</span><span class="o">=</span><span class="p">(</span><span class="n">fluxes</span><span class="o">.</span><span class="n">qin</span><span class="p">,</span> <span class="n">fluxes</span><span class="o">.</span><span class="n">qpin</span><span class="p">,</span> <span class="n">fluxes</span><span class="o">.</span><span class="n">qpout</span><span class="p">,</span>
+<span class="gp">... </span>                             <span class="n">fluxes</span><span class="o">.</span><span class="n">qout</span><span class="p">,</span> <span class="n">nodes</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">sequences</span><span class="o">.</span><span class="n">sim</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>To start the respective example runs from stationary conditions, a
+base flow value of 2m³/s is set for all values of the log sequences
+<cite>login</cite> and <cite>logout</cite>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">test</span><span class="o">.</span><span class="n">inits</span> <span class="o">=</span> <span class="p">((</span><span class="n">logs</span><span class="o">.</span><span class="n">login</span><span class="p">,</span> <span class="mf">2.</span><span class="p">),</span>
+<span class="gp">... </span>              <span class="p">(</span><span class="n">logs</span><span class="o">.</span><span class="n">logout</span><span class="p">,</span> <span class="mf">2.</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Print just the time instead of the whole date:
+&gt;&gt;&gt; test.dateformat = ‘%H:%M’</p>
+<p>Define two flood events, one for each lake inflow:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">nodes</span><span class="o">.</span><span class="n">input1</span><span class="o">.</span><span class="n">sequences</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">series</span> <span class="o">=</span> <span class="p">(</span>
+<span class="gp">... </span>                        <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span>
+<span class="gp">... </span>                        <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nodes</span><span class="o">.</span><span class="n">input2</span><span class="o">.</span><span class="n">sequences</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">series</span> <span class="o">=</span> <span class="p">(</span>
+<span class="gp">... </span>                        <span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">6.</span><span class="p">,</span> <span class="mf">9.</span><span class="p">,</span> <span class="mf">8.</span><span class="p">,</span> <span class="mf">6.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span>
+<span class="gp">... </span>                        <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In the first example, a pure fourth order moving avarage (MA) process is
+defined:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">responses</span><span class="p">(((),</span> <span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)))</span>
+</pre></div>
+</div>
+<p>This leads to a usual “unit hydrograph” convolution result, where all
+inflow “impulses” are seperated onto the actual and the three subsequent
+time steps:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">test</span><span class="p">()</span>
+<span class="go">|  date |  qin | qpin | qpout | qout | output |</span>
+<span class="go">-----------------------------------------------</span>
+<span class="go">| 00:00 |  2.0 |  2.0 |   2.0 |  2.0 |    2.0 |</span>
+<span class="go">| 01:00 |  3.0 |  3.0 |   2.2 |  2.2 |    2.2 |</span>
+<span class="go">| 02:00 |  8.0 |  8.0 |   3.6 |  3.6 |    3.6 |</span>
+<span class="go">| 03:00 | 13.0 | 13.0 |   6.9 |  6.9 |    6.9 |</span>
+<span class="go">| 04:00 | 11.0 | 11.0 |  10.1 | 10.1 |   10.1 |</span>
+<span class="go">| 05:00 |  8.0 |  8.0 |  10.7 | 10.7 |   10.7 |</span>
+<span class="go">| 06:00 |  5.0 |  5.0 |   8.8 |  8.8 |    8.8 |</span>
+<span class="go">| 07:00 |  4.0 |  4.0 |   6.3 |  6.3 |    6.3 |</span>
+<span class="go">| 08:00 |  3.0 |  3.0 |   4.5 |  4.5 |    4.5 |</span>
+<span class="go">| 09:00 |  2.0 |  2.0 |   3.3 |  3.3 |    3.3 |</span>
+<span class="go">| 10:00 |  2.0 |  2.0 |   2.5 |  2.5 |    2.5 |</span>
+<span class="go">| 11:00 |  2.0 |  2.0 |   2.1 |  2.1 |    2.1 |</span>
+<span class="go">| 12:00 |  2.0 |  2.0 |   2.0 |  2.0 |    2.0 |</span>
+<span class="go">| 13:00 |  2.0 |  2.0 |   2.0 |  2.0 |    2.0 |</span>
+<span class="go">| 14:00 |  2.0 |  2.0 |   2.0 |  2.0 |    2.0 |</span>
+<span class="go">| 15:00 |  2.0 |  2.0 |   2.0 |  2.0 |    2.0 |</span>
+<span class="go">| 16:00 |  2.0 |  2.0 |   2.0 |  2.0 |    2.0 |</span>
+<span class="go">| 17:00 |  2.0 |  2.0 |   2.0 |  2.0 |    2.0 |</span>
+<span class="go">| 18:00 |  2.0 |  2.0 |   2.0 |  2.0 |    2.0 |</span>
+<span class="go">| 19:00 |  2.0 |  2.0 |   2.0 |  2.0 |    2.0 |</span>
+</pre></div>
+</div>
+<p>In the second example, the mimimum order the MA process is defined,
+which is one.  The autoregression (AR) process is of order two.  Note
+that negative AR coefficients are allowed (also note the opposite signs
+of the coefficients contrast to the statistical literature):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">responses</span><span class="p">(((</span><span class="mf">1.1</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.3</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.2</span><span class="p">,)))</span>
+</pre></div>
+</div>
+<p>Due to the AR process, the maximum time delay of some fractions of each
+input impulse is theoretically infinite:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">test</span><span class="p">()</span>
+<span class="go">|  date |  qin | qpin |    qpout |     qout |   output |</span>
+<span class="go">--------------------------------------------------------</span>
+<span class="go">| 00:00 |  2.0 |  2.0 |      2.0 |      2.0 |      2.0 |</span>
+<span class="go">| 01:00 |  3.0 |  3.0 |      2.2 |      2.2 |      2.2 |</span>
+<span class="go">| 02:00 |  8.0 |  8.0 |     3.42 |     3.42 |     3.42 |</span>
+<span class="go">| 03:00 | 13.0 | 13.0 |    5.702 |    5.702 |    5.702 |</span>
+<span class="go">| 04:00 | 11.0 | 11.0 |   7.4462 |   7.4462 |   7.4462 |</span>
+<span class="go">| 05:00 |  8.0 |  8.0 |  8.08022 |  8.08022 |  8.08022 |</span>
+<span class="go">| 06:00 |  5.0 |  5.0 | 7.654382 | 7.654382 | 7.654382 |</span>
+<span class="go">| 07:00 |  4.0 |  4.0 | 6.795754 | 6.795754 | 6.795754 |</span>
+<span class="go">| 08:00 |  3.0 |  3.0 | 5.779015 | 5.779015 | 5.779015 |</span>
+<span class="go">| 09:00 |  2.0 |  2.0 |  4.71819 |  4.71819 |  4.71819 |</span>
+<span class="go">| 10:00 |  2.0 |  2.0 | 3.856305 | 3.856305 | 3.856305 |</span>
+<span class="go">| 11:00 |  2.0 |  2.0 | 3.226478 | 3.226478 | 3.226478 |</span>
+<span class="go">| 12:00 |  2.0 |  2.0 | 2.792235 | 2.792235 | 2.792235 |</span>
+<span class="go">| 13:00 |  2.0 |  2.0 | 2.503515 | 2.503515 | 2.503515 |</span>
+<span class="go">| 14:00 |  2.0 |  2.0 | 2.316196 | 2.316196 | 2.316196 |</span>
+<span class="go">| 15:00 |  2.0 |  2.0 | 2.196761 | 2.196761 | 2.196761 |</span>
+<span class="go">| 16:00 |  2.0 |  2.0 | 2.121578 | 2.121578 | 2.121578 |</span>
+<span class="go">| 17:00 |  2.0 |  2.0 | 2.074708 | 2.074708 | 2.074708 |</span>
+<span class="go">| 18:00 |  2.0 |  2.0 | 2.045705 | 2.045705 | 2.045705 |</span>
+<span class="go">| 19:00 |  2.0 |  2.0 | 2.027863 | 2.027863 | 2.027863 |</span>
+</pre></div>
+</div>
+<p>The third example equalts the second one, except in additional time
+delay of exactly one hour, due to the changed MA process:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">responses</span><span class="p">(((</span><span class="mf">1.1</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.3</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">)))</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">test</span><span class="p">()</span>
+<span class="go">|  date |  qin | qpin |    qpout |     qout |   output |</span>
+<span class="go">--------------------------------------------------------</span>
+<span class="go">| 00:00 |  2.0 |  2.0 |      2.0 |      2.0 |      2.0 |</span>
+<span class="go">| 01:00 |  3.0 |  3.0 |      2.0 |      2.0 |      2.0 |</span>
+<span class="go">| 02:00 |  8.0 |  8.0 |      2.2 |      2.2 |      2.2 |</span>
+<span class="go">| 03:00 | 13.0 | 13.0 |     3.42 |     3.42 |     3.42 |</span>
+<span class="go">| 04:00 | 11.0 | 11.0 |    5.702 |    5.702 |    5.702 |</span>
+<span class="go">| 05:00 |  8.0 |  8.0 |   7.4462 |   7.4462 |   7.4462 |</span>
+<span class="go">| 06:00 |  5.0 |  5.0 |  8.08022 |  8.08022 |  8.08022 |</span>
+<span class="go">| 07:00 |  4.0 |  4.0 | 7.654382 | 7.654382 | 7.654382 |</span>
+<span class="go">| 08:00 |  3.0 |  3.0 | 6.795754 | 6.795754 | 6.795754 |</span>
+<span class="go">| 09:00 |  2.0 |  2.0 | 5.779015 | 5.779015 | 5.779015 |</span>
+<span class="go">| 10:00 |  2.0 |  2.0 |  4.71819 |  4.71819 |  4.71819 |</span>
+<span class="go">| 11:00 |  2.0 |  2.0 | 3.856305 | 3.856305 | 3.856305 |</span>
+<span class="go">| 12:00 |  2.0 |  2.0 | 3.226478 | 3.226478 | 3.226478 |</span>
+<span class="go">| 13:00 |  2.0 |  2.0 | 2.792235 | 2.792235 | 2.792235 |</span>
+<span class="go">| 14:00 |  2.0 |  2.0 | 2.503515 | 2.503515 | 2.503515 |</span>
+<span class="go">| 15:00 |  2.0 |  2.0 | 2.316196 | 2.316196 | 2.316196 |</span>
+<span class="go">| 16:00 |  2.0 |  2.0 | 2.196761 | 2.196761 | 2.196761 |</span>
+<span class="go">| 17:00 |  2.0 |  2.0 | 2.121578 | 2.121578 | 2.121578 |</span>
+<span class="go">| 18:00 |  2.0 |  2.0 | 2.074708 | 2.074708 | 2.074708 |</span>
+<span class="go">| 19:00 |  2.0 |  2.0 | 2.045705 | 2.045705 | 2.045705 |</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">responses</span><span class="p">(((</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.7</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">)))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">test</span><span class="p">()</span>
+<span class="go">|  date |  qin | qpin |     qpout |      qout |    output |</span>
+<span class="go">-----------------------------------------------------------</span>
+<span class="go">| 00:00 |  2.0 |  2.0 |       2.0 |       2.0 |       2.0 |</span>
+<span class="go">| 01:00 |  3.0 |  3.0 |       2.0 |       2.0 |       2.0 |</span>
+<span class="go">| 02:00 |  8.0 |  8.0 |       2.2 |       2.2 |       2.2 |</span>
+<span class="go">| 03:00 | 13.0 | 13.0 |       3.5 |       3.5 |       3.5 |</span>
+<span class="go">| 04:00 | 11.0 | 11.0 |      6.31 |      6.31 |      6.31 |</span>
+<span class="go">| 05:00 |  8.0 |  8.0 |     9.215 |     9.215 |     9.215 |</span>
+<span class="go">| 06:00 |  5.0 |  5.0 |   11.0055 |   11.0055 |   11.0055 |</span>
+<span class="go">| 07:00 |  4.0 |  4.0 |  11.05775 |  11.05775 |  11.05775 |</span>
+<span class="go">| 08:00 |  3.0 |  3.0 |  9.682775 |  9.682775 |  9.682775 |</span>
+<span class="go">| 09:00 |  2.0 |  2.0 |  7.383738 |  7.383738 |  7.383738 |</span>
+<span class="go">| 10:00 |  2.0 |  2.0 |  4.697664 |  4.697664 |  4.697664 |</span>
+<span class="go">| 11:00 |  2.0 |  2.0 |  2.277879 |  2.277879 |  2.277879 |</span>
+<span class="go">| 12:00 |  2.0 |  2.0 |  0.528454 |  0.528454 |  0.528454 |</span>
+<span class="go">| 13:00 |  2.0 |  2.0 | -0.401834 | -0.401834 | -0.401834 |</span>
+<span class="go">| 14:00 |  2.0 |  2.0 | -0.572669 | -0.572669 | -0.572669 |</span>
+<span class="go">| 15:00 |  2.0 |  2.0 |  -0.17772 |  -0.17772 |  -0.17772 |</span>
+<span class="go">| 16:00 |  2.0 |  2.0 |  0.534289 |  0.534289 |  0.534289 |</span>
+<span class="go">| 17:00 |  2.0 |  2.0 |  1.325837 |  1.325837 |  1.325837 |</span>
+<span class="go">| 18:00 |  2.0 |  2.0 |  2.014753 |  2.014753 |  2.014753 |</span>
+<span class="go">| 19:00 |  2.0 |  2.0 |  2.494044 |  2.494044 |  2.494044 |</span>
+</pre></div>
+</div>
+<p>The plausiblity of the coefficients is not checked.  Be aware that
+the water balance is only met, if the sum of all equation is one.  But
+even then problems like negative discharge values might occur, if the
+coefficients are not set carefully, is shown in the fourth example:</p>
+<p>In the fifth example, the coefficients of the first two examples are
+combined.  For inflow discharges between 0 and 7m³/s, the pure AR
+process is applied.  For inflow discharges exceeding 7m³/s, inflow
+is seperated.  The AR process is still applied on a portion of 7m³/s,
+but for the inflow exceeding the threshold the mixed ARMA model is
+applied:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">responses</span><span class="p">(</span><span class="n">_0</span><span class="o">=</span><span class="p">((),</span> <span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)),</span>
+<span class="gp">... </span>          <span class="n">_7</span><span class="o">=</span><span class="p">((</span><span class="mf">1.1</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.3</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.2</span><span class="p">,)))</span>
+</pre></div>
+</div>
+<p>To again start from stationary conditions, one has to apply different
+values to both log sequences.  The base flow value of 2m³/s is only
+given to the (low flow) MA model, the (high flow) ARMA is initialized
+with zero values instead:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">test</span><span class="o">.</span><span class="n">inits</span><span class="o">.</span><span class="n">login</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">2.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">test</span><span class="o">.</span><span class="n">inits</span><span class="o">.</span><span class="n">logout</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">2.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">]]</span>
+</pre></div>
+</div>
+<p>The seperate handling of the inflow can be studied by inspecting the
+columns of sequence <cite>qpin</cite> and sequence <cite>qpout</cite>.  The respective left
+columns show the input and output of the MA model, the respective right
+colums show the input and output of the ARMA model:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">test</span><span class="p">()</span>
+<span class="go">|  date |  qin |      qpin |         qpout |     qout |   output |</span>
+<span class="go">------------------------------------------------------------------</span>
+<span class="go">| 00:00 |  2.0 | 2.0   0.0 | 2.0       0.0 |      2.0 |      2.0 |</span>
+<span class="go">| 01:00 |  3.0 | 3.0   0.0 | 2.2       0.0 |      2.2 |      2.2 |</span>
+<span class="go">| 02:00 |  8.0 | 7.0   1.0 | 3.4       0.2 |      3.6 |      3.6 |</span>
+<span class="go">| 03:00 | 13.0 | 7.0   6.0 | 5.3      1.42 |     6.72 |     6.72 |</span>
+<span class="go">| 04:00 | 11.0 | 7.0   4.0 | 6.6     2.302 |    8.902 |    8.902 |</span>
+<span class="go">| 05:00 |  8.0 | 7.0   1.0 | 7.0    2.3062 |   9.3062 |   9.3062 |</span>
+<span class="go">| 06:00 |  5.0 | 5.0   0.0 | 6.6   1.84622 |  8.44622 |  8.44622 |</span>
+<span class="go">| 07:00 |  4.0 | 4.0   0.0 | 5.6  1.338982 | 6.938982 | 6.938982 |</span>
+<span class="go">| 08:00 |  3.0 | 3.0   0.0 | 4.4  0.919014 | 5.319014 | 5.319014 |</span>
+<span class="go">| 09:00 |  2.0 | 2.0   0.0 | 3.3  0.609221 | 3.909221 | 3.909221 |</span>
+<span class="go">| 10:00 |  2.0 | 2.0   0.0 | 2.5  0.394439 | 2.894439 | 2.894439 |</span>
+<span class="go">| 11:00 |  2.0 | 2.0   0.0 | 2.1  0.251116 | 2.351116 | 2.351116 |</span>
+<span class="go">| 12:00 |  2.0 | 2.0   0.0 | 2.0  0.157896 | 2.157896 | 2.157896 |</span>
+<span class="go">| 13:00 |  2.0 | 2.0   0.0 | 2.0  0.098351 | 2.098351 | 2.098351 |</span>
+<span class="go">| 14:00 |  2.0 | 2.0   0.0 | 2.0  0.060817 | 2.060817 | 2.060817 |</span>
+<span class="go">| 15:00 |  2.0 | 2.0   0.0 | 2.0  0.037394 | 2.037394 | 2.037394 |</span>
+<span class="go">| 16:00 |  2.0 | 2.0   0.0 | 2.0  0.022888 | 2.022888 | 2.022888 |</span>
+<span class="go">| 17:00 |  2.0 | 2.0   0.0 | 2.0  0.013959 | 2.013959 | 2.013959 |</span>
+<span class="go">| 18:00 |  2.0 | 2.0   0.0 | 2.0  0.008488 | 2.008488 | 2.008488 |</span>
+<span class="go">| 19:00 |  2.0 | 2.0   0.0 | 2.0  0.005149 | 2.005149 | 2.005149 |</span>
+</pre></div>
+</div>
+</div></blockquote>
+<dl class="class">
+<dt id="hydpy.models.arma_v1.Model">
+<em class="property">class </em><code class="descclassname">hydpy.models.arma_v1.</code><code class="descname">Model</code><a class="reference internal" href="_modules/hydpy/models/arma_v1.html#Model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma_v1.Model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="modeltools.html#hydpy.core.modeltools.Model" title="hydpy.core.modeltools.Model"><code class="xref py py-class docutils literal"><span class="pre">hydpy.core.modeltools.Model</span></code></a></p>
+<p>Rimo/Rido version of ARMA (arma_v1).</p>
+<dl class="docutils">
+<dt>The following “run methods” are called each simulation step run in the given sequence:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference internal" href="arma.html#hydpy.models.arma.arma_model.update_inlets_v1" title="hydpy.models.arma.arma_model.update_inlets_v1"><code class="xref py py-func docutils literal"><span class="pre">update_inlets_v1()</span></code></a> <cite>Update inflow.</cite></li>
+<li><a class="reference internal" href="arma.html#hydpy.models.arma.arma_model.calc_qpin_v1" title="hydpy.models.arma.arma_model.calc_qpin_v1"><code class="xref py py-func docutils literal"><span class="pre">calc_qpin_v1()</span></code></a> <cite>Calculate the input discharge portions of the different response functions.</cite></li>
+<li><a class="reference internal" href="arma.html#hydpy.models.arma.arma_model.calc_login_v1" title="hydpy.models.arma.arma_model.calc_login_v1"><code class="xref py py-func docutils literal"><span class="pre">calc_login_v1()</span></code></a> <cite>Refresh the input log sequence for the different MA processes.</cite></li>
+<li><a class="reference internal" href="arma.html#hydpy.models.arma.arma_model.calc_qma_v1" title="hydpy.models.arma.arma_model.calc_qma_v1"><code class="xref py py-func docutils literal"><span class="pre">calc_qma_v1()</span></code></a> <cite>Calculate the discharge responses of the different MA processes.</cite></li>
+<li><a class="reference internal" href="arma.html#hydpy.models.arma.arma_model.calc_qar_v1" title="hydpy.models.arma.arma_model.calc_qar_v1"><code class="xref py py-func docutils literal"><span class="pre">calc_qar_v1()</span></code></a> <cite>Calculate the discharge responses of the different AR processes.</cite></li>
+<li><a class="reference internal" href="arma.html#hydpy.models.arma.arma_model.calc_qpout_v1" title="hydpy.models.arma.arma_model.calc_qpout_v1"><code class="xref py py-func docutils literal"><span class="pre">calc_qpout_v1()</span></code></a> <cite>Calculate the ARMA results for the different response functions.</cite></li>
+<li><a class="reference internal" href="arma.html#hydpy.models.arma.arma_model.calc_logout_v1" title="hydpy.models.arma.arma_model.calc_logout_v1"><code class="xref py py-func docutils literal"><span class="pre">calc_logout_v1()</span></code></a> <cite>Refresh the log sequence for the different AR processes.</cite></li>
+<li><a class="reference internal" href="arma.html#hydpy.models.arma.arma_model.calc_qout_v1" title="hydpy.models.arma.arma_model.calc_qout_v1"><code class="xref py py-func docutils literal"><span class="pre">calc_qout_v1()</span></code></a> <cite>Sum up the results of the different response functions.</cite></li>
+<li><a class="reference internal" href="arma.html#hydpy.models.arma.arma_model.update_outlets_v1" title="hydpy.models.arma.arma_model.update_outlets_v1"><code class="xref py py-func docutils literal"><span class="pre">update_outlets_v1()</span></code></a> <cite>Update outflow.</cite></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="hydpy.models.arma_v1.ControlParameters">
+<em class="property">class </em><code class="descclassname">hydpy.models.arma_v1.</code><code class="descname">ControlParameters</code><span class="sig-paren">(</span><em>pars</em>, <em>cls_fastaccess=None</em>, <em>cymodel=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/models/arma_v1.html#ControlParameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma_v1.ControlParameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="parametertools.html#hydpy.core.parametertools.SubParameters" title="hydpy.core.parametertools.SubParameters"><code class="xref py py-class docutils literal"><span class="pre">hydpy.core.parametertools.SubParameters</span></code></a></p>
+<p>Control parameters of arma_v1, directly defined by the user.</p>
+<dl class="docutils">
+<dt>The following parameter classes are selected:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference internal" href="arma.html#hydpy.models.arma.arma_control.Responses" title="hydpy.models.arma.arma_control.Responses"><code class="xref py py-class docutils literal"><span class="pre">Responses</span></code></a> <cite>Assigns different ARMA models to different discharge thresholds.</cite></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="hydpy.models.arma_v1.DerivedParameters">
+<em class="property">class </em><code class="descclassname">hydpy.models.arma_v1.</code><code class="descname">DerivedParameters</code><span class="sig-paren">(</span><em>pars</em>, <em>cls_fastaccess=None</em>, <em>cymodel=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/models/arma_v1.html#DerivedParameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma_v1.DerivedParameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="parametertools.html#hydpy.core.parametertools.SubParameters" title="hydpy.core.parametertools.SubParameters"><code class="xref py py-class docutils literal"><span class="pre">hydpy.core.parametertools.SubParameters</span></code></a></p>
+<p>Derived parameters of arma_v1, indirectly defined by the user.</p>
+<dl class="docutils">
+<dt>The following parameter classes are selected:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference internal" href="arma.html#hydpy.models.arma.arma_derived.Nmb" title="hydpy.models.arma.arma_derived.Nmb"><code class="xref py py-class docutils literal"><span class="pre">Nmb</span></code></a> <cite>Number of response functions [-].</cite></li>
+<li><a class="reference internal" href="arma.html#hydpy.models.arma.arma_derived.MaxQ" title="hydpy.models.arma.arma_derived.MaxQ"><code class="xref py py-class docutils literal"><span class="pre">MaxQ</span></code></a> <cite>Maximum discharge values of the respective ARMA models [m³/s].</cite></li>
+<li><a class="reference internal" href="arma.html#hydpy.models.arma.arma_derived.DiffQ" title="hydpy.models.arma.arma_derived.DiffQ"><code class="xref py py-class docutils literal"><span class="pre">DiffQ</span></code></a> <cite>Differences between the values of :class:`MaxQ</cite> [m³/s].`</li>
+<li><a class="reference internal" href="arma.html#hydpy.models.arma.arma_derived.AR_Order" title="hydpy.models.arma.arma_derived.AR_Order"><code class="xref py py-class docutils literal"><span class="pre">AR_Order</span></code></a> <cite>Number of AR coefficients of the different responses [-].</cite></li>
+<li><a class="reference internal" href="arma.html#hydpy.models.arma.arma_derived.MA_Order" title="hydpy.models.arma.arma_derived.MA_Order"><code class="xref py py-class docutils literal"><span class="pre">MA_Order</span></code></a> <cite>Number of MA coefficients of the different responses [-].</cite></li>
+<li><a class="reference internal" href="arma.html#hydpy.models.arma.arma_derived.AR_Coefs" title="hydpy.models.arma.arma_derived.AR_Coefs"><code class="xref py py-class docutils literal"><span class="pre">AR_Coefs</span></code></a> <cite>AR coefficients of the different responses [-].</cite></li>
+<li><a class="reference internal" href="arma.html#hydpy.models.arma.arma_derived.MA_Coefs" title="hydpy.models.arma.arma_derived.MA_Coefs"><code class="xref py py-class docutils literal"><span class="pre">MA_Coefs</span></code></a> <cite>MA coefficients of the different responses [-].</cite></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="hydpy.models.arma_v1.FluxSequences">
+<em class="property">class </em><code class="descclassname">hydpy.models.arma_v1.</code><code class="descname">FluxSequences</code><span class="sig-paren">(</span><em>seqs</em>, <em>cls_fastaccess=None</em>, <em>cymodel=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/models/arma_v1.html#FluxSequences"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma_v1.FluxSequences" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="sequencetools.html#hydpy.core.sequencetools.FluxSequences" title="hydpy.core.sequencetools.FluxSequences"><code class="xref py py-class docutils literal"><span class="pre">hydpy.core.sequencetools.FluxSequences</span></code></a></p>
+<p>Flux sequences of arma_v1</p>
+<dl class="docutils">
+<dt>The following sequence classes are selected:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference internal" href="arma.html#hydpy.models.arma.arma_fluxes.QIn" title="hydpy.models.arma.arma_fluxes.QIn"><code class="xref py py-class docutils literal"><span class="pre">QIn</span></code></a> <cite>Total inflow [m³/s].</cite></li>
+<li><a class="reference internal" href="arma.html#hydpy.models.arma.arma_fluxes.QPIn" title="hydpy.models.arma.arma_fluxes.QPIn"><code class="xref py py-class docutils literal"><span class="pre">QPIn</span></code></a> <cite>Inflow portions corresponding to the different thresholds [m³/s].</cite></li>
+<li><a class="reference internal" href="arma.html#hydpy.models.arma.arma_fluxes.QMA" title="hydpy.models.arma.arma_fluxes.QMA"><code class="xref py py-class docutils literal"><span class="pre">QMA</span></code></a> <cite>MA result for the different thresholds [m³/s].</cite></li>
+<li><a class="reference internal" href="arma.html#hydpy.models.arma.arma_fluxes.QAR" title="hydpy.models.arma.arma_fluxes.QAR"><code class="xref py py-class docutils literal"><span class="pre">QAR</span></code></a> <cite>AR result for the different thresholds [m³/s].</cite></li>
+<li><a class="reference internal" href="arma.html#hydpy.models.arma.arma_fluxes.QPOut" title="hydpy.models.arma.arma_fluxes.QPOut"><code class="xref py py-class docutils literal"><span class="pre">QPOut</span></code></a> <cite>Outflow portions corresponding to the different thresholds [m³/s].</cite></li>
+<li><a class="reference internal" href="arma.html#hydpy.models.arma.arma_fluxes.QOut" title="hydpy.models.arma.arma_fluxes.QOut"><code class="xref py py-class docutils literal"><span class="pre">QOut</span></code></a> <cite>Total outflow [m³/s].</cite></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="hydpy.models.arma_v1.LogSequences">
+<em class="property">class </em><code class="descclassname">hydpy.models.arma_v1.</code><code class="descname">LogSequences</code><span class="sig-paren">(</span><em>seqs</em>, <em>cls_fastaccess=None</em>, <em>cymodel=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/models/arma_v1.html#LogSequences"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma_v1.LogSequences" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="sequencetools.html#hydpy.core.sequencetools.LogSequences" title="hydpy.core.sequencetools.LogSequences"><code class="xref py py-class docutils literal"><span class="pre">hydpy.core.sequencetools.LogSequences</span></code></a></p>
+<p>Log sequences of arma_v1.</p>
+<dl class="docutils">
+<dt>The following sequence classes are selected:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference internal" href="arma.html#hydpy.models.arma.arma_logs.LogIn" title="hydpy.models.arma.arma_logs.LogIn"><code class="xref py py-class docutils literal"><span class="pre">LogIn</span></code></a> <cite>The recent and the past inflow portions for the application of the different MA processes [m³/s].</cite></li>
+<li><a class="reference internal" href="arma.html#hydpy.models.arma.arma_logs.LogOut" title="hydpy.models.arma.arma_logs.LogOut"><code class="xref py py-class docutils literal"><span class="pre">LogOut</span></code></a> <cite>The past outflow portions for the application of the different AR processes [m³/s].</cite></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="hydpy.models.arma_v1.InletSequences">
+<em class="property">class </em><code class="descclassname">hydpy.models.arma_v1.</code><code class="descname">InletSequences</code><span class="sig-paren">(</span><em>seqs</em>, <em>cls_fastaccess=None</em>, <em>cymodel=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/models/arma_v1.html#InletSequences"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma_v1.InletSequences" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="sequencetools.html#hydpy.core.sequencetools.LinkSequences" title="hydpy.core.sequencetools.LinkSequences"><code class="xref py py-class docutils literal"><span class="pre">hydpy.core.sequencetools.LinkSequences</span></code></a></p>
+<p>Upstream link sequences of arma_v1.</p>
+<dl class="docutils">
+<dt>The following sequence classes are selected:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference internal" href="arma.html#hydpy.models.arma.arma_inlets.Q" title="hydpy.models.arma.arma_inlets.Q"><code class="xref py py-class docutils literal"><span class="pre">Q</span></code></a> <cite>Abfluss (runoff) [m³/s].</cite></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="hydpy.models.arma_v1.OutletSequences">
+<em class="property">class </em><code class="descclassname">hydpy.models.arma_v1.</code><code class="descname">OutletSequences</code><span class="sig-paren">(</span><em>seqs</em>, <em>cls_fastaccess=None</em>, <em>cymodel=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/models/arma_v1.html#OutletSequences"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma_v1.OutletSequences" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="sequencetools.html#hydpy.core.sequencetools.LinkSequences" title="hydpy.core.sequencetools.LinkSequences"><code class="xref py py-class docutils literal"><span class="pre">hydpy.core.sequencetools.LinkSequences</span></code></a></p>
+<p>Downstream link sequences of arma_v1.</p>
+<dl class="docutils">
+<dt>The following sequence classes are selected:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference internal" href="arma.html#hydpy.models.arma.arma_outlets.Q" title="hydpy.models.arma.arma_outlets.Q"><code class="xref py py-class docutils literal"><span class="pre">Q</span></code></a> <cite>Abfluss (runoff) [m³/s].</cite></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="arma.html"
+                        title="previous chapter">arma</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="HydPy-H.html"
+                        title="next chapter">HydPy-H (HBV)</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/arma_v1.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="HydPy-H.html" title="HydPy-H (HBV)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="arma.html" title="arma"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">HydPy 2.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modelcollection.html" >Model Collection</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="HydPy-A.html" >HydPy-A</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Christoph Tyralla.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.5.
+    </div>
+  </body>
+</html>

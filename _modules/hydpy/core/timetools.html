@@ -1,0 +1,1654 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>hydpy.core.timetools &#8212; HydPy 2.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">HydPy 2.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for hydpy.core.timetools</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;This module specifies how  dates and periods are handled in HydPy.&quot;&quot;&quot;</span>
+<span class="c1"># import...</span>
+<span class="c1"># ...from standard library</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">division</span><span class="p">,</span> <span class="n">print_function</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">calendar</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="c1"># ...from third party packages</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="c1"># ...from HydPy</span>
+<span class="kn">from</span> <span class="nn">hydpy.core</span> <span class="k">import</span> <span class="n">objecttools</span>
+<span class="kn">from</span> <span class="nn">hydpy.core</span> <span class="k">import</span> <span class="n">autodoctools</span>
+
+
+<span class="c1"># The import of `_strptime` is not thread save.  The following call of</span>
+<span class="c1"># `strptime` is supposed to prevent possible problems arising from this bug.</span>
+<span class="n">time</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s1">&#39;1999&#39;</span><span class="p">,</span> <span class="s1">&#39;%Y&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Date"><a class="viewcode-back" href="../../../timetools.html#hydpy.core.timetools.Date">[docs]</a><span class="k">class</span> <span class="nc">Date</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Handles a single date.</span>
+
+<span class="sd">    Classes :class:`Date` is build on top of the Python module :mod:`datetime`.</span>
+<span class="sd">    In essence, it wraps the :mod:`datetime` class :class:`~datetime.datetime`,</span>
+<span class="sd">    and is supposed to specialise this general class on the needs of HydPy</span>
+<span class="sd">    users.</span>
+
+<span class="sd">    Be aware of the different minimum time resolution of module :mod:`datetime`</span>
+<span class="sd">    (microseconds) and module :mod:`~hydpy.core.timetools` (seconds).</span>
+
+<span class="sd">    :class:`Date` objects can be initialized via :class:`~datetime.datetime`</span>
+<span class="sd">    objects directly, e.g.:</span>
+
+<span class="sd">        &gt;&gt;&gt; from datetime import datetime</span>
+<span class="sd">        &gt;&gt;&gt; from hydpy.core.timetools import Date</span>
+<span class="sd">        &gt;&gt;&gt; # Initialize a `datetime` object...</span>
+<span class="sd">        &gt;&gt;&gt; datetime_object = datetime(1996, 11, 1, 0, 0, 0)</span>
+<span class="sd">        &gt;&gt;&gt; # ...and use it to initialise a `Date` object.</span>
+<span class="sd">        &gt;&gt;&gt; date1 = Date(datetime_object)</span>
+
+<span class="sd">    Alternatively, one can use :class:`str` objects as initialization</span>
+<span class="sd">    arguments, which need to match one of the following format styles:</span>
+
+<span class="sd">        &gt;&gt;&gt; # The `os` style without empty space and colon, which is applied in</span>
+<span class="sd">        &gt;&gt;&gt; # text files and folder names:</span>
+<span class="sd">        &gt;&gt;&gt; date2 = Date(&#39;1997_11_01_00_00_00&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; # The `iso` style, which is more legible and in accordance with the</span>
+<span class="sd">        &gt;&gt;&gt; # international ISO norm:</span>
+<span class="sd">        &gt;&gt;&gt; date2 = Date(&#39;1997.11.01 00:00:00&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; # The `din` style, which is more legible for users in countries</span>
+<span class="sd">        &gt;&gt;&gt; # where the position of day and year are interchanged (DIN refers</span>
+<span class="sd">        &gt;&gt;&gt; # to a german norm):</span>
+<span class="sd">        &gt;&gt;&gt; date2 = Date(&#39;01.11.1997 00:00:00&#39;)</span>
+
+<span class="sd">    :class:`Date` keeps the chosen style in mind and uses it for printing.</span>
+<span class="sd">    But the user is also allowed to change it:</span>
+
+<span class="sd">        &gt;&gt;&gt; # Print in accordance with the `iso` style...</span>
+<span class="sd">        &gt;&gt;&gt; date2.string(&#39;iso&#39;)</span>
+<span class="sd">        &#39;1997.11.01 00:00:00&#39;</span>
+<span class="sd">        &gt;&gt;&gt; # ...without changing the memorized `din` style:</span>
+<span class="sd">        &gt;&gt;&gt; date2.style</span>
+<span class="sd">        &#39;din&#39;</span>
+
+<span class="sd">        # Alternatively, the style property can be set permanentely:</span>
+<span class="sd">        &gt;&gt;&gt; date2.style = &#39;iso&#39;</span>
+<span class="sd">        &gt;&gt;&gt; str(date2)</span>
+<span class="sd">        &#39;1997.11.01 00:00:00&#39;</span>
+
+<span class="sd">    It is allowed to abbreviate the input strings. Using the `iso` style as an</span>
+<span class="sd">    example:</span>
+
+<span class="sd">        &gt;&gt;&gt; # The following three input arguments...</span>
+<span class="sd">        &gt;&gt;&gt; test1 = Date(&#39;1996.11.01 00:00:00&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; test2 = Date(&#39;1996.11.01 00:00&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; test3 = Date(&#39;1996.11.01 00&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; test4 = Date(&#39;1996.11.01&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; # ...all lead to identical `Date` instances.</span>
+<span class="sd">        &gt;&gt;&gt; for test in (test1, test2, test3, test4):</span>
+<span class="sd">        ...     print(test)</span>
+<span class="sd">        1996.11.01 00:00:00</span>
+<span class="sd">        1996.11.01 00:00:00</span>
+<span class="sd">        1996.11.01 00:00:00</span>
+<span class="sd">        1996.11.01 00:00:00</span>
+
+<span class="sd">    If :class:`Date` has not been initialized via a :class:`str` object and</span>
+<span class="sd">    the style property has not been set manually, the default style `iso`</span>
+<span class="sd">    is selected.</span>
+
+<span class="sd">    One can change the year, month... of a :class:`Date` object via numbers:</span>
+
+<span class="sd">        # Assign an integer...</span>
+<span class="sd">        &gt;&gt;&gt; test4.year = 1997</span>
+<span class="sd">        &gt;&gt;&gt; # ...or something that can be converted to an integer.</span>
+<span class="sd">        &gt;&gt;&gt; test4.month = &#39;10&#39;</span>
+<span class="sd">        &gt;&gt;&gt; print(test4)</span>
+<span class="sd">        1997.10.01 00:00:00</span>
+
+<span class="sd">    One can ask for the actual water year, which depends on the selected</span>
+<span class="sd">    reference month:</span>
+
+<span class="sd">        &gt;&gt;&gt; oct = Date(&#39;1996.10.01&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; nov = Date(&#39;1996.11.01&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; # Under the standard settings, the water year is assumed to start</span>
+<span class="sd">        &gt;&gt;&gt; # November.</span>
+<span class="sd">        &gt;&gt;&gt; oct.wateryear</span>
+<span class="sd">        1996</span>
+<span class="sd">        &gt;&gt;&gt; nov.wateryear</span>
+<span class="sd">        1997</span>
+<span class="sd">        &gt;&gt;&gt; # Changing the reference month via one `Date` object affects all</span>
+<span class="sd">        &gt;&gt;&gt; # objects.</span>
+<span class="sd">        &gt;&gt;&gt; test4.refmonth = 10</span>
+<span class="sd">        &gt;&gt;&gt; oct.wateryear</span>
+<span class="sd">        1997</span>
+<span class="sd">        &gt;&gt;&gt; nov.wateryear</span>
+<span class="sd">        1997</span>
+<span class="sd">        &gt;&gt;&gt; test4.refmonth = &#39;November&#39;</span>
+<span class="sd">        &gt;&gt;&gt; oct.wateryear</span>
+<span class="sd">        1996</span>
+<span class="sd">        &gt;&gt;&gt; nov.wateryear</span>
+<span class="sd">        1997</span>
+
+<span class="sd">    Note that :class:`Date` objects are mutable.  Use the `copy` method</span>
+<span class="sd">    to prevent from unintentional results:</span>
+
+<span class="sd">        &gt;&gt;&gt; date1 = Date(&#39;1996.11.01 00:00&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; date2 = date1</span>
+<span class="sd">        &gt;&gt;&gt; date3 = date1.copy()</span>
+<span class="sd">        &gt;&gt;&gt; date1.year = 1997</span>
+<span class="sd">        &gt;&gt;&gt; for date in (date1, date2, date3):</span>
+<span class="sd">        ...     print(date)</span>
+<span class="sd">        1997.11.01 00:00:00</span>
+<span class="sd">        1997.11.01 00:00:00</span>
+<span class="sd">        1996.11.01 00:00:00</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># These are the so far accepted date format strings.</span>
+    <span class="n">_formatstrings</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;os&#39;</span><span class="p">:</span> <span class="s1">&#39;%Y_%m_</span><span class="si">%d</span><span class="s1">_%H_%M_%S&#39;</span><span class="p">,</span>
+                      <span class="s1">&#39;iso&#39;</span><span class="p">:</span> <span class="s1">&#39;%Y.%m.</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">,</span>
+                      <span class="s1">&#39;din&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="si">%d</span><span class="s1">.%m.%Y %H:%M:%S&#39;</span><span class="p">}</span>
+    <span class="c1"># The first month of the hydrological year (e.g. November in Germany)</span>
+    <span class="n">_firstmonth_wateryear</span> <span class="o">=</span> <span class="mi">11</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">datetime</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_style</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">Date</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">datetime</span> <span class="o">=</span> <span class="n">date</span><span class="o">.</span><span class="n">datetime</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">date</span><span class="o">.</span><span class="n">microsecond</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;For `Date` instances, the microsecond must &#39;</span>
+                                 <span class="s1">&#39;be `0`.  For the given `datetime` object, &#39;</span>
+                                 <span class="s1">&#39;it is `</span><span class="si">%d</span><span class="s1">` instead.&#39;</span> <span class="o">%</span> <span class="n">date</span><span class="o">.</span><span class="n">microsecond</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">datetime</span> <span class="o">=</span> <span class="n">date</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_initfromstr</span><span class="p">(</span><span class="n">date</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">TOY</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">datetime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span>
+                                              <span class="n">date</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">date</span><span class="o">.</span><span class="n">day</span><span class="p">,</span> <span class="n">date</span><span class="o">.</span><span class="n">hour</span><span class="p">,</span>
+                                              <span class="n">date</span><span class="o">.</span><span class="n">minute</span><span class="p">,</span> <span class="n">date</span><span class="o">.</span><span class="n">second</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;The supplied argument must be either an &#39;</span>
+                            <span class="s1">&#39;instance of `datetime.datetime` or of `str`.  &#39;</span>
+                            <span class="s1">&#39;The given arguments type is </span><span class="si">%s</span><span class="s1">.&#39;</span> <span class="o">%</span> <span class="nb">type</span><span class="p">(</span><span class="n">date</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_initfromstr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Try to initialize `datetime` from the given :class:`str` instance.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            * date (:class:`str`): Initialization date.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">style</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_formatstrings</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">datetime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_style</span> <span class="o">=</span> <span class="n">style</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="n">string</span> <span class="o">=</span> <span class="n">string</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datetime</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Date could not be identified out of the given &#39;</span>
+                             <span class="s1">&#39;string </span><span class="si">%s</span><span class="s1">.  The available formats are </span><span class="si">%s</span><span class="s1">.&#39;</span>
+                             <span class="o">%</span> <span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_formatstrings</span><span class="p">))</span>
+
+<div class="viewcode-block" id="Date.fromarray"><a class="viewcode-back" href="../../../timetools.html#hydpy.core.timetools.Date.fromarray">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">fromarray</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">array</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns a :class:`Date` instance based on date information (year,</span>
+<span class="sd">        month, day, hour, minute, second) stored as the first entries of the</span>
+<span class="sd">        successive rows of a :class:`~numpy.ndarray` object.&quot;&quot;&quot;</span>
+        <span class="n">intarray</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">array</span><span class="o">.</span><span class="n">ndim</span><span class="p">):</span>
+            <span class="n">intarray</span> <span class="o">=</span> <span class="n">intarray</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="o">*</span><span class="n">intarray</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Date.toarray"><a class="viewcode-back" href="../../../timetools.html#hydpy.core.timetools.Date.toarray">[docs]</a>    <span class="k">def</span> <span class="nf">toarray</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns a 1-dimensional :mod:`numpy` :class:`~numpy.ndarray` with</span>
+<span class="sd">        six entries defining the actual date (year, month, day, hour, minute,</span>
+<span class="sd">        second).&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">day</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hour</span><span class="p">,</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">minute</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">second</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_getrefmonth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;First month of the hydrological year. The default value is 11</span>
+<span class="sd">        (November which is the german reference month). Setting it e.g. to 10</span>
+<span class="sd">        (October is another common reference month many different countries)</span>
+<span class="sd">        affects all :class:`Date` instances.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Date</span><span class="o">.</span><span class="n">_firstmonth_wateryear</span>
+
+    <span class="k">def</span> <span class="nf">_setrefmonth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">Date</span><span class="o">.</span><span class="n">_firstmonth_wateryear</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)[:</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">months</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;jan&#39;</span><span class="p">,</span> <span class="s1">&#39;feb&#39;</span><span class="p">,</span> <span class="s1">&#39;mar&#39;</span><span class="p">,</span> <span class="s1">&#39;apr&#39;</span><span class="p">,</span> <span class="s1">&#39;may&#39;</span><span class="p">,</span> <span class="s1">&#39;jun&#39;</span><span class="p">,</span>
+                          <span class="s1">&#39;jul&#39;</span><span class="p">,</span> <span class="s1">&#39;aug&#39;</span><span class="p">,</span> <span class="s1">&#39;sew&#39;</span><span class="p">,</span> <span class="s1">&#39;oct&#39;</span><span class="p">,</span> <span class="s1">&#39;nov&#39;</span><span class="p">,</span> <span class="s1">&#39;dec&#39;</span><span class="p">]</span>
+                <span class="n">Date</span><span class="o">.</span><span class="n">_firstmonth_wateryear</span> <span class="o">=</span> <span class="n">months</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">string</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The given value `</span><span class="si">%s</span><span class="s1">` cannot be interpreted &#39;</span>
+                                 <span class="s1">&#39;as a month. Supply e.g. a number between 1 &#39;</span>
+                                 <span class="s1">&#39;and 12 or a month name instead.&#39;</span> <span class="o">%</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="n">refmonth</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_getrefmonth</span><span class="p">,</span> <span class="n">_setrefmonth</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_getstyle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Date format style to be applied in printing.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_style</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;iso&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_style</span>
+
+    <span class="k">def</span> <span class="nf">_setstyle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">style</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">style</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_formatstrings</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_style</span> <span class="o">=</span> <span class="n">style</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_style</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s1">&#39;Date format style `</span><span class="si">%s</span><span class="s1">` is not available.&#39;</span> <span class="o">%</span> <span class="n">style</span><span class="p">)</span>
+
+    <span class="n">style</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_getstyle</span><span class="p">,</span> <span class="n">_setstyle</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_setthing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">thing</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Convenience method for `_setyear`, `_setmonth`...&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Changing the </span><span class="si">%s</span><span class="s1"> of a `Date` instance is only &#39;</span>
+                             <span class="s1">&#39;allowed via numbers, but the given value `</span><span class="si">%s</span><span class="s1">` &#39;</span>
+                             <span class="s1">&#39;is of type `</span><span class="si">%s</span><span class="s1">` instead.&#39;</span>
+                             <span class="o">%</span> <span class="p">(</span><span class="n">thing</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)))</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">unit</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;year&#39;</span><span class="p">,</span> <span class="s1">&#39;month&#39;</span><span class="p">,</span> <span class="s1">&#39;day&#39;</span><span class="p">,</span> <span class="s1">&#39;hour&#39;</span><span class="p">,</span> <span class="s1">&#39;minute&#39;</span><span class="p">,</span> <span class="s1">&#39;second&#39;</span><span class="p">):</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="n">unit</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unit</span><span class="p">)</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="n">thing</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">datetime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_getsecond</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The actual second.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">second</span>
+
+    <span class="k">def</span> <span class="nf">_setsecond</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">second</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setthing</span><span class="p">(</span><span class="s1">&#39;second&#39;</span><span class="p">,</span> <span class="n">second</span><span class="p">)</span>
+
+    <span class="n">second</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_getsecond</span><span class="p">,</span> <span class="n">_setsecond</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_getminute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The actual minute.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">minute</span>
+
+    <span class="k">def</span> <span class="nf">_setminute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">minute</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setthing</span><span class="p">(</span><span class="s1">&#39;minute&#39;</span><span class="p">,</span> <span class="n">minute</span><span class="p">)</span>
+
+    <span class="n">minute</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_getminute</span><span class="p">,</span> <span class="n">_setminute</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_gethour</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The actual hour.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">hour</span>
+
+    <span class="k">def</span> <span class="nf">_sethour</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hour</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setthing</span><span class="p">(</span><span class="s1">&#39;hour&#39;</span><span class="p">,</span> <span class="n">hour</span><span class="p">)</span>
+
+    <span class="n">hour</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_gethour</span><span class="p">,</span> <span class="n">_sethour</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_getday</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The actual day.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">day</span>
+
+    <span class="k">def</span> <span class="nf">_setday</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">day</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setthing</span><span class="p">(</span><span class="s1">&#39;day&#39;</span><span class="p">,</span> <span class="n">day</span><span class="p">)</span>
+
+    <span class="n">day</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_getday</span><span class="p">,</span> <span class="n">_setday</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_getmonth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The actual month.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">month</span>
+
+    <span class="k">def</span> <span class="nf">_setmonth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">month</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setthing</span><span class="p">(</span><span class="s1">&#39;month&#39;</span><span class="p">,</span> <span class="n">month</span><span class="p">)</span>
+
+    <span class="n">month</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_getmonth</span><span class="p">,</span> <span class="n">_setmonth</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_getyear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The actual year.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">year</span>
+
+    <span class="k">def</span> <span class="nf">_setyear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">year</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setthing</span><span class="p">(</span><span class="s1">&#39;year&#39;</span><span class="p">,</span> <span class="n">year</span><span class="p">)</span>
+
+    <span class="n">year</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_getyear</span><span class="p">,</span> <span class="n">_setyear</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">wateryear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The actual hydrological year according selected reference month.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">month</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_firstmonth_wateryear</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">year</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">year</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">dayofyear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Day of year as an integer value.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">timetuple</span><span class="p">()</span><span class="o">.</span><span class="n">tm_yday</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">leapyear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return whether the actual date falls in a leap year or not.&quot;&quot;&quot;</span>
+        <span class="n">year</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">year</span>
+        <span class="k">return</span> <span class="p">(((</span><span class="n">year</span> <span class="o">%</span> <span class="mi">4</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span>
+                <span class="p">(((</span><span class="n">year</span> <span class="o">%</span> <span class="mi">100</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">((</span><span class="n">year</span> <span class="o">%</span> <span class="mi">400</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)))</span>
+
+<div class="viewcode-block" id="Date.copy"><a class="viewcode-back" href="../../../timetools.html#hydpy.core.timetools.Date.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns a deep copy of the :class:`Date` instance.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="n">Date</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datetime</span> <span class="o">+</span> <span class="n">Period</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="n">timedelta</span><span class="p">)</span>
+        <span class="n">new</span><span class="o">.</span><span class="n">style</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">style</span>
+        <span class="k">return</span> <span class="n">new</span>
+
+    <span class="k">def</span> <span class="nf">__iadd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">datetime</span> <span class="o">+=</span> <span class="n">Period</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="n">timedelta</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">__sub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Period</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datetime</span><span class="o">-</span><span class="n">Date</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="n">datetime</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">new</span> <span class="o">=</span> <span class="n">Date</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datetime</span><span class="o">-</span><span class="n">Period</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="n">timedelta</span><span class="p">)</span>
+                <span class="n">new</span><span class="o">.</span><span class="n">style</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">style</span>
+                <span class="k">return</span> <span class="n">new</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Object `</span><span class="si">%s</span><span class="s1">` of type `</span><span class="si">%s</span><span class="s1">` can not be &#39;</span>
+                                <span class="s1">&#39;substracted from a `Date` instance.&#39;</span>
+                                <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">other</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">)))</span>
+
+    <span class="k">def</span> <span class="nf">__isub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">datetime</span> <span class="o">-=</span> <span class="n">Period</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="n">timedelta</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">datetime</span> <span class="o">&lt;</span> <span class="n">Date</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="n">datetime</span>
+
+    <span class="k">def</span> <span class="nf">__le__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">datetime</span> <span class="o">&lt;=</span> <span class="n">Date</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="n">datetime</span>
+
+    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">datetime</span> <span class="o">==</span> <span class="n">Date</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="n">datetime</span>
+
+    <span class="k">def</span> <span class="nf">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">datetime</span> <span class="o">!=</span> <span class="n">Date</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="n">datetime</span>
+
+    <span class="k">def</span> <span class="nf">__gt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">datetime</span> <span class="o">&gt;</span> <span class="n">Date</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="n">datetime</span>
+
+    <span class="k">def</span> <span class="nf">__ge__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">datetime</span> <span class="o">&gt;=</span> <span class="n">Date</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="n">datetime</span>
+
+<div class="viewcode-block" id="Date.string"><a class="viewcode-back" href="../../../timetools.html#hydpy.core.timetools.Date.string">[docs]</a>    <span class="k">def</span> <span class="nf">string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">style</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns a :class:`str` object representing the actual date in</span>
+<span class="sd">        accordance with the given style.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">retain</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">style</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">style</span> <span class="o">=</span> <span class="n">style</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">style</span> <span class="o">=</span> <span class="n">retain</span></div>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_formatstrings</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;Date(&#39;</span><span class="si">%s</span><span class="s2">&#39;)&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__dir__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">objecttools</span><span class="o">.</span><span class="n">dir_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Period"><a class="viewcode-back" href="../../../timetools.html#hydpy.core.timetools.Period">[docs]</a><span class="k">class</span> <span class="nc">Period</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Handles the length of a single time period.</span>
+
+<span class="sd">    Class :class:`Period` is build on top of the Python module :mod:`datetime`.</span>
+<span class="sd">    In essence, it wraps the :mod:`datetime` class</span>
+<span class="sd">    :class:`~datetime.timedelta` and is supposed to specialise this general</span>
+<span class="sd">    classes on the needs of HydPy users.</span>
+
+<span class="sd">    Be aware of the different minimum time resolution of module :mod:`datetime`</span>
+<span class="sd">    (microseconds) and module :mod:`~hydpy.core.timetools` (seconds).</span>
+
+<span class="sd">    :class:`Period` objects can be directly initialized via</span>
+<span class="sd">    :class:`~datetime.timedelta` objects, e.g.:</span>
+
+<span class="sd">        &gt;&gt;&gt; from datetime import timedelta</span>
+<span class="sd">        &gt;&gt;&gt; from hydpy.core.timetools import Period</span>
+<span class="sd">        &gt;&gt;&gt; # Initialize a `timedelta` object...</span>
+<span class="sd">        &gt;&gt;&gt; timedelta_object = timedelta(1, 0)</span>
+<span class="sd">        &gt;&gt;&gt; # ...and use it to initialise a `Period` object</span>
+<span class="sd">        &gt;&gt;&gt; period = Period(timedelta_object)</span>
+
+<span class="sd">    Alternatively, one can initialize from :class:`str` objects.  These must</span>
+<span class="sd">    consist of some characters defining an integer value directly followed by</span>
+<span class="sd">    a single character defining the unit:</span>
+
+<span class="sd">        &gt;&gt;&gt; # 30 seconds:</span>
+<span class="sd">        &gt;&gt;&gt; period = Period(&#39;30s&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; # 5 minutes:</span>
+<span class="sd">        &gt;&gt;&gt; period = Period(&#39;5m&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; # 6 hours:</span>
+<span class="sd">        &gt;&gt;&gt; period = Period(&#39;6h&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; # 1 day:</span>
+<span class="sd">        &gt;&gt;&gt; period = Period(&#39;1d&#39;)</span>
+
+<span class="sd">    :class:`Period` always determines the unit leading to the most legigible</span>
+<span class="sd">    expression:</span>
+
+<span class="sd">        &gt;&gt;&gt; # Print using the unit leading to the smallest integer value:</span>
+<span class="sd">        &gt;&gt;&gt; print(period)</span>
+<span class="sd">        1d</span>
+<span class="sd">        &gt;&gt;&gt; # Alternatively, the values of all time units are directly</span>
+<span class="sd">        &gt;&gt;&gt; # available as `float` objects:</span>
+<span class="sd">        &gt;&gt;&gt; period.days</span>
+<span class="sd">        1.0</span>
+<span class="sd">        &gt;&gt;&gt; period.hours</span>
+<span class="sd">        24.0</span>
+<span class="sd">        &gt;&gt;&gt; period.minutes</span>
+<span class="sd">        1440.0</span>
+<span class="sd">        &gt;&gt;&gt; period.seconds</span>
+<span class="sd">        86400.0</span>
+
+<span class="sd">    If considered useful, logic and arithmetic operations are supported.</span>
+<span class="sd">    Some examples:</span>
+
+<span class="sd">        &gt;&gt;&gt; # Determine the period length between two dates.</span>
+<span class="sd">        &gt;&gt;&gt; from hydpy.core.timetools import Date</span>
+<span class="sd">        &gt;&gt;&gt; date1, date2 = Date(&#39;1997.11.01&#39;), Date(&#39;1996.11.01&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; wholeperiod = date1 - date2</span>
+<span class="sd">        &gt;&gt;&gt; print(wholeperiod)</span>
+<span class="sd">        365d</span>
+<span class="sd">        &gt;&gt;&gt; # Determine, how often one period fits into the other.</span>
+<span class="sd">        &gt;&gt;&gt; wholeperiod / period</span>
+<span class="sd">        365.0</span>
+<span class="sd">        &gt;&gt;&gt; # Get one sixths of period:</span>
+<span class="sd">        &gt;&gt;&gt; period / 6</span>
+<span class="sd">        Period(&#39;4h&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; # But when trying to get one seventh of period, the following</span>
+<span class="sd">        &gt;&gt;&gt; # error is raised:</span>
+<span class="sd">        &gt;&gt;&gt; period / 7</span>
+<span class="sd">        Traceback (most recent call last):</span>
+<span class="sd">        ...</span>
+<span class="sd">        ValueError: For `Period` instances, microseconds must be zero.  However, for the given `timedelta` object, it is`857142` instead.</span>
+
+<span class="sd">        &gt;&gt;&gt; # Double a period duration.</span>
+<span class="sd">        &gt;&gt;&gt; period *= 2</span>
+<span class="sd">        &gt;&gt;&gt; period</span>
+<span class="sd">        Period(&#39;2d&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; # Shift a date.</span>
+<span class="sd">        &gt;&gt;&gt; date1 - period</span>
+<span class="sd">        Date(&#39;1997.10.30 00:00:00&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; # Note that the modulo operator returns a boolean value, indicating</span>
+<span class="sd">        &gt;&gt;&gt; # whether division results in a remainder or not:</span>
+<span class="sd">        &gt;&gt;&gt; Period(&#39;1d&#39;) % Period(&#39;12h&#39;)</span>
+<span class="sd">        False</span>
+<span class="sd">        &gt;&gt;&gt; Period(&#39;1d&#39;) % Period(&#39;13h&#39;)</span>
+<span class="sd">        True</span>
+<span class="sd">        &gt;&gt;&gt; # Following the same line of thinking, floor division leads to the</span>
+<span class="sd">        &gt;&gt;&gt; # opposite results:</span>
+<span class="sd">        &gt;&gt;&gt; Period(&#39;1d&#39;) // Period(&#39;12h&#39;)</span>
+<span class="sd">        True</span>
+<span class="sd">        &gt;&gt;&gt; Period(&#39;1d&#39;) // Period(&#39;13h&#39;)</span>
+<span class="sd">        False</span>
+<span class="sd">        &gt;&gt;&gt; # Compare dates or periods.</span>
+<span class="sd">        &gt;&gt;&gt; date1 &lt; date2</span>
+<span class="sd">        False</span>
+<span class="sd">        &gt;&gt;&gt; min(date1, date2)</span>
+<span class="sd">        Date(&#39;1996.11.01 00:00:00&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; period == wholeperiod</span>
+<span class="sd">        False</span>
+<span class="sd">        &gt;&gt;&gt; # Operations on initialisation arguments are supported.</span>
+<span class="sd">        &gt;&gt;&gt; date1 + &#39;5m&#39;</span>
+<span class="sd">        Date(&#39;1997.11.01 00:05:00&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; period != &#39;12h&#39;</span>
+<span class="sd">        True</span>
+
+<span class="sd">    Note that :class:`Period` objects are mutable.  Use the `copy` method</span>
+<span class="sd">    to prevent from unintentional results::</span>
+
+<span class="sd">        &gt;&gt;&gt; period1 = Period(&#39;6h&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; period2 = period1</span>
+<span class="sd">        &gt;&gt;&gt; period3 = period1.copy()</span>
+<span class="sd">        &gt;&gt;&gt; period1 -= &#39;2h&#39;</span>
+<span class="sd">        &gt;&gt;&gt; period1, period2, period3</span>
+<span class="sd">        (Period(&#39;4h&#39;), Period(&#39;4h&#39;), Period(&#39;6h&#39;))</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">period</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timedelta</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_unit</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="n">Period</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">timedelta</span> <span class="o">=</span> <span class="n">period</span><span class="o">.</span><span class="n">timedelta</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">period</span><span class="o">.</span><span class="n">microseconds</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s1">&#39;For `Period` instances, microseconds must be zero.  &#39;</span>
+                    <span class="s1">&#39;However, for the given `timedelta` object, it is&#39;</span>
+                    <span class="s1">&#39;`</span><span class="si">%d</span><span class="s1">` instead.&#39;</span> <span class="o">%</span> <span class="n">period</span><span class="o">.</span><span class="n">microseconds</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">timedelta</span> <span class="o">=</span> <span class="n">period</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_initfromstr</span><span class="p">(</span><span class="n">period</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The supplied argument must be either an &#39;</span>
+                             <span class="s1">&#39;instance of `datetime.timedelta` or `str`.  &#39;</span>
+                             <span class="s1">&#39;The given arguments type is </span><span class="si">%s</span><span class="s1">.&#39;</span>
+                             <span class="o">%</span> <span class="n">objecttools</span><span class="o">.</span><span class="n">classname</span><span class="p">(</span><span class="n">period</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_initfromstr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">period</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Try to initialize `timedelta` from the given :class:`str` instance.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            * period (:class:`str`): Period length.</span>
+<span class="sd">         &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">number</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">period</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;All characters of the given period string, &#39;</span>
+                             <span class="s1">&#39;except the last one which represents the unit, &#39;</span>
+                             <span class="s1">&#39;need to define a whole decimal number.  Instead,&#39;</span>
+                             <span class="s1">&#39; these characters are `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="n">period</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_unit</span> <span class="o">=</span> <span class="n">period</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unit</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="s1">&#39;h&#39;</span><span class="p">,</span> <span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="s1">&#39;s&#39;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The last character of the given period string &#39;</span>
+                             <span class="s1">&#39;needs to be either `d` (days), `h` (hours) or &#39;</span>
+                             <span class="s1">&#39;`m` (minutes).  Instead, the last character is &#39;</span>
+                             <span class="s1">&#39;`</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unit</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unit</span> <span class="o">==</span> <span class="s1">&#39;d&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">timedelta</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">number</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unit</span> <span class="o">==</span> <span class="s1">&#39;h&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">timedelta</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">number</span><span class="o">*</span><span class="mi">3600</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unit</span> <span class="o">==</span> <span class="s1">&#39;m&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">timedelta</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">number</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unit</span> <span class="o">==</span> <span class="s1">&#39;s&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">timedelta</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">number</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Period.fromseconds"><a class="viewcode-back" href="../../../timetools.html#hydpy.core.timetools.Period.fromseconds">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">fromseconds</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">seconds</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns a :class:`Period` instance based on a given number of</span>
+<span class="sd">        seconds.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">seconds</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">seconds</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="n">seconds</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">seconds</span><span class="o">.</span><span class="n">flatten</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">seconds</span><span class="p">)))</span></div>
+
+    <span class="k">def</span> <span class="nf">_guessunit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Guess the unit of the period as the largest one, which results in</span>
+<span class="sd">        an integer duration.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">days</span> <span class="o">%</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;d&#39;</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">hours</span> <span class="o">%</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;h&#39;</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">minutes</span> <span class="o">%</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;m&#39;</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">seconds</span> <span class="o">%</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;s&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The stepsize is not a multiple of one &#39;</span>
+                             <span class="s1">&#39;second, which is not allowed.&#39;</span><span class="p">)</span>
+
+    <span class="n">unit</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_guessunit</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_getseconds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Period length in seconds.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">timedelta</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span>
+
+    <span class="n">seconds</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_getseconds</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_getminutes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Period length in minutes.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">seconds</span> <span class="o">/</span> <span class="mi">60</span>
+
+    <span class="n">minutes</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_getminutes</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_gethours</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Period length in hours.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">minutes</span> <span class="o">/</span> <span class="mi">60</span>
+
+    <span class="n">hours</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_gethours</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_getdays</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Period length in days.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">hours</span> <span class="o">/</span> <span class="mi">24</span>
+
+    <span class="n">days</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_getdays</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Period.copy"><a class="viewcode-back" href="../../../timetools.html#hydpy.core.timetools.Period.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns a deep copy of the :class:`Period` instance.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">new</span> <span class="o">=</span> <span class="n">Date</span><span class="p">(</span><span class="n">Date</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="n">datetime</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">timedelta</span><span class="p">)</span>
+            <span class="n">new</span><span class="o">.</span><span class="n">style</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">style</span>
+            <span class="k">return</span> <span class="n">new</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">Period</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timedelta</span> <span class="o">+</span> <span class="n">Period</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="n">timedelta</span><span class="p">)</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Object `</span><span class="si">%s</span><span class="s1">` of type `</span><span class="si">%s</span><span class="s1">` can not be &#39;</span>
+                                <span class="s1">&#39;added to a `Period` instance.&#39;</span>
+                                <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">other</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">)))</span>
+
+    <span class="k">def</span> <span class="nf">__iadd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timedelta</span> <span class="o">+=</span> <span class="n">Period</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="n">timedelta</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">__sub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">Period</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timedelta</span> <span class="o">-</span> <span class="n">Period</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="n">timedelta</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__isub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timedelta</span> <span class="o">-=</span> <span class="n">Period</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="n">timedelta</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">__mul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">Period</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timedelta</span> <span class="o">*</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__rmul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span> <span class="o">*</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">__imul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timedelta</span> <span class="o">*=</span> <span class="n">value</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">__truediv__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">Period</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timedelta</span> <span class="o">//</span> <span class="n">other</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">seconds</span> <span class="o">/</span> <span class="n">Period</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="n">seconds</span>
+
+    <span class="k">def</span> <span class="nf">__itruediv__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span> <span class="o">/</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">__mod__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">seconds</span> <span class="o">%</span> <span class="n">Period</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="n">seconds</span><span class="p">)</span> <span class="o">!=</span> <span class="mf">0.</span>
+
+    <span class="k">def</span> <span class="nf">__floordiv__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">seconds</span> <span class="o">%</span> <span class="n">Period</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="n">seconds</span><span class="p">)</span> <span class="o">==</span> <span class="mf">0.</span>
+
+    <span class="k">def</span> <span class="nf">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">timedelta</span> <span class="o">&lt;</span> <span class="n">Period</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="n">timedelta</span>
+
+    <span class="k">def</span> <span class="nf">__le__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">timedelta</span> <span class="o">&lt;=</span> <span class="n">Period</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="n">timedelta</span>
+
+    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">timedelta</span> <span class="o">==</span> <span class="n">Period</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="n">timedelta</span>
+
+    <span class="k">def</span> <span class="nf">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">timedelta</span> <span class="o">!=</span> <span class="n">Period</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="n">timedelta</span>
+
+    <span class="k">def</span> <span class="nf">__gt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">timedelta</span> <span class="o">&gt;</span> <span class="n">Period</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="n">timedelta</span>
+
+    <span class="k">def</span> <span class="nf">__ge__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">timedelta</span> <span class="o">&gt;=</span> <span class="n">Period</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="n">timedelta</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit</span> <span class="o">==</span> <span class="s1">&#39;d&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%d</span><span class="s1">d&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">days</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit</span> <span class="o">==</span> <span class="s1">&#39;h&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%d</span><span class="s1">h&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">hours</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit</span> <span class="o">==</span> <span class="s1">&#39;m&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%d</span><span class="s1">m&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">minutes</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit</span> <span class="o">==</span> <span class="s1">&#39;s&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%d</span><span class="s1">s&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">seconds</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;Period(&#39;</span><span class="si">%s</span><span class="s2">&#39;)&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__dir__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">objecttools</span><span class="o">.</span><span class="n">dir_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Timegrid"><a class="viewcode-back" href="../../../timetools.html#hydpy.core.timetools.Timegrid">[docs]</a><span class="k">class</span> <span class="nc">Timegrid</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Handle a time period defined by to dates and a step size in between.</span>
+
+<span class="sd">    In hydrological modelling, input (and output) data are usually only</span>
+<span class="sd">    available with a certain resolution, which also determines the possible</span>
+<span class="sd">    resolution of the actual simulation.  This is reflected by the class</span>
+<span class="sd">    :class:`Timegrid`, which represents the first and the last date of e.g.</span>
+<span class="sd">    a simulation period as well as the intermediate dates. A :class:`Timegrid`</span>
+<span class="sd">    object is initialized by defining its first date, its last date and its</span>
+<span class="sd">    stepsize:</span>
+
+<span class="sd">        &gt;&gt;&gt; from hydpy.core.timetools import Date, Period, Timegrid</span>
+<span class="sd">        &gt;&gt;&gt; # Either pass the proper attributes directly...</span>
+<span class="sd">        &gt;&gt;&gt; firstdate = Date(&#39;1996.11.01&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; lastdate = Date(&#39;1997.11.01&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; stepsize = Period(&#39;1d&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; timegrid_sim = Timegrid(firstdate, lastdate, stepsize)</span>
+<span class="sd">        &gt;&gt;&gt; timegrid_sim</span>
+<span class="sd">        Timegrid(&#39;1996.11.01 00:00:00&#39;,</span>
+<span class="sd">                 &#39;1997.11.01 00:00:00&#39;,</span>
+<span class="sd">                 &#39;1d&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; # ...or pass their initialization arguments:</span>
+<span class="sd">        &gt;&gt;&gt; timegrid_sim = Timegrid(&#39;1996.11.01&#39;, &#39;1997.11.01&#39;, &#39;1d&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; timegrid_sim</span>
+<span class="sd">        Timegrid(&#39;1996.11.01 00:00:00&#39;,</span>
+<span class="sd">                 &#39;1997.11.01 00:00:00&#39;,</span>
+<span class="sd">                 &#39;1d&#39;)</span>
+
+<span class="sd">    :class:`Timegrid` provides functionalities to ease and secure the handling</span>
+<span class="sd">    of dates in HydPy. Here some examples:</span>
+
+<span class="sd">        &gt;&gt;&gt; # Retrieve a date via indexing, e.g. the second one:</span>
+<span class="sd">        &gt;&gt;&gt; date = timegrid_sim[1]</span>
+<span class="sd">        &gt;&gt;&gt; date</span>
+<span class="sd">        Date(&#39;1996.11.02 00:00:00&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; # Or the other way round, retrieve the index belonging to a date:</span>
+<span class="sd">        &gt;&gt;&gt; timegrid_sim[date]</span>
+<span class="sd">        1</span>
+<span class="sd">        &gt;&gt;&gt; # Indexing beyond the ranges of the actual time period is allowed:</span>
+<span class="sd">        &gt;&gt;&gt; timegrid_sim[-366]</span>
+<span class="sd">        Date(&#39;1995.11.01 00:00:00&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; timegrid_sim[timegrid_sim[date+&#39;365d&#39;]]</span>
+<span class="sd">        Date(&#39;1997.11.02 00:00:00&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; # Iterate through all time grid points (e.g. to print the first</span>
+<span class="sd">        &gt;&gt;&gt; # day of each month):</span>
+<span class="sd">        &gt;&gt;&gt; for date in timegrid_sim:</span>
+<span class="sd">        ...     if date.day == 1:</span>
+<span class="sd">        ...         print(date)</span>
+<span class="sd">        1996.11.01 00:00:00</span>
+<span class="sd">        1996.12.01 00:00:00</span>
+<span class="sd">        1997.01.01 00:00:00</span>
+<span class="sd">        1997.02.01 00:00:00</span>
+<span class="sd">        1997.03.01 00:00:00</span>
+<span class="sd">        1997.04.01 00:00:00</span>
+<span class="sd">        1997.05.01 00:00:00</span>
+<span class="sd">        1997.06.01 00:00:00</span>
+<span class="sd">        1997.07.01 00:00:00</span>
+<span class="sd">        1997.08.01 00:00:00</span>
+<span class="sd">        1997.09.01 00:00:00</span>
+<span class="sd">        1997.10.01 00:00:00</span>
+
+<span class="sd">    After doing some changes one should call the :func:`~Timegrid.verify`</span>
+<span class="sd">    method:</span>
+
+<span class="sd">        &gt;&gt;&gt; # `verify` keeps silent if everything seems to be alright...</span>
+<span class="sd">        &gt;&gt;&gt; timegrid_sim.verify()</span>
+<span class="sd">        &gt;&gt;&gt; # ...but raises an suitable exception otherwise:</span>
+<span class="sd">        &gt;&gt;&gt; timegrid_sim.firstdate.minute = 30</span>
+<span class="sd">        &gt;&gt;&gt; timegrid_sim.verify()</span>
+<span class="sd">        Traceback (most recent call last):</span>
+<span class="sd">        ...</span>
+<span class="sd">        ValueError: Unplausible timegrid. The period span between the given dates 1996.11.01 00:30:00 and 1997.11.01 00:00:00 is not a multiple of the given step size 1d.</span>
+
+<span class="sd">    One can check two :class:`Timegrid` instances for equality:</span>
+
+<span class="sd">        &gt;&gt;&gt; # Make a deep copy of the timegrid already existing.</span>
+<span class="sd">        &gt;&gt;&gt; timegrid_test = timegrid_sim.copy()</span>
+<span class="sd">        &gt;&gt;&gt; # Test for equality and non-equality.</span>
+<span class="sd">        &gt;&gt;&gt; timegrid_sim == timegrid_test</span>
+<span class="sd">        True</span>
+<span class="sd">        &gt;&gt;&gt; timegrid_sim != timegrid_test</span>
+<span class="sd">        False</span>
+<span class="sd">        &gt;&gt;&gt; # Modify one date of the new timegrid.</span>
+<span class="sd">        &gt;&gt;&gt; timegrid_test.firstdate += &#39;1d&#39;</span>
+<span class="sd">        &gt;&gt;&gt; # Again, test for equality and non-equality.</span>
+<span class="sd">        &gt;&gt;&gt; timegrid_sim == timegrid_test</span>
+<span class="sd">        False</span>
+<span class="sd">        &gt;&gt;&gt; timegrid_sim != timegrid_test</span>
+<span class="sd">        True</span>
+
+<span class="sd">    Also, one can check if a date or even the whole timegrid lies within a</span>
+<span class="sd">    span defined by a :class:`Timegrid` instance::</span>
+
+<span class="sd">        &gt;&gt;&gt; # Define a long timegrid:</span>
+<span class="sd">        &gt;&gt;&gt; timegrid_long = Timegrid(&#39;1996.11.01&#39;, &#39;2006.11.01&#39;, &#39;1d&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; # Check different dates for lying in the defined time period:</span>
+<span class="sd">        &gt;&gt;&gt; &#39;1996.10.31&#39; in timegrid_long</span>
+<span class="sd">        False</span>
+<span class="sd">        &gt;&gt;&gt; &#39;1996.11.01&#39; in timegrid_long</span>
+<span class="sd">        True</span>
+<span class="sd">        &gt;&gt;&gt; &#39;1996.11.02&#39; in timegrid_long</span>
+<span class="sd">        True</span>
+<span class="sd">        &gt;&gt;&gt; # For dates not alligned on the grid `False` is returned:</span>
+<span class="sd">        &gt;&gt;&gt; &#39;1996.11.01 12:00&#39; in timegrid_long</span>
+<span class="sd">        False</span>
+
+<span class="sd">        &gt;&gt;&gt; # Now define a timegrid containing only the first year of the</span>
+<span class="sd">        &gt;&gt;&gt; # long one:</span>
+<span class="sd">        &gt;&gt;&gt; timegrid_short = Timegrid(&#39;1996.11.01&#39;, &#39;1997.11.01&#39;, &#39;1d&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; # Check which timegrid is contained by the other:</span>
+<span class="sd">        &gt;&gt;&gt; timegrid_short in timegrid_long</span>
+<span class="sd">        True</span>
+<span class="sd">        &gt;&gt;&gt; timegrid_long in timegrid_short</span>
+<span class="sd">        False</span>
+<span class="sd">        &gt;&gt;&gt; # For timegrids with different stepsizes `False` is returned:</span>
+<span class="sd">        &gt;&gt;&gt; timegrid_short.stepsize = Period(&#39;1h&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; timegrid_short in timegrid_long</span>
+<span class="sd">        False</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_firstdate</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_lastdate</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_stepsize</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">firstdate</span><span class="p">,</span> <span class="n">lastdate</span><span class="p">,</span> <span class="n">stepsize</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">firstdate</span> <span class="o">=</span> <span class="n">firstdate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lastdate</span> <span class="o">=</span> <span class="n">lastdate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span> <span class="o">=</span> <span class="n">stepsize</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verify</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_getfirstdate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_firstdate</span>
+
+    <span class="k">def</span> <span class="nf">_setfirstdate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">firstdate</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_firstdate</span> <span class="o">=</span> <span class="n">Date</span><span class="p">(</span><span class="n">firstdate</span><span class="p">)</span>
+
+    <span class="n">firstdate</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_getfirstdate</span><span class="p">,</span> <span class="n">_setfirstdate</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_getlastdate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lastdate</span>
+
+    <span class="k">def</span> <span class="nf">_setlastdate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lastdate</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lastdate</span> <span class="o">=</span> <span class="n">Date</span><span class="p">(</span><span class="n">lastdate</span><span class="p">)</span>
+
+    <span class="n">lastdate</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_getlastdate</span><span class="p">,</span> <span class="n">_setlastdate</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_getstepsize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stepsize</span>
+
+    <span class="k">def</span> <span class="nf">_setstepsize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stepsize</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stepsize</span> <span class="o">=</span> <span class="n">Period</span><span class="p">(</span><span class="n">stepsize</span><span class="p">)</span>
+
+    <span class="n">stepsize</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_getstepsize</span><span class="p">,</span> <span class="n">_setstepsize</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Timegrid.fromarray"><a class="viewcode-back" href="../../../timetools.html#hydpy.core.timetools.Timegrid.fromarray">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">fromarray</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">array</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns a :class:`Timegrid` instance based on two date and one</span>
+<span class="sd">        period information stored in the first 13 rows of a</span>
+<span class="sd">        :class:`~numpy.ndarray` object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">firstdate</span><span class="o">=</span><span class="n">Date</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">array</span><span class="p">[:</span><span class="mi">6</span><span class="p">]),</span>
+                       <span class="n">lastdate</span><span class="o">=</span><span class="n">Date</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">array</span><span class="p">[</span><span class="mi">6</span><span class="p">:</span><span class="mi">12</span><span class="p">]),</span>
+                       <span class="n">stepsize</span><span class="o">=</span><span class="n">Period</span><span class="o">.</span><span class="n">fromseconds</span><span class="p">(</span><span class="n">array</span><span class="p">[</span><span class="mi">12</span><span class="p">]))</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s1">&#39;To define a Timegrid instance via an array, 13 &#39;</span>
+                             <span class="s1">&#39;numbers are required.  However, the given array &#39;</span>
+                             <span class="s1">&#39;consist of </span><span class="si">%d</span><span class="s1"> entries/rows only.&#39;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Timegrid.toarray"><a class="viewcode-back" href="../../../timetools.html#hydpy.core.timetools.Timegrid.toarray">[docs]</a>    <span class="k">def</span> <span class="nf">toarray</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns a 1-dimensional :mod:`numpy` :class:`~numpy.ndarray` with</span>
+<span class="sd">        thirteen entries first defining the start date, secondly defining the</span>
+<span class="sd">        end date and thirdly the step size in seconds.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">values</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">values</span><span class="p">[:</span><span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">firstdate</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span>
+        <span class="n">values</span><span class="p">[</span><span class="mi">6</span><span class="p">:</span><span class="mi">12</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lastdate</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span>
+        <span class="n">values</span><span class="p">[</span><span class="mi">12</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span><span class="o">.</span><span class="n">seconds</span>
+        <span class="k">return</span> <span class="n">values</span></div>
+
+<div class="viewcode-block" id="Timegrid.array2series"><a class="viewcode-back" href="../../../timetools.html#hydpy.core.timetools.Timegrid.array2series">[docs]</a>    <span class="k">def</span> <span class="nf">array2series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Prefix the information of the actual Timegrid object to the given</span>
+<span class="sd">        array and return it.</span>
+
+<span class="sd">        The Timegrid information is stored in the first thirteen values of</span>
+<span class="sd">        the first axis of the returned series.  Initialize a Timegrid object</span>
+<span class="sd">        and apply its `array2series` method on a simple list containing</span>
+<span class="sd">        numbers:</span>
+
+<span class="sd">        &gt;&gt;&gt; from hydpy.core.timetools import Timegrid</span>
+<span class="sd">        &gt;&gt;&gt; timegrid = Timegrid(&#39;2000.11.01 00:00&#39;, &#39;2000.11.01 04:00&#39;, &#39;1h&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; series = timegrid.array2series([1, 2, 3.5, &#39;5.0&#39;])</span>
+
+<span class="sd">        The first six entries contain the first date of the timegrid (year,</span>
+<span class="sd">        month, day, hour, minute, second):</span>
+
+<span class="sd">        &gt;&gt;&gt; from hydpy.core.objecttools import round_</span>
+<span class="sd">        &gt;&gt;&gt; round_(series[:6])</span>
+<span class="sd">        2000.0, 11.0, 1.0, 0.0, 0.0, 0.0</span>
+
+<span class="sd">        The six subsequent entries contain the last date:</span>
+
+<span class="sd">        &gt;&gt;&gt; round_(series[6:12])</span>
+<span class="sd">        2000.0, 11.0, 1.0, 4.0, 0.0, 0.0</span>
+
+<span class="sd">        The thirteens value is the step size in seconds:</span>
+
+<span class="sd">        &gt;&gt;&gt; round_(series[12])</span>
+<span class="sd">        3600.0</span>
+
+<span class="sd">        The last four value are the ones of the given vector:</span>
+
+<span class="sd">        &gt;&gt;&gt; round_(series[-4:])</span>
+<span class="sd">        1.0, 2.0, 3.5, 5.0</span>
+
+<span class="sd">        The given array can have an arbitrary number of dimensions:</span>
+
+<span class="sd">        &gt;&gt;&gt; import numpy</span>
+<span class="sd">        &gt;&gt;&gt; array = numpy.eye(4)</span>
+<span class="sd">        &gt;&gt;&gt; series = timegrid.array2series(array)</span>
+
+<span class="sd">        Now the timegrid information is stored in the first column:</span>
+
+<span class="sd">        &gt;&gt;&gt; round_(series[:13, 0])</span>
+<span class="sd">        2000.0, 11.0, 1.0, 0.0, 0.0, 0.0, 2000.0, 11.0, 1.0, 4.0, 0.0, 0.0, 3600.0</span>
+
+<span class="sd">        All other columns of the first thirteen rows contain nan values, e.g.:</span>
+
+<span class="sd">        &gt;&gt;&gt; round_(series[12, :])</span>
+<span class="sd">        3600.0, nan, nan, nan</span>
+
+<span class="sd">        The original values are stored in the last four rows, e.g.:</span>
+
+<span class="sd">        &gt;&gt;&gt; round_(series[13, :])</span>
+<span class="sd">        1.0, 0.0, 0.0, 0.0</span>
+
+<span class="sd">        Inappropriate array objects result in error messages like:</span>
+
+<span class="sd">        &gt;&gt;&gt; timegrid.array2series([[1, 2], [3]])</span>
+<span class="sd">        Traceback (most recent call last):</span>
+<span class="sd">        ...</span>
+<span class="sd">        ValueError: While trying to prefix timegrid information to the given array, the following error occured: setting an array element with a sequence.</span>
+
+<span class="sd">        If the given array does not fit to the defined timegrid, a special</span>
+<span class="sd">        error message is returned:</span>
+
+<span class="sd">        &gt;&gt;&gt; timegrid.array2series([[1, 2], [3, 4]])</span>
+<span class="sd">        Traceback (most recent call last):</span>
+<span class="sd">        ...</span>
+<span class="sd">        ValueError: When converting an array to a sequence, the lengths of the timegrid and the given array must be equal, but the length of the timegrid object is `4` and the length of the array object is `2`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">array</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">BaseException</span><span class="p">:</span>
+            <span class="n">objecttools</span><span class="o">.</span><span class="n">augmentexcmessage</span><span class="p">(</span><span class="s1">&#39;While trying to prefix timegrid &#39;</span>
+                                          <span class="s1">&#39;information to the given array&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s1">&#39;When converting an array to a sequence, the lengths of the &#39;</span>
+                <span class="s1">&#39;timegrid and the given array must be equal, but the length &#39;</span>
+                <span class="s1">&#39;of the timegrid object is `</span><span class="si">%s</span><span class="s1">` and the length of the array &#39;</span>
+                <span class="s1">&#39;object is `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="p">)))</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">13</span>
+        <span class="n">series</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+        <span class="n">slices</span> <span class="o">=</span> <span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">13</span><span class="p">)]</span>
+        <span class="n">subshape</span> <span class="o">=</span> <span class="p">[</span><span class="mi">13</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">series</span><span class="o">.</span><span class="n">ndim</span><span class="p">):</span>
+            <span class="n">slices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="n">subshape</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">series</span><span class="p">[</span><span class="n">slices</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">subshape</span><span class="p">)</span>
+        <span class="n">series</span><span class="p">[</span><span class="mi">13</span><span class="p">:]</span> <span class="o">=</span> <span class="n">array</span>
+        <span class="k">return</span> <span class="n">series</span></div>
+
+<div class="viewcode-block" id="Timegrid.verify"><a class="viewcode-back" href="../../../timetools.html#hydpy.core.timetools.Timegrid.verify">[docs]</a>    <span class="k">def</span> <span class="nf">verify</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Raise an :class:`~exceptions.ValueError` if the dates or the</span>
+<span class="sd">        step size of the time frame are inconsistent.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">firstdate</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lastdate</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Unplausible timegrid. The first given &#39;</span>
+                             <span class="s1">&#39;date </span><span class="si">%s</span><span class="s1">, the second given date is </span><span class="si">%s</span><span class="s1">. &#39;</span>
+                             <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">firstdate</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lastdate</span><span class="p">))</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lastdate</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">firstdate</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Unplausible timegrid. The period span &#39;</span>
+                             <span class="s1">&#39;between the given dates </span><span class="si">%s</span><span class="s1"> and </span><span class="si">%s</span><span class="s1"> is not &#39;</span>
+                             <span class="s1">&#39;a multiple of the given step size </span><span class="si">%s</span><span class="s1">.&#39;</span> <span class="o">%</span>
+                             <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">firstdate</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lastdate</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Timegrid.copy"><a class="viewcode-back" href="../../../timetools.html#hydpy.core.timetools.Timegrid.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns a deep copy of the :class:`Timegrid` instance.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">lastdate</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">firstdate</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">Date</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">firstdate</span> <span class="o">+</span> <span class="n">key</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">Date</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="p">(</span><span class="n">key</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">firstdate</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span>
+            <span class="k">if</span> <span class="n">index</span> <span class="o">%</span> <span class="mf">1.</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The given date `</span><span class="si">%s</span><span class="s1">` is not properly &#39;</span>
+                                 <span class="s1">&#39;alligned on the indexed timegrid.&#39;</span> <span class="o">%</span> <span class="n">key</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">date</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">firstdate</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">while</span> <span class="n">date</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">lastdate</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">date</span>
+            <span class="n">date</span> <span class="o">=</span> <span class="n">date</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span>
+
+    <span class="k">def</span> <span class="nf">_containsdate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">):</span>
+        <span class="n">date</span> <span class="o">=</span> <span class="n">Date</span><span class="p">(</span><span class="n">date</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">firstdate</span> <span class="o">&lt;=</span> <span class="n">date</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lastdate</span><span class="p">)</span> <span class="ow">and</span>
+                <span class="p">((</span><span class="n">date</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">firstdate</span><span class="p">)</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_containstimegrid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timegrid</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_containsdate</span><span class="p">(</span><span class="n">timegrid</span><span class="o">.</span><span class="n">firstdate</span><span class="p">)</span> <span class="ow">and</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_containsdate</span><span class="p">(</span><span class="n">timegrid</span><span class="o">.</span><span class="n">lastdate</span><span class="p">)</span> <span class="ow">and</span>
+                <span class="p">(</span><span class="n">timegrid</span><span class="o">.</span><span class="n">stepsize</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Timegrid</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_containstimegrid</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_containsdate</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">firstdate</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">firstdate</span><span class="p">)</span> <span class="ow">and</span>
+                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lastdate</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">lastdate</span><span class="p">)</span> <span class="ow">and</span>
+                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">stepsize</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">firstdate</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">firstdate</span><span class="p">)</span> <span class="ow">or</span>
+                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lastdate</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">lastdate</span><span class="p">)</span> <span class="ow">or</span>
+                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">stepsize</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="s1">&#39;from </span><span class="si">%s</span><span class="s1"> to </span><span class="si">%s</span><span class="s1"> in </span><span class="si">%s</span><span class="s1"> steps&#39;</span>
+                <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">firstdate</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lastdate</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">assignrepr</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Timegrid.assignrepr"><a class="viewcode-back" href="../../../timetools.html#hydpy.core.timetools.Timegrid.assignrepr">[docs]</a>    <span class="k">def</span> <span class="nf">assignrepr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a :func:`repr` string with an prefixed assignement.</span>
+
+<span class="sd">        Argument:</span>
+<span class="sd">            * prefix(:class:`str`): Usually something like &#39;x = &#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">skip</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span> <span class="o">+</span> <span class="mi">9</span>
+        <span class="n">blanks</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span> <span class="o">*</span> <span class="n">skip</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">Timegrid(&#39;</span><span class="si">%s</span><span class="s2">&#39;,&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">firstdate</span><span class="p">)),</span>
+                 <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&#39;</span><span class="si">%s</span><span class="s2">&#39;,&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">blanks</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lastdate</span><span class="p">)),</span>
+                 <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&#39;</span><span class="si">%s</span><span class="s2">&#39;)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">blanks</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span><span class="p">))]</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">__dir__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">objecttools</span><span class="o">.</span><span class="n">dir_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Timegrids"><a class="viewcode-back" href="../../../timetools.html#hydpy.core.timetools.Timegrids">[docs]</a><span class="k">class</span> <span class="nc">Timegrids</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Handles all :class:`Timegrid` instances of a HydPy project.</span>
+
+<span class="sd">    The HydPy framework distinguishes three `time frames`, one associated</span>
+<span class="sd">    with the input date available on disk (`data`), one associated, with the</span>
+<span class="sd">    initialisation period (`init`), and one associated with the actual</span>
+<span class="sd">    simulation period (`sim`).  The last two latter time frames are</span>
+<span class="sd">    represented by two different :class:`Timegrid` objects, which are both</span>
+<span class="sd">    handled by a single :class:`Timegrids` object.  (The `data` time frames</span>
+<span class="sd">    are also defined via :class:`Timegrid` objects, but for each input data</span>
+<span class="sd">    file seperately. See module :mod:`~hydpy.core.sequencetools` for</span>
+<span class="sd">    further information.)</span>
+
+<span class="sd">    There is usually only one :class:`Timegrids` object required within each</span>
+<span class="sd">    HydPy project.  Usually It is instantiated in the project&#39;s main file</span>
+<span class="sd">    or at the top of script defining a HydPy workflow and assigned to the</span>
+<span class="sd">    :mod:`~hydpy.pub` module, which provides access to &quot;global&quot; project</span>
+<span class="sd">    settings:</span>
+
+<span class="sd">        &gt;&gt;&gt; from hydpy import Timegrid, Timegrids</span>
+<span class="sd">        &gt;&gt;&gt; from hydpy import pub</span>
+
+<span class="sd">    In many cases, one want to perform the simulation over the whole</span>
+<span class="sd">    initialization period.  Then only one Timegrid instance must be</span>
+<span class="sd">    defined:</span>
+
+<span class="sd">        &gt;&gt;&gt; pub.timegrids = Timegrids(Timegrid(&#39;2000.11.11&#39;,</span>
+<span class="sd">        ...                                    &#39;2003.11.11&#39;,</span>
+<span class="sd">        ...                                     &#39;1d&#39;))</span>
+<span class="sd">        &gt;&gt;&gt; pub.timegrids</span>
+<span class="sd">        Timegrids(Timegrid(&#39;2000.11.11 00:00:00&#39;,</span>
+<span class="sd">                           &#39;2003.11.11 00:00:00&#39;,</span>
+<span class="sd">                           &#39;1d&#39;))</span>
+
+<span class="sd">    Otherwise, two Timegrid instances must be given:</span>
+
+<span class="sd">        &gt;&gt;&gt; pub.timegrids = Timegrids(init=Timegrid(&#39;2000.11.11&#39;,</span>
+<span class="sd">        ...                                         &#39;2003.11.11&#39;,</span>
+<span class="sd">        ...                                         &#39;1h&#39;),</span>
+<span class="sd">        ...                           sim=Timegrid(&#39;2001.11.11&#39;,</span>
+<span class="sd">        ...                                        &#39;2002.11.11&#39;,</span>
+<span class="sd">        ...                                        &#39;1h&#39;))</span>
+<span class="sd">        &gt;&gt;&gt; pub.timegrids</span>
+<span class="sd">        Timegrids(init=Timegrid(&#39;2000.11.11 00:00:00&#39;,</span>
+<span class="sd">                                &#39;2003.11.11 00:00:00&#39;,</span>
+<span class="sd">                                &#39;1h&#39;),</span>
+<span class="sd">                  sim=Timegrid(&#39;2001.11.11 00:00:00&#39;,</span>
+<span class="sd">                               &#39;2002.11.11 00:00:00&#39;,</span>
+<span class="sd">                               &#39;1h&#39;))</span>
+
+<span class="sd">    Some examples on the usage of this :class:`Timegrids` instance:</span>
+
+<span class="sd">        &gt;&gt;&gt; # Get the general data and simulation step size:</span>
+<span class="sd">        &gt;&gt;&gt; pub.timegrids.stepsize</span>
+<span class="sd">        Period(&#39;1h&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; # Get the factor to convert `mm/stepsize` to m^3/s for an area</span>
+<span class="sd">        &gt;&gt;&gt; # of 36 km^2:</span>
+<span class="sd">        &gt;&gt;&gt; pub.timegrids.qfactor(36.)</span>
+<span class="sd">        10.0</span>
+<span class="sd">        &gt;&gt;&gt; # Get the index of the first values of the `initialization frame`</span>
+<span class="sd">        &gt;&gt;&gt; # which belong to the `simulation frame`.</span>
+<span class="sd">        &gt;&gt;&gt; pub.timegrids.init[pub.timegrids.sim.firstdate]</span>
+<span class="sd">        8760</span>
+
+<span class="sd">    Each manual change should be followed by calling the</span>
+<span class="sd">    :func:`~Timegrids.verify` method, which calls the :func:`~Timegrid.verify`</span>
+<span class="sd">    method of the single :class:`Timegrid` instances and performs some</span>
+<span class="sd">    additional tests:</span>
+
+<span class="sd">        &gt;&gt;&gt; # To postpone the end of the `simulation time frame` exactly</span>
+<span class="sd">        &gt;&gt;&gt; # one year is fine:</span>
+<span class="sd">        &gt;&gt;&gt; pub.timegrids.sim.lastdate += &#39;365d&#39;</span>
+<span class="sd">        &gt;&gt;&gt; pub.timegrids.verify()</span>
+<span class="sd">        &gt;&gt;&gt; # But any additional day shifts it outside the `initialisation</span>
+<span class="sd">        &gt;&gt;&gt; # time frame`, so verification raises a value error:</span>
+<span class="sd">        &gt;&gt;&gt; pub.timegrids.sim.lastdate += &#39;1d&#39;</span>
+<span class="sd">        &gt;&gt;&gt; pub.timegrids.verify()</span>
+<span class="sd">        Traceback (most recent call last):</span>
+<span class="sd">        ...</span>
+<span class="sd">        ValueError: The last date of the initialisation period (2003.11.11 00:00:00) must not be earlier than the last date of the simulation period (2003.11.12 00:00:00).</span>
+<span class="sd">        &gt;&gt;&gt; pub.timegrids.sim.lastdate -= &#39;1d&#39;</span>
+
+<span class="sd">        &gt;&gt;&gt; # The other boundary is also checked:</span>
+<span class="sd">        &gt;&gt;&gt; pub.timegrids.sim.firstdate -= &#39;366d&#39;</span>
+<span class="sd">        &gt;&gt;&gt; pub.timegrids.verify()</span>
+<span class="sd">        Traceback (most recent call last):</span>
+<span class="sd">        ...</span>
+<span class="sd">        ValueError: The first date of the initialisation period (2000.11.11 00:00:00) must not be later than the first date of the simulation period (2000.11.10 00:00:00).</span>
+
+<span class="sd">        &gt;&gt;&gt; # Both timegrids are checked to have the same step size:</span>
+<span class="sd">        &gt;&gt;&gt; pub.timegrids.sim = Timegrid(&#39;2001.11.11&#39;,</span>
+<span class="sd">        ...                              &#39;2002.11.11&#39;,</span>
+<span class="sd">        ...                              &#39;1d&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; pub.timegrids.verify()</span>
+<span class="sd">        Traceback (most recent call last):</span>
+<span class="sd">        ...</span>
+<span class="sd">        ValueError: The initialization stepsize (1h) must be identical with the simulation stepsize (1d).</span>
+
+<span class="sd">        &gt;&gt;&gt; # Also, they are checked to be properly aligned:</span>
+<span class="sd">        &gt;&gt;&gt; pub.timegrids.sim = Timegrid(&#39;2001.11.11 00:30&#39;,</span>
+<span class="sd">        ...                              &#39;2002.11.11 00:30&#39;,</span>
+<span class="sd">        ...                              &#39;1h&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; pub.timegrids.verify()</span>
+<span class="sd">        Traceback (most recent call last):</span>
+<span class="sd">        ...</span>
+<span class="sd">        ValueError: The simulation time grid is not properly alligned on the initialization time grid.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init</span><span class="p">,</span> <span class="n">sim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">objecttools</span><span class="o">.</span><span class="n">HydPyDeprecationWarning</span><span class="p">(</span>
+                <span class="s1">&#39;The global `data` timegrid information is outdated.  Now &#39;</span>
+                <span class="s1">&#39;each time series file contains its own `data` timegrid.  &#39;</span>
+                <span class="s1">&#39;Supplying the `data` keyword to the `Timegrids` constructor &#39;</span>
+                <span class="s1">&#39;does nothing and will be banned in the future.&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init</span> <span class="o">=</span> <span class="n">init</span>
+        <span class="k">if</span> <span class="n">sim</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sim</span> <span class="o">=</span> <span class="n">sim</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verify</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_getstepsize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Stepsize of all handled :class:`Timegrid` objects.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">stepsize</span>
+
+    <span class="k">def</span> <span class="nf">_setstepsize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stepsize</span><span class="p">):</span>
+        <span class="n">stepsize</span> <span class="o">=</span> <span class="n">Period</span><span class="p">(</span><span class="n">stepsize</span><span class="p">)</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">timegrid</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="n">timegrid</span><span class="o">.</span><span class="n">stepsize</span> <span class="o">=</span> <span class="n">stepsize</span>
+
+    <span class="n">stepsize</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_getstepsize</span><span class="p">,</span> <span class="n">_setstepsize</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Timegrids.verify"><a class="viewcode-back" href="../../../timetools.html#hydpy.core.timetools.Timegrids.verify">[docs]</a>    <span class="k">def</span> <span class="nf">verify</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Raise an :class:`~exceptions.ValueError` it the different</span>
+<span class="sd">        time grids are inconsistent.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">verify</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">verify</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">firstdate</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">firstdate</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The first date of the initialisation period &#39;</span>
+                             <span class="s1">&#39;(</span><span class="si">%s</span><span class="s1">) must not be later than the first date &#39;</span>
+                             <span class="s1">&#39;of the simulation period (</span><span class="si">%s</span><span class="s1">).&#39;</span>
+                             <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">firstdate</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">firstdate</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">lastdate</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">lastdate</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The last date of the initialisation period &#39;</span>
+                             <span class="s1">&#39;(</span><span class="si">%s</span><span class="s1">) must not be earlier than the last date &#39;</span>
+                             <span class="s1">&#39;of the simulation period (</span><span class="si">%s</span><span class="s1">).&#39;</span>
+                             <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">lastdate</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">lastdate</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">stepsize</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">stepsize</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The initialization stepsize (</span><span class="si">%s</span><span class="s1">) must be &#39;</span>
+                             <span class="s1">&#39;identical with the simulation stepsize (</span><span class="si">%s</span><span class="s1">).&#39;</span>
+                             <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">stepsize</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">stepsize</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">firstdate</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The simulation time grid is not properly &#39;</span>
+                                 <span class="s1">&#39;alligned on the initialization time grid.&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Timegrids.qfactor"><a class="viewcode-back" href="../../../timetools.html#hydpy.core.timetools.Timegrids.qfactor">[docs]</a>    <span class="k">def</span> <span class="nf">qfactor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">area</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the factor for converting `mm/stepsize` to `m^3/s`.</span>
+
+<span class="sd">        Argument:</span>
+<span class="sd">            * area (:class:`float`): Reference area, which must be given in</span>
+<span class="sd">              the unit `km^2`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">area</span> <span class="o">*</span> <span class="mf">1000.</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span><span class="o">.</span><span class="n">seconds</span></div>
+
+<div class="viewcode-block" id="Timegrids.parfactor"><a class="viewcode-back" href="../../../timetools.html#hydpy.core.timetools.Timegrids.parfactor">[docs]</a>    <span class="k">def</span> <span class="nf">parfactor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stepsize</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the factor for converting parameter to simulation step size.</span>
+
+<span class="sd">        Argument:</span>
+<span class="sd">            * stepsize (:class:`Period` or an suitable initialization argument</span>
+<span class="sd">              thereof): Time interval, to which the parameter values refer.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">stepsize</span> <span class="o">/</span> <span class="n">Period</span><span class="p">(</span><span class="n">stepsize</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Timegrids.copy"><a class="viewcode-back" href="../../../timetools.html#hydpy.core.timetools.Timegrids.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns a deep copy of the :class:`Timegrids` instance.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">timegrid</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">yield</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">timegrid</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;All timegrids of the actual HydPy project.&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">assignrepr</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Timegrids.assignrepr"><a class="viewcode-back" href="../../../timetools.html#hydpy.core.timetools.Timegrids.assignrepr">[docs]</a>    <span class="k">def</span> <span class="nf">assignrepr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a :func:`repr` string with an prefixed assignement.</span>
+
+<span class="sd">        Argument:</span>
+<span class="sd">            * prefix(:class:`str`): Usually something like &#39;x = &#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">caller</span> <span class="o">=</span> <span class="s1">&#39;Timegrids(&#39;</span>
+        <span class="n">blanks</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">caller</span><span class="p">))</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">caller</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">:</span>
+            <span class="n">prefix</span> <span class="o">+=</span> <span class="s1">&#39;init=&#39;</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">,&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">assignrepr</span><span class="p">(</span><span class="n">prefix</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">:</span>
+            <span class="n">prefix</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">sim=&#39;</span> <span class="o">%</span> <span class="n">blanks</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">,&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">assignrepr</span><span class="p">(</span><span class="n">prefix</span><span class="p">))</span>
+        <span class="n">lines</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">__dir__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">objecttools</span><span class="o">.</span><span class="n">dir_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TOY"><a class="viewcode-back" href="../../../timetools.html#hydpy.core.timetools.TOY">[docs]</a><span class="k">class</span> <span class="nc">TOY</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Time of year handler.</span>
+
+<span class="sd">    :class:`TOY` objects are used to define certain things that are true for</span>
+<span class="sd">    a certain time point in each year.  The smallest supported time unit is</span>
+<span class="sd">    seconds.</span>
+
+<span class="sd">    Normally, for initialization a string is passed, defining the month, the</span>
+<span class="sd">    day, the hour, the minute and the second in the order they are mentioned,</span>
+<span class="sd">    seperated by a single underscore:</span>
+
+<span class="sd">    &gt;&gt;&gt; from hydpy.core.timetools import TOY</span>
+<span class="sd">    &gt;&gt;&gt; t = TOY(&#39;3_13_23_33_43&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; t.month</span>
+<span class="sd">    3</span>
+<span class="sd">    &gt;&gt;&gt; t.day</span>
+<span class="sd">    13</span>
+<span class="sd">    &gt;&gt;&gt; t.hour</span>
+<span class="sd">    23</span>
+<span class="sd">    &gt;&gt;&gt; t.minute</span>
+<span class="sd">    33</span>
+<span class="sd">    &gt;&gt;&gt; t.second</span>
+<span class="sd">    43</span>
+
+<span class="sd">    If a lower precision is required, one can shorten the string, which</span>
+<span class="sd">    implicitely sets the omitted property to the lowest possible value:</span>
+
+<span class="sd">    &gt;&gt;&gt; TOY(&#39;3_13_23_33&#39;)</span>
+<span class="sd">    TOY(&#39;3_13_23_33_0&#39;)</span>
+
+<span class="sd">    The most extreme example would be, to pass not string at all:</span>
+
+<span class="sd">    &gt;&gt;&gt; TOY()</span>
+<span class="sd">    TOY(&#39;1_1_0_0_0&#39;)</span>
+
+<span class="sd">    One can prefix some information to the string, which is usefull when the</span>
+<span class="sd">    string is to be used as a valid variable name somewhere else:</span>
+
+<span class="sd">    &gt;&gt;&gt; TOY(&#39;something_3_13_23_33_2&#39;)</span>
+<span class="sd">    TOY(&#39;3_13_23_33_2&#39;)</span>
+
+<span class="sd">    As one can see, the prefixed information is lost in the printed string</span>
+<span class="sd">    representation.  But a string with a standard prefix is returned through</span>
+<span class="sd">    applying :class:`str` on :class:`TOY` instances:</span>
+
+<span class="sd">    &gt;&gt;&gt; str(TOY(&#39;something_3_13_23_33_2&#39;))</span>
+<span class="sd">    &#39;toy_3_13_23_33_2&#39;</span>
+
+<span class="sd">    Alternatively, one can use a :class:`Date` object as a initialization</span>
+<span class="sd">    argument, ommitting the year:</span>
+
+<span class="sd">    &gt;&gt;&gt; TOY(Date(&#39;2001.02.03 04:05:06&#39;))</span>
+<span class="sd">    TOY(&#39;2_3_4_5_6&#39;)</span>
+
+<span class="sd">    It is only allowed to modify the mentioned properties, not to define new</span>
+<span class="sd">    ones:</span>
+
+<span class="sd">    &gt;&gt;&gt; t.microsecond = 53</span>
+<span class="sd">    Traceback (most recent call last):</span>
+<span class="sd">    ...</span>
+<span class="sd">    AttributeError: TOY (time of year) objects only allow to set the properties month, day, hour, minute or second, but `microsecond` is given.</span>
+
+<span class="sd">    It is allowed to pass objects that can be converted to integers:</span>
+
+<span class="sd">    &gt;&gt;&gt; t.second = &#39;53&#39;</span>
+<span class="sd">    &gt;&gt;&gt; t.second</span>
+<span class="sd">    53</span>
+
+<span class="sd">    If the passed object cannot be converted properly, an exception is raised:</span>
+
+<span class="sd">    &gt;&gt;&gt; t.second = &#39;fiftythree&#39;</span>
+<span class="sd">    Traceback (most recent call last):</span>
+<span class="sd">    ...</span>
+<span class="sd">    ValueError: For TOY (time of year) objects, all properties must be of type `int`, but the value `fiftythree` of type `str` given for property `second` cannot be converted to `int`.</span>
+
+<span class="sd">    Additionally, given values are checked to lie within a suitable range:</span>
+
+<span class="sd">    &gt;&gt;&gt; t.second = 60</span>
+<span class="sd">    Traceback (most recent call last):</span>
+<span class="sd">    ...</span>
+<span class="sd">    ValueError: The value of property `second` of TOY (time of year) objects must lie within the range `(0, 59)`, but the given value is `60`.</span>
+
+<span class="sd">    Note that the allowed values for `month` and `day` depend on each other,</span>
+<span class="sd">    which is why the order one defines them might be of importance.  So, if</span>
+<span class="sd">    January is predefined, one can set day to the 31th:</span>
+
+<span class="sd">    &gt;&gt;&gt; t.month = 1</span>
+<span class="sd">    &gt;&gt;&gt; t.day = 31</span>
+
+<span class="sd">    But afterwards one cannot directly change the month to February:</span>
+
+<span class="sd">    &gt;&gt;&gt; t.month = 2</span>
+<span class="sd">    Traceback (most recent call last):</span>
+<span class="sd">    ...</span>
+<span class="sd">    ValueError: The value of property `month` of the actual TOY (time of year) object must not be the given value `2`, as the day has already been set to `31`.</span>
+
+<span class="sd">    Hence first set `day` to a smaller value and then change `month`:</span>
+
+<span class="sd">    &gt;&gt;&gt; t.day = 28</span>
+<span class="sd">    &gt;&gt;&gt; t.month = 2</span>
+
+<span class="sd">    For February it is important to note, that the 29th is generally</span>
+<span class="sd">    disallowed:</span>
+
+<span class="sd">    &gt;&gt;&gt; t.day = 29</span>
+<span class="sd">    Traceback (most recent call last):</span>
+<span class="sd">    ...</span>
+<span class="sd">    ValueError: The value of property `day` of the actual TOY (time of year) object must lie within the range `(1, 28)`, as the month has already been set to `2`, but the given value is `29`.</span>
+
+<span class="sd">    It is possible to compare two :class:`TOY` instances:</span>
+
+<span class="sd">    &gt;&gt;&gt; t1, t2 = TOY(&#39;1&#39;), TOY(&#39;2&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; (t1 &lt; t1, t1 &lt; t2, t2 &lt; t1)</span>
+<span class="sd">    (False, True, False)</span>
+<span class="sd">    &gt;&gt;&gt; (t1 &lt;= t1, t1 &lt;= t2, t2 &lt;= t1)</span>
+<span class="sd">    (True, True, False)</span>
+<span class="sd">    &gt;&gt;&gt; (t1 == t1, t1 == t2)</span>
+<span class="sd">    (True, False)</span>
+<span class="sd">    &gt;&gt;&gt; (t1 != t1, t1 != t2)</span>
+<span class="sd">    (False, True)</span>
+<span class="sd">    &gt;&gt;&gt; (t1 &gt;= t1, t1 &gt;= t2, t2 &gt;= t1)</span>
+<span class="sd">    (True, False, True)</span>
+<span class="sd">    &gt;&gt;&gt; (t1 &gt; t1, t1 &gt; t2, t2 &gt; t1)</span>
+<span class="sd">    (False, False, True)</span>
+
+<span class="sd">    Subtracting two :class:`TOY` object gives their time difference in seconds:</span>
+
+<span class="sd">    &gt;&gt;&gt; TOY(&#39;1_1_0_3_0&#39;) - TOY(&#39;1_1_0_1_30&#39;)</span>
+<span class="sd">    90</span>
+
+<span class="sd">    Instead of negative values, it is always assumed that the first</span>
+<span class="sd">    :class:`TOY` object lies within the future (eventually within the</span>
+<span class="sd">    subsequent year):</span>
+
+<span class="sd">    &gt;&gt;&gt; TOY(&#39;1_1_0_1_30&#39;) - TOY(&#39;12_31_23_58_30&#39;)</span>
+<span class="sd">    180</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_PROPERTIES</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">(((</span><span class="s1">&#39;month&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">12</span><span class="p">)),</span>
+                                           <span class="p">(</span><span class="s1">&#39;day&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">31</span><span class="p">)),</span>
+                                           <span class="p">(</span><span class="s1">&#39;hour&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">23</span><span class="p">)),</span>
+                                           <span class="p">(</span><span class="s1">&#39;minute&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">59</span><span class="p">)),</span>
+                                           <span class="p">(</span><span class="s1">&#39;second&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">59</span><span class="p">))))</span>
+    <span class="n">_STARTDATE</span> <span class="o">=</span> <span class="n">Date</span><span class="p">(</span><span class="s1">&#39;01.01.2000&#39;</span><span class="p">)</span>
+    <span class="n">_ENDDATE</span> <span class="o">=</span> <span class="n">Date</span><span class="p">(</span><span class="s1">&#39;01.01.2001&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Date</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_PROPERTIES</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_PROPERTIES</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
+                <span class="k">del</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_PROPERTIES</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prop</span><span class="p">,</span> <span class="n">values</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+                <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">prop</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;month&#39;</span><span class="p">,</span> <span class="s1">&#39;day&#39;</span><span class="p">):</span>
+                        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prop</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prop</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="n">objecttools</span><span class="o">.</span><span class="n">augmentexcmessage</span><span class="p">(</span>
+                        <span class="s1">&#39;While trying to retrieve the </span><span class="si">%s</span><span class="s1"> for TOY (time of &#39;</span>
+                        <span class="s1">&#39;year) object based on the string `</span><span class="si">%s</span><span class="s1">`&#39;</span>
+                        <span class="o">%</span> <span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_PROPERTIES</span><span class="p">:</span>
+            <span class="n">keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_PROPERTIES</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="n">props</span> <span class="o">=</span> <span class="s1">&#39; or &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">keys</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="n">keys</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;TOY (time of year) objects only allow to &#39;</span>
+                                 <span class="s1">&#39;set the properties </span><span class="si">%s</span><span class="s1">, but `</span><span class="si">%s</span><span class="s1">` is given.&#39;</span>
+                                 <span class="o">%</span> <span class="p">(</span><span class="n">props</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;For TOY (time of year) objects, all properties &#39;</span>
+                             <span class="s1">&#39;must be of type `int`, but the value `</span><span class="si">%s</span><span class="s1">` of &#39;</span>
+                             <span class="s1">&#39;type `</span><span class="si">%s</span><span class="s1">` given for property `</span><span class="si">%s</span><span class="s1">` cannot be &#39;</span>
+                             <span class="s1">&#39;converted to `int`.&#39;</span>
+                             <span class="o">%</span> <span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">objecttools</span><span class="o">.</span><span class="n">classname</span><span class="p">(</span><span class="n">value</span><span class="p">),</span> <span class="n">name</span><span class="p">))</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;day&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">month</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="n">bounds</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">calendar</span><span class="o">.</span><span class="n">monthrange</span><span class="p">(</span><span class="mi">1999</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">month</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">value</span> <span class="o">&lt;=</span> <span class="n">bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The value of property `day` of the actual &#39;</span>
+                                 <span class="s1">&#39;TOY (time of year) object must lie within &#39;</span>
+                                 <span class="s1">&#39;the range `</span><span class="si">%s</span><span class="s1">`, as the month has already &#39;</span>
+                                 <span class="s1">&#39;been set to `</span><span class="si">%s</span><span class="s1">`, but the given value is &#39;</span>
+                                 <span class="s1">&#39;`</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">bounds</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;month&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">day</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="n">bounds</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">calendar</span><span class="o">.</span><span class="n">monthrange</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="n">value</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">day</span> <span class="o">&lt;=</span> <span class="n">bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The value of property `month` of the actual &#39;</span>
+                                 <span class="s1">&#39;TOY (time of year) object must not be the &#39;</span>
+                                 <span class="s1">&#39;given value `</span><span class="si">%s</span><span class="s1">`, as the day has already &#39;</span>
+                                 <span class="s1">&#39;been set to `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">day</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">bounds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_PROPERTIES</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">value</span> <span class="o">&lt;=</span> <span class="n">bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The value of property `</span><span class="si">%s</span><span class="s1">` of TOY (time of &#39;</span>
+                                 <span class="s1">&#39;year) objects must lie within the range &#39;</span>
+                                 <span class="s1">&#39;`</span><span class="si">%s</span><span class="s1">`, but the given value is `</span><span class="si">%s</span><span class="s1">`.&#39;</span>
+                                 <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">bounds</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+        <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">passed_seconds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Amount of time passed in seconds since the beginning of the year.</span>
+
+<span class="sd">        In the first example, the year is only one minute and thirty seconds</span>
+<span class="sd">        old:</span>
+
+<span class="sd">        &gt;&gt;&gt; from hydpy.core.timetools import TOY</span>
+<span class="sd">        &gt;&gt;&gt; TOY(&#39;1_1_0_1_30&#39;).passed_seconds</span>
+<span class="sd">        90</span>
+
+<span class="sd">        The second example shows that the 29th February is generally included:</span>
+
+<span class="sd">        &gt;&gt;&gt; TOY(&#39;3&#39;).passed_seconds</span>
+<span class="sd">        5184000</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">((</span><span class="n">Date</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">datetime</span> <span class="o">-</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_STARTDATE</span><span class="o">.</span><span class="n">datetime</span><span class="p">)</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">())</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">left_seconds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Remaining part of the year in seconds.</span>
+
+<span class="sd">        In the first example, only one minute and thirty seconds of the year</span>
+<span class="sd">        remain:</span>
+
+<span class="sd">        &gt;&gt;&gt; from hydpy.core.timetools import TOY</span>
+<span class="sd">        &gt;&gt;&gt; TOY(&#39;12_31_23_58_30&#39;).left_seconds</span>
+<span class="sd">        90</span>
+
+<span class="sd">        The second example shows that the 29th February is generally included:</span>
+
+<span class="sd">        &gt;&gt;&gt; TOY(&#39;2&#39;).left_seconds</span>
+<span class="sd">        28944000</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_ENDDATE</span><span class="o">.</span><span class="n">datetime</span> <span class="o">-</span>
+                    <span class="n">Date</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">datetime</span><span class="p">)</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">passed_seconds</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">passed_seconds</span>
+
+    <span class="k">def</span> <span class="nf">__le__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">passed_seconds</span> <span class="o">&lt;=</span> <span class="n">other</span><span class="o">.</span><span class="n">passed_seconds</span>
+
+    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">passed_seconds</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">passed_seconds</span>
+
+    <span class="k">def</span> <span class="nf">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">passed_seconds</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">passed_seconds</span>
+
+    <span class="k">def</span> <span class="nf">__gt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">passed_seconds</span> <span class="o">&gt;</span> <span class="n">other</span><span class="o">.</span><span class="n">passed_seconds</span>
+
+    <span class="k">def</span> <span class="nf">__ge__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">passed_seconds</span> <span class="o">&gt;=</span> <span class="n">other</span><span class="o">.</span><span class="n">passed_seconds</span>
+
+    <span class="k">def</span> <span class="nf">__sub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span> <span class="o">&gt;=</span> <span class="n">other</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">passed_seconds</span> <span class="o">-</span> <span class="n">other</span><span class="o">.</span><span class="n">passed_seconds</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">passed_seconds</span> <span class="o">+</span> <span class="n">other</span><span class="o">.</span><span class="n">left_seconds</span>
+
+    <span class="k">def</span> <span class="nf">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;toy_</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prop</span><span class="p">))</span> <span class="k">for</span> <span class="n">prop</span>
+                                   <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_PROPERTIES</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;TOY(&#39;</span><span class="si">%s</span><span class="s2">&#39;)&quot;</span> <span class="o">%</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prop</span><span class="p">))</span> <span class="k">for</span> <span class="n">prop</span>
+                                      <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_PROPERTIES</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+    <span class="fm">__dir__</span> <span class="o">=</span> <span class="n">objecttools</span><span class="o">.</span><span class="n">dir_</span></div>
+
+
+<span class="n">autodoctools</span><span class="o">.</span><span class="n">autodoc_module</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">HydPy 2.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Christoph Tyralla.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.5.
+    </div>
+  </body>
+</html>

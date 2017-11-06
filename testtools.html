@@ -1,0 +1,390 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>testtools &#8212; HydPy 2.0.0 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="timetools" href="timetools.html" />
+    <link rel="prev" title="sequencetools" href="sequencetools.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="timetools.html" title="timetools"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="sequencetools.html" title="sequencetools"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">HydPy 2.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="core.html" accesskey="U">Core Modules</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="testtools">
+<span id="id1"></span><h1>testtools<a class="headerlink" href="#testtools" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-hydpy.core.testtools"></span><p>This module implements tools for making doctests more legible.</p>
+<p>Module <a class="reference internal" href="#module-hydpy.core.testtools" title="hydpy.core.testtools"><code class="xref py py-mod docutils literal"><span class="pre">testtools</span></code></a> implements the following members:</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference internal" href="#hydpy.core.testtools.Array" title="hydpy.core.testtools.Array"><code class="xref py py-class docutils literal"><span class="pre">Array</span></code></a> Assures that attributes are <code class="xref py py-class docutils literal"><span class="pre">ndarray</span></code> objects.</li>
+<li><a class="reference internal" href="#hydpy.core.testtools.ArrayDescriptor" title="hydpy.core.testtools.ArrayDescriptor"><code class="xref py py-class docutils literal"><span class="pre">ArrayDescriptor</span></code></a> Descriptor for handling values of <a class="reference internal" href="#hydpy.core.testtools.Array" title="hydpy.core.testtools.Array"><code class="xref py py-class docutils literal"><span class="pre">Array</span></code></a> objects.</li>
+<li><a class="reference internal" href="#hydpy.core.testtools.Test" title="hydpy.core.testtools.Test"><code class="xref py py-class docutils literal"><span class="pre">Test</span></code></a> Base class for <a class="reference internal" href="#hydpy.core.testtools.IntegrationTest" title="hydpy.core.testtools.IntegrationTest"><code class="xref py py-class docutils literal"><span class="pre">IntegrationTest</span></code></a> and <a class="reference internal" href="#hydpy.core.testtools.UnitTest" title="hydpy.core.testtools.UnitTest"><code class="xref py py-class docutils literal"><span class="pre">UnitTest</span></code></a>.</li>
+<li><a class="reference internal" href="#hydpy.core.testtools.IntegrationTest" title="hydpy.core.testtools.IntegrationTest"><code class="xref py py-class docutils literal"><span class="pre">IntegrationTest</span></code></a> Defines model integration doctests.</li>
+<li><a class="reference internal" href="#hydpy.core.testtools.UnitTest" title="hydpy.core.testtools.UnitTest"><code class="xref py py-class docutils literal"><span class="pre">UnitTest</span></code></a> no description available</li>
+</ul>
+</div></blockquote>
+<hr class="docutils" />
+<dl class="class">
+<dt id="hydpy.core.testtools.Array">
+<em class="property">class </em><code class="descclassname">hydpy.core.testtools.</code><code class="descname">Array</code><a class="reference internal" href="_modules/hydpy/core/testtools.html#Array"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.core.testtools.Array" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2.7/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<p>Assures that attributes are <code class="xref py py-class docutils literal"><span class="pre">ndarray</span></code> objects.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="hydpy.core.testtools.ArrayDescriptor">
+<em class="property">class </em><code class="descclassname">hydpy.core.testtools.</code><code class="descname">ArrayDescriptor</code><a class="reference internal" href="_modules/hydpy/core/testtools.html#ArrayDescriptor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.core.testtools.ArrayDescriptor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2.7/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<p>Descriptor for handling values of <a class="reference internal" href="#hydpy.core.testtools.Array" title="hydpy.core.testtools.Array"><code class="xref py py-class docutils literal"><span class="pre">Array</span></code></a> objects.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="hydpy.core.testtools.Test">
+<em class="property">class </em><code class="descclassname">hydpy.core.testtools.</code><code class="descname">Test</code><a class="reference internal" href="_modules/hydpy/core/testtools.html#Test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.core.testtools.Test" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2.7/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<p>Base class for <a class="reference internal" href="#hydpy.core.testtools.IntegrationTest" title="hydpy.core.testtools.IntegrationTest"><code class="xref py py-class docutils literal"><span class="pre">IntegrationTest</span></code></a> and <a class="reference internal" href="#hydpy.core.testtools.UnitTest" title="hydpy.core.testtools.UnitTest"><code class="xref py py-class docutils literal"><span class="pre">UnitTest</span></code></a>.</p>
+<p>This base class defines the printing of the test results primarily.
+How the tests shall be prepared and performed, is to be defined in
+its subclasses.</p>
+<dl class="attribute">
+<dt id="hydpy.core.testtools.Test.inits">
+<code class="descname">inits</code><em class="property"> = &lt;hydpy.core.testtools.Array object&gt;</em><a class="headerlink" href="#hydpy.core.testtools.Test.inits" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stores arrays for setting the same values of parameters and/or
+sequences before each new experiment.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.core.testtools.Test.nmb_rows">
+<code class="descname">nmb_rows</code><a class="headerlink" href="#hydpy.core.testtools.Test.nmb_rows" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of rows of the table.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.core.testtools.Test.nmb_cols">
+<code class="descname">nmb_cols</code><a class="headerlink" href="#hydpy.core.testtools.Test.nmb_cols" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of columns of the table.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.core.testtools.Test.raw_header_strings">
+<code class="descname">raw_header_strings</code><a class="headerlink" href="#hydpy.core.testtools.Test.raw_header_strings" title="Permalink to this definition">¶</a></dt>
+<dd><p>All raw strings for the tables header.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.core.testtools.Test.raw_body_strings">
+<code class="descname">raw_body_strings</code><a class="headerlink" href="#hydpy.core.testtools.Test.raw_body_strings" title="Permalink to this definition">¶</a></dt>
+<dd><p>All raw strings for the tables body.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.core.testtools.Test.raw_strings">
+<code class="descname">raw_strings</code><a class="headerlink" href="#hydpy.core.testtools.Test.raw_strings" title="Permalink to this definition">¶</a></dt>
+<dd><p>All raw strings for the complete table.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.core.testtools.Test.col_widths">
+<code class="descname">col_widths</code><a class="headerlink" href="#hydpy.core.testtools.Test.col_widths" title="Permalink to this definition">¶</a></dt>
+<dd><p>The widths of all columns of the table.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.core.testtools.Test.col_seperators">
+<code class="descname">col_seperators</code><a class="headerlink" href="#hydpy.core.testtools.Test.col_seperators" title="Permalink to this definition">¶</a></dt>
+<dd><p>The seperators for adjacent columns.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.core.testtools.Test.row_nmb_characters">
+<code class="descname">row_nmb_characters</code><a class="headerlink" href="#hydpy.core.testtools.Test.row_nmb_characters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of characters of a single row of the table.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="hydpy.core.testtools.Test.print_table">
+<code class="descname">print_table</code><span class="sig-paren">(</span><em>idx1=None</em>, <em>idx2=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/core/testtools.html#Test.print_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.core.testtools.Test.print_table" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print the result table between the given indices.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="hydpy.core.testtools.IntegrationTest">
+<em class="property">class </em><code class="descclassname">hydpy.core.testtools.</code><code class="descname">IntegrationTest</code><span class="sig-paren">(</span><em>element</em>, <em>seqs=None</em>, <em>inits=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/core/testtools.html#IntegrationTest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.core.testtools.IntegrationTest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#hydpy.core.testtools.Test" title="hydpy.core.testtools.Test"><code class="xref py py-class docutils literal"><span class="pre">hydpy.core.testtools.Test</span></code></a></p>
+<p>Defines model integration doctests.</p>
+<p>The functionality of <a class="reference internal" href="#hydpy.core.testtools.Test" title="hydpy.core.testtools.Test"><code class="xref py py-class docutils literal"><span class="pre">Test</span></code></a> is easiest to understand by inspecting
+doctests like the ones of modules <a class="reference internal" href="llake_v1.html#module-hydpy.models.llake_v1" title="hydpy.models.llake_v1"><code class="xref py py-mod docutils literal"><span class="pre">llake_v1</span></code></a> or
+<a class="reference internal" href="arma_v1.html#module-hydpy.models.arma_v1" title="hydpy.models.arma_v1"><code class="xref py py-mod docutils literal"><span class="pre">arma_v1</span></code></a>.</p>
+<p>Note that all condition sequences (state and logging sequences) are
+initialized in accordance with the values are given in the <cite>inits</cite>
+values.  The values of the simulation sequences of outlet and
+sender nodes are always set to zero before each test run.  All other
+parameter and sequence values can be changed between different test
+runs.</p>
+<dl class="attribute">
+<dt id="hydpy.core.testtools.IntegrationTest.HEADER_OF_FIRST_COL">
+<code class="descname">HEADER_OF_FIRST_COL</code><em class="property"> = 'date'</em><a class="headerlink" href="#hydpy.core.testtools.IntegrationTest.HEADER_OF_FIRST_COL" title="Permalink to this definition">¶</a></dt>
+<dd><p>The header of the first column containing dates.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.core.testtools.IntegrationTest.raw_first_col_strings">
+<code class="descname">raw_first_col_strings</code><a class="headerlink" href="#hydpy.core.testtools.IntegrationTest.raw_first_col_strings" title="Permalink to this definition">¶</a></dt>
+<dd><p>The raw date strings of the first column, except the header.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.core.testtools.IntegrationTest.dateformat">
+<code class="descname">dateformat</code><a class="headerlink" href="#hydpy.core.testtools.IntegrationTest.dateformat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Format string for printing dates in the first column of the table.</p>
+<p>See <a class="reference external" href="https://docs.python.org/2.7/library/datetime.html#module-datetime" title="(in Python v2.7)"><code class="xref py py-mod docutils literal"><span class="pre">datetime</span></code></a> for the format strings allowed.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="hydpy.core.testtools.IntegrationTest.get_output_array">
+<em class="property">static </em><code class="descname">get_output_array</code><span class="sig-paren">(</span><em>seq</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/core/testtools.html#IntegrationTest.get_output_array"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.core.testtools.IntegrationTest.get_output_array" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the array containing the output results of the given
+sequence.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="hydpy.core.testtools.IntegrationTest.extract_nodes">
+<code class="descname">extract_nodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/core/testtools.html#IntegrationTest.extract_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.core.testtools.IntegrationTest.extract_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return all nodes connected to the actual element.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="hydpy.core.testtools.IntegrationTest.prepare_input_node_sequences">
+<code class="descname">prepare_input_node_sequences</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/core/testtools.html#IntegrationTest.prepare_input_node_sequences"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.core.testtools.IntegrationTest.prepare_input_node_sequences" title="Permalink to this definition">¶</a></dt>
+<dd><p>Configure the simulations sequences of the input nodes in
+a manner that allows for applying their time series data in
+integration tests.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="hydpy.core.testtools.IntegrationTest.prepare_input_model_sequences">
+<code class="descname">prepare_input_model_sequences</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/core/testtools.html#IntegrationTest.prepare_input_model_sequences"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.core.testtools.IntegrationTest.prepare_input_model_sequences" title="Permalink to this definition">¶</a></dt>
+<dd><p>Configure the input sequences of the model in a manner that allows
+for applying their time series data in integration tests.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="hydpy.core.testtools.IntegrationTest.extract_print_sequences">
+<code class="descname">extract_print_sequences</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/core/testtools.html#IntegrationTest.extract_print_sequences"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.core.testtools.IntegrationTest.extract_print_sequences" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of all input, flux and state sequences of the model
+as well as the simulation sequences of all nodes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="hydpy.core.testtools.IntegrationTest.prepare_model">
+<code class="descname">prepare_model</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/core/testtools.html#IntegrationTest.prepare_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.core.testtools.IntegrationTest.prepare_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Derive the secondary parameter values, prepare all required time
+series and set the initial conditions.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="hydpy.core.testtools.IntegrationTest.reset_outlets">
+<code class="descname">reset_outlets</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/core/testtools.html#IntegrationTest.reset_outlets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.core.testtools.IntegrationTest.reset_outlets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the values of the simulation sequences of all outlet nodes to
+zero.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="hydpy.core.testtools.IntegrationTest.reset_inits">
+<code class="descname">reset_inits</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/core/testtools.html#IntegrationTest.reset_inits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.core.testtools.IntegrationTest.reset_inits" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set all initial conditions.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="hydpy.core.testtools.UnitTest">
+<em class="property">class </em><code class="descclassname">hydpy.core.testtools.</code><code class="descname">UnitTest</code><span class="sig-paren">(</span><em>model</em>, <em>method</em>, <em>first_example=1</em>, <em>last_example=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/core/testtools.html#UnitTest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.core.testtools.UnitTest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#hydpy.core.testtools.Test" title="hydpy.core.testtools.Test"><code class="xref py py-class docutils literal"><span class="pre">hydpy.core.testtools.Test</span></code></a></p>
+<dl class="attribute">
+<dt id="hydpy.core.testtools.UnitTest.HEADER_OF_FIRST_COL">
+<code class="descname">HEADER_OF_FIRST_COL</code><em class="property"> = 'ex.'</em><a class="headerlink" href="#hydpy.core.testtools.UnitTest.HEADER_OF_FIRST_COL" title="Permalink to this definition">¶</a></dt>
+<dd><p>The header of the first column containing sequential numbers.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.core.testtools.UnitTest.nexts">
+<code class="descname">nexts</code><em class="property"> = &lt;hydpy.core.testtools.Array object&gt;</em><a class="headerlink" href="#hydpy.core.testtools.UnitTest.nexts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stores arrays for setting different values of parameters and/or
+sequences before each new experiment.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.core.testtools.UnitTest.results">
+<code class="descname">results</code><em class="property"> = &lt;hydpy.core.testtools.Array object&gt;</em><a class="headerlink" href="#hydpy.core.testtools.UnitTest.results" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stores arrays with the resulting values of parameters and/or
+sequences of each new experiment.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.core.testtools.UnitTest.nmb_examples">
+<code class="descname">nmb_examples</code><a class="headerlink" href="#hydpy.core.testtools.UnitTest.nmb_examples" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.core.testtools.UnitTest.idx0">
+<code class="descname">idx0</code><a class="headerlink" href="#hydpy.core.testtools.UnitTest.idx0" title="Permalink to this definition">¶</a></dt>
+<dd><p>First index of the examples selected for printing.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.core.testtools.UnitTest.idx1">
+<code class="descname">idx1</code><a class="headerlink" href="#hydpy.core.testtools.UnitTest.idx1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Last index of the examples selected for printing.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="hydpy.core.testtools.UnitTest.get_output_array">
+<code class="descname">get_output_array</code><span class="sig-paren">(</span><em>parseq</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/core/testtools.html#UnitTest.get_output_array"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.core.testtools.UnitTest.get_output_array" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the array containing the output results of the given
+parameter or sequence.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.core.testtools.UnitTest.raw_first_col_strings">
+<code class="descname">raw_first_col_strings</code><a class="headerlink" href="#hydpy.core.testtools.UnitTest.raw_first_col_strings" title="Permalink to this definition">¶</a></dt>
+<dd><p>The raw integer strings of the first column, except the header.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="hydpy.core.testtools.UnitTest.memorize_inits">
+<code class="descname">memorize_inits</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/core/testtools.html#UnitTest.memorize_inits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.core.testtools.UnitTest.memorize_inits" title="Permalink to this definition">¶</a></dt>
+<dd><p>Memorize all initial conditions.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="hydpy.core.testtools.UnitTest.prepare_output_arrays">
+<code class="descname">prepare_output_arrays</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/core/testtools.html#UnitTest.prepare_output_arrays"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.core.testtools.UnitTest.prepare_output_arrays" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="hydpy.core.testtools.UnitTest.reset_inits">
+<code class="descname">reset_inits</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/core/testtools.html#UnitTest.reset_inits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.core.testtools.UnitTest.reset_inits" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set all initial conditions.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="hydpy.core.testtools.UnitTest.extract_method_doc">
+<code class="descname">extract_method_doc</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/core/testtools.html#UnitTest.extract_method_doc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.core.testtools.UnitTest.extract_method_doc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the documentation string of the method to be tested.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="hydpy.core.testtools.UnitTest.extract_print_parameters_and_sequences">
+<code class="descname">extract_print_parameters_and_sequences</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/core/testtools.html#UnitTest.extract_print_parameters_and_sequences"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.core.testtools.UnitTest.extract_print_parameters_and_sequences" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of all input, flux and state sequences of the model
+as well as the simulation sequences of all nodes.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="sequencetools.html"
+                        title="previous chapter">sequencetools</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="timetools.html"
+                        title="next chapter">timetools</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/testtools.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="timetools.html" title="timetools"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="sequencetools.html" title="sequencetools"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">HydPy 2.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="core.html" >Core Modules</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Christoph Tyralla.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.5.
+    </div>
+  </body>
+</html>

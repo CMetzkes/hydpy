@@ -1,0 +1,399 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>hydpy.models.arma_v1 &#8212; HydPy 2.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">HydPy 2.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for hydpy.models.arma_v1</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Integration examples:</span>
+
+<span class="sd">    The following tests are performed over a period of 20 hours:</span>
+
+<span class="sd">    &gt;&gt;&gt; from hydpy import pub, Timegrid, Timegrids, Nodes, Element</span>
+<span class="sd">    &gt;&gt;&gt; pub.timegrids = Timegrids(Timegrid(&#39;01.01.2000 00:00&#39;,</span>
+<span class="sd">    ...                                    &#39;01.01.2000 20:00&#39;,</span>
+<span class="sd">    ...                                    &#39;1h&#39;))</span>
+
+<span class="sd">    Import the model and define the time settings:</span>
+
+<span class="sd">    &gt;&gt;&gt; from hydpy.models.arma_v1 import *</span>
+<span class="sd">    &gt;&gt;&gt; parameterstep(&#39;1h&#39;)</span>
+
+<span class="sd">    For testing purposes, the model input shall be retrieved from the nodes</span>
+<span class="sd">    `input1` and `input2` and the model output shall be passed to node</span>
+<span class="sd">    `output`.  Firstly, define all nodes:</span>
+
+<span class="sd">    &gt;&gt;&gt; nodes = Nodes(&#39;input1&#39;, &#39;input2&#39;, &#39;output&#39;)</span>
+
+<span class="sd">    Define the element &quot;stream&quot; and build the connections between</span>
+<span class="sd">    the nodes defined above and the `arma_v1` model instance:</span>
+
+<span class="sd">    &gt;&gt;&gt; stream = Element(&#39;stream&#39;,</span>
+<span class="sd">    ...                  inlets=[&#39;input1&#39;, &#39;input2&#39;],</span>
+<span class="sd">    ...                  outlets=&#39;output&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; stream.connect(model)</span>
+
+<span class="sd">    Prepare a test function object, which prints the respective values of</span>
+<span class="sd">    the model sequences `qin`, `qpin`, `qpout`, and `qout`.  The node sequence</span>
+<span class="sd">    `sim` is added in order to prove that the values calculated for `qout` are</span>
+<span class="sd">    actually passed to `sim`:</span>
+
+<span class="sd">    &gt;&gt;&gt; from hydpy.core.testtools import IntegrationTest</span>
+<span class="sd">    &gt;&gt;&gt; test = IntegrationTest(stream,</span>
+<span class="sd">    ...                        seqs=(fluxes.qin, fluxes.qpin, fluxes.qpout,</span>
+<span class="sd">    ...                              fluxes.qout, nodes.output.sequences.sim))</span>
+
+<span class="sd">    To start the respective example runs from stationary conditions, a</span>
+<span class="sd">    base flow value of 2m³/s is set for all values of the log sequences</span>
+<span class="sd">    `login` and `logout`:</span>
+
+<span class="sd">    &gt;&gt;&gt; test.inits = ((logs.login, 2.),</span>
+<span class="sd">    ...               (logs.logout, 2.))</span>
+
+<span class="sd">    Print just the time instead of the whole date:</span>
+<span class="sd">    &gt;&gt;&gt; test.dateformat = &#39;%H:%M&#39;</span>
+
+<span class="sd">    Define two flood events, one for each lake inflow:</span>
+
+<span class="sd">    &gt;&gt;&gt; nodes.input1.sequences.sim.series = (</span>
+<span class="sd">    ...                         1., 1., 2., 4., 3., 2., 1., 1., 1., 1.,</span>
+<span class="sd">    ...                         1., 1., 1., 1., 1., 1., 1., 1., 1., 1.)</span>
+<span class="sd">    &gt;&gt;&gt; nodes.input2.sequences.sim.series = (</span>
+<span class="sd">    ...                         1., 2., 6., 9., 8., 6., 4., 3., 2., 1.,</span>
+<span class="sd">    ...                         1., 1., 1., 1., 1., 1., 1., 1., 1., 1.)</span>
+
+<span class="sd">    In the first example, a pure fourth order moving avarage (MA) process is</span>
+<span class="sd">    defined:</span>
+
+<span class="sd">    &gt;&gt;&gt; responses(((), (0.2, 0.4, 0.3, 0.1)))</span>
+
+<span class="sd">    This leads to a usual &quot;unit hydrograph&quot; convolution result, where all</span>
+<span class="sd">    inflow &quot;impulses&quot; are seperated onto the actual and the three subsequent</span>
+<span class="sd">    time steps:</span>
+
+<span class="sd">    &gt;&gt;&gt; test()</span>
+<span class="sd">    |  date |  qin | qpin | qpout | qout | output |</span>
+<span class="sd">    -----------------------------------------------</span>
+<span class="sd">    | 00:00 |  2.0 |  2.0 |   2.0 |  2.0 |    2.0 |</span>
+<span class="sd">    | 01:00 |  3.0 |  3.0 |   2.2 |  2.2 |    2.2 |</span>
+<span class="sd">    | 02:00 |  8.0 |  8.0 |   3.6 |  3.6 |    3.6 |</span>
+<span class="sd">    | 03:00 | 13.0 | 13.0 |   6.9 |  6.9 |    6.9 |</span>
+<span class="sd">    | 04:00 | 11.0 | 11.0 |  10.1 | 10.1 |   10.1 |</span>
+<span class="sd">    | 05:00 |  8.0 |  8.0 |  10.7 | 10.7 |   10.7 |</span>
+<span class="sd">    | 06:00 |  5.0 |  5.0 |   8.8 |  8.8 |    8.8 |</span>
+<span class="sd">    | 07:00 |  4.0 |  4.0 |   6.3 |  6.3 |    6.3 |</span>
+<span class="sd">    | 08:00 |  3.0 |  3.0 |   4.5 |  4.5 |    4.5 |</span>
+<span class="sd">    | 09:00 |  2.0 |  2.0 |   3.3 |  3.3 |    3.3 |</span>
+<span class="sd">    | 10:00 |  2.0 |  2.0 |   2.5 |  2.5 |    2.5 |</span>
+<span class="sd">    | 11:00 |  2.0 |  2.0 |   2.1 |  2.1 |    2.1 |</span>
+<span class="sd">    | 12:00 |  2.0 |  2.0 |   2.0 |  2.0 |    2.0 |</span>
+<span class="sd">    | 13:00 |  2.0 |  2.0 |   2.0 |  2.0 |    2.0 |</span>
+<span class="sd">    | 14:00 |  2.0 |  2.0 |   2.0 |  2.0 |    2.0 |</span>
+<span class="sd">    | 15:00 |  2.0 |  2.0 |   2.0 |  2.0 |    2.0 |</span>
+<span class="sd">    | 16:00 |  2.0 |  2.0 |   2.0 |  2.0 |    2.0 |</span>
+<span class="sd">    | 17:00 |  2.0 |  2.0 |   2.0 |  2.0 |    2.0 |</span>
+<span class="sd">    | 18:00 |  2.0 |  2.0 |   2.0 |  2.0 |    2.0 |</span>
+<span class="sd">    | 19:00 |  2.0 |  2.0 |   2.0 |  2.0 |    2.0 |</span>
+
+<span class="sd">    In the second example, the mimimum order the MA process is defined,</span>
+<span class="sd">    which is one.  The autoregression (AR) process is of order two.  Note</span>
+<span class="sd">    that negative AR coefficients are allowed (also note the opposite signs</span>
+<span class="sd">    of the coefficients contrast to the statistical literature):</span>
+
+<span class="sd">    &gt;&gt;&gt; responses(((1.1, -0.3), (0.2,)))</span>
+
+<span class="sd">    Due to the AR process, the maximum time delay of some fractions of each</span>
+<span class="sd">    input impulse is theoretically infinite:</span>
+
+<span class="sd">    &gt;&gt;&gt; test()</span>
+<span class="sd">    |  date |  qin | qpin |    qpout |     qout |   output |</span>
+<span class="sd">    --------------------------------------------------------</span>
+<span class="sd">    | 00:00 |  2.0 |  2.0 |      2.0 |      2.0 |      2.0 |</span>
+<span class="sd">    | 01:00 |  3.0 |  3.0 |      2.2 |      2.2 |      2.2 |</span>
+<span class="sd">    | 02:00 |  8.0 |  8.0 |     3.42 |     3.42 |     3.42 |</span>
+<span class="sd">    | 03:00 | 13.0 | 13.0 |    5.702 |    5.702 |    5.702 |</span>
+<span class="sd">    | 04:00 | 11.0 | 11.0 |   7.4462 |   7.4462 |   7.4462 |</span>
+<span class="sd">    | 05:00 |  8.0 |  8.0 |  8.08022 |  8.08022 |  8.08022 |</span>
+<span class="sd">    | 06:00 |  5.0 |  5.0 | 7.654382 | 7.654382 | 7.654382 |</span>
+<span class="sd">    | 07:00 |  4.0 |  4.0 | 6.795754 | 6.795754 | 6.795754 |</span>
+<span class="sd">    | 08:00 |  3.0 |  3.0 | 5.779015 | 5.779015 | 5.779015 |</span>
+<span class="sd">    | 09:00 |  2.0 |  2.0 |  4.71819 |  4.71819 |  4.71819 |</span>
+<span class="sd">    | 10:00 |  2.0 |  2.0 | 3.856305 | 3.856305 | 3.856305 |</span>
+<span class="sd">    | 11:00 |  2.0 |  2.0 | 3.226478 | 3.226478 | 3.226478 |</span>
+<span class="sd">    | 12:00 |  2.0 |  2.0 | 2.792235 | 2.792235 | 2.792235 |</span>
+<span class="sd">    | 13:00 |  2.0 |  2.0 | 2.503515 | 2.503515 | 2.503515 |</span>
+<span class="sd">    | 14:00 |  2.0 |  2.0 | 2.316196 | 2.316196 | 2.316196 |</span>
+<span class="sd">    | 15:00 |  2.0 |  2.0 | 2.196761 | 2.196761 | 2.196761 |</span>
+<span class="sd">    | 16:00 |  2.0 |  2.0 | 2.121578 | 2.121578 | 2.121578 |</span>
+<span class="sd">    | 17:00 |  2.0 |  2.0 | 2.074708 | 2.074708 | 2.074708 |</span>
+<span class="sd">    | 18:00 |  2.0 |  2.0 | 2.045705 | 2.045705 | 2.045705 |</span>
+<span class="sd">    | 19:00 |  2.0 |  2.0 | 2.027863 | 2.027863 | 2.027863 |</span>
+
+<span class="sd">    The third example equalts the second one, except in additional time</span>
+<span class="sd">    delay of exactly one hour, due to the changed MA process:</span>
+
+<span class="sd">    &gt;&gt;&gt; responses(((1.1, -0.3), (0.0, 0.2)))</span>
+
+<span class="sd">    &gt;&gt;&gt; test()</span>
+<span class="sd">    |  date |  qin | qpin |    qpout |     qout |   output |</span>
+<span class="sd">    --------------------------------------------------------</span>
+<span class="sd">    | 00:00 |  2.0 |  2.0 |      2.0 |      2.0 |      2.0 |</span>
+<span class="sd">    | 01:00 |  3.0 |  3.0 |      2.0 |      2.0 |      2.0 |</span>
+<span class="sd">    | 02:00 |  8.0 |  8.0 |      2.2 |      2.2 |      2.2 |</span>
+<span class="sd">    | 03:00 | 13.0 | 13.0 |     3.42 |     3.42 |     3.42 |</span>
+<span class="sd">    | 04:00 | 11.0 | 11.0 |    5.702 |    5.702 |    5.702 |</span>
+<span class="sd">    | 05:00 |  8.0 |  8.0 |   7.4462 |   7.4462 |   7.4462 |</span>
+<span class="sd">    | 06:00 |  5.0 |  5.0 |  8.08022 |  8.08022 |  8.08022 |</span>
+<span class="sd">    | 07:00 |  4.0 |  4.0 | 7.654382 | 7.654382 | 7.654382 |</span>
+<span class="sd">    | 08:00 |  3.0 |  3.0 | 6.795754 | 6.795754 | 6.795754 |</span>
+<span class="sd">    | 09:00 |  2.0 |  2.0 | 5.779015 | 5.779015 | 5.779015 |</span>
+<span class="sd">    | 10:00 |  2.0 |  2.0 |  4.71819 |  4.71819 |  4.71819 |</span>
+<span class="sd">    | 11:00 |  2.0 |  2.0 | 3.856305 | 3.856305 | 3.856305 |</span>
+<span class="sd">    | 12:00 |  2.0 |  2.0 | 3.226478 | 3.226478 | 3.226478 |</span>
+<span class="sd">    | 13:00 |  2.0 |  2.0 | 2.792235 | 2.792235 | 2.792235 |</span>
+<span class="sd">    | 14:00 |  2.0 |  2.0 | 2.503515 | 2.503515 | 2.503515 |</span>
+<span class="sd">    | 15:00 |  2.0 |  2.0 | 2.316196 | 2.316196 | 2.316196 |</span>
+<span class="sd">    | 16:00 |  2.0 |  2.0 | 2.196761 | 2.196761 | 2.196761 |</span>
+<span class="sd">    | 17:00 |  2.0 |  2.0 | 2.121578 | 2.121578 | 2.121578 |</span>
+<span class="sd">    | 18:00 |  2.0 |  2.0 | 2.074708 | 2.074708 | 2.074708 |</span>
+<span class="sd">    | 19:00 |  2.0 |  2.0 | 2.045705 | 2.045705 | 2.045705 |</span>
+
+
+<span class="sd">    &gt;&gt;&gt; responses(((1.5, -0.7), (0.0, 0.2)))</span>
+<span class="sd">    &gt;&gt;&gt; test()</span>
+<span class="sd">    |  date |  qin | qpin |     qpout |      qout |    output |</span>
+<span class="sd">    -----------------------------------------------------------</span>
+<span class="sd">    | 00:00 |  2.0 |  2.0 |       2.0 |       2.0 |       2.0 |</span>
+<span class="sd">    | 01:00 |  3.0 |  3.0 |       2.0 |       2.0 |       2.0 |</span>
+<span class="sd">    | 02:00 |  8.0 |  8.0 |       2.2 |       2.2 |       2.2 |</span>
+<span class="sd">    | 03:00 | 13.0 | 13.0 |       3.5 |       3.5 |       3.5 |</span>
+<span class="sd">    | 04:00 | 11.0 | 11.0 |      6.31 |      6.31 |      6.31 |</span>
+<span class="sd">    | 05:00 |  8.0 |  8.0 |     9.215 |     9.215 |     9.215 |</span>
+<span class="sd">    | 06:00 |  5.0 |  5.0 |   11.0055 |   11.0055 |   11.0055 |</span>
+<span class="sd">    | 07:00 |  4.0 |  4.0 |  11.05775 |  11.05775 |  11.05775 |</span>
+<span class="sd">    | 08:00 |  3.0 |  3.0 |  9.682775 |  9.682775 |  9.682775 |</span>
+<span class="sd">    | 09:00 |  2.0 |  2.0 |  7.383738 |  7.383738 |  7.383738 |</span>
+<span class="sd">    | 10:00 |  2.0 |  2.0 |  4.697664 |  4.697664 |  4.697664 |</span>
+<span class="sd">    | 11:00 |  2.0 |  2.0 |  2.277879 |  2.277879 |  2.277879 |</span>
+<span class="sd">    | 12:00 |  2.0 |  2.0 |  0.528454 |  0.528454 |  0.528454 |</span>
+<span class="sd">    | 13:00 |  2.0 |  2.0 | -0.401834 | -0.401834 | -0.401834 |</span>
+<span class="sd">    | 14:00 |  2.0 |  2.0 | -0.572669 | -0.572669 | -0.572669 |</span>
+<span class="sd">    | 15:00 |  2.0 |  2.0 |  -0.17772 |  -0.17772 |  -0.17772 |</span>
+<span class="sd">    | 16:00 |  2.0 |  2.0 |  0.534289 |  0.534289 |  0.534289 |</span>
+<span class="sd">    | 17:00 |  2.0 |  2.0 |  1.325837 |  1.325837 |  1.325837 |</span>
+<span class="sd">    | 18:00 |  2.0 |  2.0 |  2.014753 |  2.014753 |  2.014753 |</span>
+<span class="sd">    | 19:00 |  2.0 |  2.0 |  2.494044 |  2.494044 |  2.494044 |</span>
+
+<span class="sd">    The plausiblity of the coefficients is not checked.  Be aware that</span>
+<span class="sd">    the water balance is only met, if the sum of all equation is one.  But</span>
+<span class="sd">    even then problems like negative discharge values might occur, if the</span>
+<span class="sd">    coefficients are not set carefully, is shown in the fourth example:</span>
+
+<span class="sd">    In the fifth example, the coefficients of the first two examples are</span>
+<span class="sd">    combined.  For inflow discharges between 0 and 7m³/s, the pure AR</span>
+<span class="sd">    process is applied.  For inflow discharges exceeding 7m³/s, inflow</span>
+<span class="sd">    is seperated.  The AR process is still applied on a portion of 7m³/s,</span>
+<span class="sd">    but for the inflow exceeding the threshold the mixed ARMA model is</span>
+<span class="sd">    applied:</span>
+
+<span class="sd">    &gt;&gt;&gt; responses(_0=((), (0.2, 0.4, 0.3, 0.1)),</span>
+<span class="sd">    ...           _7=((1.1, -0.3), (0.2,)))</span>
+
+<span class="sd">    To again start from stationary conditions, one has to apply different</span>
+<span class="sd">    values to both log sequences.  The base flow value of 2m³/s is only</span>
+<span class="sd">    given to the (low flow) MA model, the (high flow) ARMA is initialized</span>
+<span class="sd">    with zero values instead:</span>
+
+<span class="sd">    &gt;&gt;&gt; test.inits.login = [[2.0], [0.0]]</span>
+<span class="sd">    &gt;&gt;&gt; test.inits.logout = [[2.0], [0.0]]</span>
+
+<span class="sd">    The seperate handling of the inflow can be studied by inspecting the</span>
+<span class="sd">    columns of sequence `qpin` and sequence `qpout`.  The respective left</span>
+<span class="sd">    columns show the input and output of the MA model, the respective right</span>
+<span class="sd">    colums show the input and output of the ARMA model:</span>
+
+<span class="sd">    &gt;&gt;&gt; test()</span>
+<span class="sd">    |  date |  qin |      qpin |         qpout |     qout |   output |</span>
+<span class="sd">    ------------------------------------------------------------------</span>
+<span class="sd">    | 00:00 |  2.0 | 2.0   0.0 | 2.0       0.0 |      2.0 |      2.0 |</span>
+<span class="sd">    | 01:00 |  3.0 | 3.0   0.0 | 2.2       0.0 |      2.2 |      2.2 |</span>
+<span class="sd">    | 02:00 |  8.0 | 7.0   1.0 | 3.4       0.2 |      3.6 |      3.6 |</span>
+<span class="sd">    | 03:00 | 13.0 | 7.0   6.0 | 5.3      1.42 |     6.72 |     6.72 |</span>
+<span class="sd">    | 04:00 | 11.0 | 7.0   4.0 | 6.6     2.302 |    8.902 |    8.902 |</span>
+<span class="sd">    | 05:00 |  8.0 | 7.0   1.0 | 7.0    2.3062 |   9.3062 |   9.3062 |</span>
+<span class="sd">    | 06:00 |  5.0 | 5.0   0.0 | 6.6   1.84622 |  8.44622 |  8.44622 |</span>
+<span class="sd">    | 07:00 |  4.0 | 4.0   0.0 | 5.6  1.338982 | 6.938982 | 6.938982 |</span>
+<span class="sd">    | 08:00 |  3.0 | 3.0   0.0 | 4.4  0.919014 | 5.319014 | 5.319014 |</span>
+<span class="sd">    | 09:00 |  2.0 | 2.0   0.0 | 3.3  0.609221 | 3.909221 | 3.909221 |</span>
+<span class="sd">    | 10:00 |  2.0 | 2.0   0.0 | 2.5  0.394439 | 2.894439 | 2.894439 |</span>
+<span class="sd">    | 11:00 |  2.0 | 2.0   0.0 | 2.1  0.251116 | 2.351116 | 2.351116 |</span>
+<span class="sd">    | 12:00 |  2.0 | 2.0   0.0 | 2.0  0.157896 | 2.157896 | 2.157896 |</span>
+<span class="sd">    | 13:00 |  2.0 | 2.0   0.0 | 2.0  0.098351 | 2.098351 | 2.098351 |</span>
+<span class="sd">    | 14:00 |  2.0 | 2.0   0.0 | 2.0  0.060817 | 2.060817 | 2.060817 |</span>
+<span class="sd">    | 15:00 |  2.0 | 2.0   0.0 | 2.0  0.037394 | 2.037394 | 2.037394 |</span>
+<span class="sd">    | 16:00 |  2.0 | 2.0   0.0 | 2.0  0.022888 | 2.022888 | 2.022888 |</span>
+<span class="sd">    | 17:00 |  2.0 | 2.0   0.0 | 2.0  0.013959 | 2.013959 | 2.013959 |</span>
+<span class="sd">    | 18:00 |  2.0 | 2.0   0.0 | 2.0  0.008488 | 2.008488 | 2.008488 |</span>
+<span class="sd">    | 19:00 |  2.0 | 2.0   0.0 | 2.0  0.005149 | 2.005149 | 2.005149 |</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># import...</span>
+<span class="c1"># ...from standard library</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">division</span><span class="p">,</span> <span class="n">print_function</span>
+<span class="kn">from</span> <span class="nn">hydpy.core</span> <span class="k">import</span> <span class="n">modeltools</span>
+<span class="kn">from</span> <span class="nn">hydpy.core</span> <span class="k">import</span> <span class="n">parametertools</span>
+<span class="kn">from</span> <span class="nn">hydpy.core</span> <span class="k">import</span> <span class="n">sequencetools</span>
+<span class="c1"># ...from HydPy</span>
+<span class="kn">from</span> <span class="nn">hydpy.core.modelimports</span> <span class="k">import</span> <span class="o">*</span>
+<span class="c1"># ...from arma</span>
+<span class="kn">from</span> <span class="nn">hydpy.models.arma</span> <span class="k">import</span> <span class="n">arma_model</span>
+<span class="kn">from</span> <span class="nn">hydpy.models.arma</span> <span class="k">import</span> <span class="n">arma_control</span>
+<span class="kn">from</span> <span class="nn">hydpy.models.arma</span> <span class="k">import</span> <span class="n">arma_derived</span>
+<span class="kn">from</span> <span class="nn">hydpy.models.arma</span> <span class="k">import</span> <span class="n">arma_fluxes</span>
+<span class="kn">from</span> <span class="nn">hydpy.models.arma</span> <span class="k">import</span> <span class="n">arma_logs</span>
+<span class="kn">from</span> <span class="nn">hydpy.models.arma</span> <span class="k">import</span> <span class="n">arma_inlets</span>
+<span class="kn">from</span> <span class="nn">hydpy.models.arma</span> <span class="k">import</span> <span class="n">arma_outlets</span>
+
+
+<div class="viewcode-block" id="Model"><a class="viewcode-back" href="../../../arma_v1.html#hydpy.models.arma_v1.Model">[docs]</a><span class="k">class</span> <span class="nc">Model</span><span class="p">(</span><span class="n">modeltools</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Rimo/Rido version of ARMA (arma_v1).&quot;&quot;&quot;</span>
+
+    <span class="n">_RUNMETHODS</span> <span class="o">=</span> <span class="p">(</span><span class="n">arma_model</span><span class="o">.</span><span class="n">update_inlets_v1</span><span class="p">,</span>
+                   <span class="n">arma_model</span><span class="o">.</span><span class="n">calc_qpin_v1</span><span class="p">,</span>
+                   <span class="n">arma_model</span><span class="o">.</span><span class="n">calc_login_v1</span><span class="p">,</span>
+                   <span class="n">arma_model</span><span class="o">.</span><span class="n">calc_qma_v1</span><span class="p">,</span>
+                   <span class="n">arma_model</span><span class="o">.</span><span class="n">calc_qar_v1</span><span class="p">,</span>
+                   <span class="n">arma_model</span><span class="o">.</span><span class="n">calc_qpout_v1</span><span class="p">,</span>
+                   <span class="n">arma_model</span><span class="o">.</span><span class="n">calc_logout_v1</span><span class="p">,</span>
+                   <span class="n">arma_model</span><span class="o">.</span><span class="n">calc_qout_v1</span><span class="p">,</span>
+                   <span class="n">arma_model</span><span class="o">.</span><span class="n">update_outlets_v1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ControlParameters"><a class="viewcode-back" href="../../../arma_v1.html#hydpy.models.arma_v1.ControlParameters">[docs]</a><span class="k">class</span> <span class="nc">ControlParameters</span><span class="p">(</span><span class="n">parametertools</span><span class="o">.</span><span class="n">SubParameters</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Control parameters of arma_v1, directly defined by the user.&quot;&quot;&quot;</span>
+    <span class="n">_PARCLASSES</span> <span class="o">=</span> <span class="p">(</span><span class="n">arma_control</span><span class="o">.</span><span class="n">Responses</span><span class="p">,)</span></div>
+
+
+<div class="viewcode-block" id="DerivedParameters"><a class="viewcode-back" href="../../../arma_v1.html#hydpy.models.arma_v1.DerivedParameters">[docs]</a><span class="k">class</span> <span class="nc">DerivedParameters</span><span class="p">(</span><span class="n">parametertools</span><span class="o">.</span><span class="n">SubParameters</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Derived parameters of arma_v1, indirectly defined by the user.&quot;&quot;&quot;</span>
+    <span class="n">_PARCLASSES</span> <span class="o">=</span> <span class="p">(</span><span class="n">arma_derived</span><span class="o">.</span><span class="n">Nmb</span><span class="p">,</span>
+                   <span class="n">arma_derived</span><span class="o">.</span><span class="n">MaxQ</span><span class="p">,</span>
+                   <span class="n">arma_derived</span><span class="o">.</span><span class="n">DiffQ</span><span class="p">,</span>
+                   <span class="n">arma_derived</span><span class="o">.</span><span class="n">AR_Order</span><span class="p">,</span>
+                   <span class="n">arma_derived</span><span class="o">.</span><span class="n">MA_Order</span><span class="p">,</span>
+                   <span class="n">arma_derived</span><span class="o">.</span><span class="n">AR_Coefs</span><span class="p">,</span>
+                   <span class="n">arma_derived</span><span class="o">.</span><span class="n">MA_Coefs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FluxSequences"><a class="viewcode-back" href="../../../arma_v1.html#hydpy.models.arma_v1.FluxSequences">[docs]</a><span class="k">class</span> <span class="nc">FluxSequences</span><span class="p">(</span><span class="n">sequencetools</span><span class="o">.</span><span class="n">FluxSequences</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Flux sequences of arma_v1&quot;&quot;&quot;</span>
+    <span class="n">_SEQCLASSES</span> <span class="o">=</span> <span class="p">(</span><span class="n">arma_fluxes</span><span class="o">.</span><span class="n">QIn</span><span class="p">,</span>
+                   <span class="n">arma_fluxes</span><span class="o">.</span><span class="n">QPIn</span><span class="p">,</span>
+                   <span class="n">arma_fluxes</span><span class="o">.</span><span class="n">QMA</span><span class="p">,</span>
+                   <span class="n">arma_fluxes</span><span class="o">.</span><span class="n">QAR</span><span class="p">,</span>
+                   <span class="n">arma_fluxes</span><span class="o">.</span><span class="n">QPOut</span><span class="p">,</span>
+                   <span class="n">arma_fluxes</span><span class="o">.</span><span class="n">QOut</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="LogSequences"><a class="viewcode-back" href="../../../arma_v1.html#hydpy.models.arma_v1.LogSequences">[docs]</a><span class="k">class</span> <span class="nc">LogSequences</span><span class="p">(</span><span class="n">sequencetools</span><span class="o">.</span><span class="n">LogSequences</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Log sequences of arma_v1.&quot;&quot;&quot;</span>
+    <span class="n">_SEQCLASSES</span> <span class="o">=</span> <span class="p">(</span><span class="n">arma_logs</span><span class="o">.</span><span class="n">LogIn</span><span class="p">,</span>
+                   <span class="n">arma_logs</span><span class="o">.</span><span class="n">LogOut</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="InletSequences"><a class="viewcode-back" href="../../../arma_v1.html#hydpy.models.arma_v1.InletSequences">[docs]</a><span class="k">class</span> <span class="nc">InletSequences</span><span class="p">(</span><span class="n">sequencetools</span><span class="o">.</span><span class="n">LinkSequences</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Upstream link sequences of arma_v1.&quot;&quot;&quot;</span>
+    <span class="n">_SEQCLASSES</span> <span class="o">=</span> <span class="p">(</span><span class="n">arma_inlets</span><span class="o">.</span><span class="n">Q</span><span class="p">,)</span></div>
+
+
+<div class="viewcode-block" id="OutletSequences"><a class="viewcode-back" href="../../../arma_v1.html#hydpy.models.arma_v1.OutletSequences">[docs]</a><span class="k">class</span> <span class="nc">OutletSequences</span><span class="p">(</span><span class="n">sequencetools</span><span class="o">.</span><span class="n">LinkSequences</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Downstream link sequences of arma_v1.&quot;&quot;&quot;</span>
+    <span class="n">_SEQCLASSES</span> <span class="o">=</span> <span class="p">(</span><span class="n">arma_outlets</span><span class="o">.</span><span class="n">Q</span><span class="p">,)</span></div>
+
+
+<span class="n">tester</span> <span class="o">=</span> <span class="n">Tester</span><span class="p">()</span>
+<span class="n">cythonizer</span> <span class="o">=</span> <span class="n">Cythonizer</span><span class="p">()</span>
+<span class="n">cythonizer</span><span class="o">.</span><span class="n">complete</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">HydPy 2.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Christoph Tyralla.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.5.
+    </div>
+  </body>
+</html>

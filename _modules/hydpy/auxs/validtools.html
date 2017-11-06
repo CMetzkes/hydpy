@@ -1,0 +1,169 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>hydpy.auxs.validtools &#8212; HydPy 2.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">HydPy 2.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for hydpy.auxs.validtools</h1><div class="highlight"><pre>
+<span></span><span class="c1"># import...</span>
+<span class="sd">&quot;&quot;&quot;This module implements features for the validation of (numerical) input</span>
+<span class="sd">data.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1"># ...from standard library</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">division</span><span class="p">,</span> <span class="n">print_function</span>
+<span class="c1"># ...from site-packages</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="c1"># ...from HydPy</span>
+<span class="kn">from</span> <span class="nn">hydpy.core</span> <span class="k">import</span> <span class="n">autodoctools</span>
+
+
+<div class="viewcode-block" id="test_equal_shape"><a class="viewcode-back" href="../../../validtools.html#hydpy.auxs.validtools.test_equal_shape">[docs]</a><span class="k">def</span> <span class="nf">test_equal_shape</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Raise a ValueError if the shapes of the objects given as keywords</span>
+<span class="sd">    are not equal.</span>
+
+<span class="sd">    If all shapes are equal, nothing happens:</span>
+
+<span class="sd">    &gt;&gt;&gt; from hydpy.auxs.validtools import test_equal_shape</span>
+<span class="sd">    &gt;&gt;&gt; test_equal_shape(arr1=numpy.array([1., 2.]),</span>
+<span class="sd">    ...                  arr2=numpy.array([3., 4.]),</span>
+<span class="sd">    ...                  arr3=numpy.array([5., 6.]))</span>
+
+<span class="sd">    If at least one shape differs, the following error is raised:</span>
+
+<span class="sd">    &gt;&gt;&gt; test_equal_shape(arr1=numpy.array([1., 2.]),</span>
+<span class="sd">    ...                  arr2=numpy.array([3.]),</span>
+<span class="sd">    ...                  arr3=numpy.array([5., 6.]))</span>
+<span class="sd">    Traceback (most recent call last):</span>
+<span class="sd">    ...</span>
+<span class="sd">    ValueError: The shapes of the following objects are not equal: arr1 (2,), arr2 (1,), arr3 (2,).</span>
+
+<span class="sd">    For flexibility in the functions application, it is allowed to pass only</span>
+<span class="sd">    one array or no arrays at all:</span>
+
+<span class="sd">    &gt;&gt;&gt; test_equal_shape(arr1=numpy.array([1., 2.]))</span>
+<span class="sd">    &gt;&gt;&gt; test_equal_shape()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="n">shapes</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">array</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span>
+                          <span class="k">for</span> <span class="n">array</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">shapes</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">shapes</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s1">&#39;The shapes of the following objects are not equal: </span><span class="si">%s</span><span class="s1">.&#39;</span>
+            <span class="o">%</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">shape</span><span class="p">))</span> <span class="k">for</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span>
+                        <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">shapes</span><span class="p">))))</span></div>
+
+
+<div class="viewcode-block" id="test_non_negative"><a class="viewcode-back" href="../../../validtools.html#hydpy.auxs.validtools.test_non_negative">[docs]</a><span class="k">def</span> <span class="nf">test_non_negative</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Raise a ValueError if at least one value of the objects given as</span>
+<span class="sd">    keywords is negative.</span>
+
+<span class="sd">    If all values are non negative, nothing happens:</span>
+
+<span class="sd">    &gt;&gt;&gt; from hydpy.auxs.validtools import test_non_negative</span>
+<span class="sd">    &gt;&gt;&gt; test_non_negative(arr1=numpy.array([1., 2.]),</span>
+<span class="sd">    ...                   arr2=numpy.array([3., 4.]),</span>
+<span class="sd">    ...                   arr3=numpy.array([5., 6.]))</span>
+
+<span class="sd">    If at least one value is negative, the following error is raised:</span>
+
+<span class="sd">    &gt;&gt;&gt; test_non_negative(arr1=numpy.array([1., 2.]),</span>
+<span class="sd">    ...                   arr2=numpy.array([-3., 4.]),</span>
+<span class="sd">    ...                   arr3=numpy.array([5., 6.]))</span>
+<span class="sd">    Traceback (most recent call last):</span>
+<span class="sd">    ...</span>
+<span class="sd">    ValueError: For the following objects, at least one value is negative: arr2.</span>
+
+<span class="sd">    For flexibility in the functions application, it is allowed to pass</span>
+<span class="sd">    no arrays at all:</span>
+
+<span class="sd">    &gt;&gt;&gt; test_non_negative()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="n">negs</span> <span class="o">=</span> <span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">nanmin</span><span class="p">(</span><span class="n">array</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.</span> <span class="k">for</span> <span class="n">array</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">negs</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s1">&#39;For the following objects, at least one value is negative: </span><span class="si">%s</span><span class="s1">.&#39;</span>
+            <span class="o">%</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">neg</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">negs</span><span class="p">))</span> <span class="k">if</span> <span class="n">neg</span><span class="p">))</span></div>
+
+<span class="n">autodoctools</span><span class="o">.</span><span class="n">autodoc_module</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">HydPy 2.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Christoph Tyralla.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.5.
+    </div>
+  </body>
+</html>

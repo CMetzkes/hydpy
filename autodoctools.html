@@ -1,0 +1,174 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>autodoctools &#8212; HydPy 2.0.0 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="connectiontools" href="connectiontools.html" />
+    <link rel="prev" title="Core Modules" href="core.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="connectiontools.html" title="connectiontools"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="core.html" title="Core Modules"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">HydPy 2.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="core.html" accesskey="U">Core Modules</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="autodoctools">
+<span id="id1"></span><h1>autodoctools<a class="headerlink" href="#autodoctools" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-hydpy.core.autodoctools"></span><p>This module implements tools for increasing the level of automation and
+standardisation of the online documentation generated with Sphinx.</p>
+<p>Module <a class="reference internal" href="#module-hydpy.core.autodoctools" title="hydpy.core.autodoctools"><code class="xref py py-mod docutils literal"><span class="pre">autodoctools</span></code></a> implements the following members:</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference internal" href="#hydpy.core.autodoctools.description" title="hydpy.core.autodoctools.description"><code class="xref py py-func docutils literal"><span class="pre">description()</span></code></a> Returns the first “paragraph” of the docstring of the given object.</li>
+<li><a class="reference internal" href="#hydpy.core.autodoctools.autodoc_basemodel" title="hydpy.core.autodoctools.autodoc_basemodel"><code class="xref py py-func docutils literal"><span class="pre">autodoc_basemodel()</span></code></a> Add an exhaustive docstring to the <cite>__init__</cite> module of a basemodel.</li>
+<li><a class="reference internal" href="#hydpy.core.autodoctools.autodoc_module" title="hydpy.core.autodoctools.autodoc_module"><code class="xref py py-func docutils literal"><span class="pre">autodoc_module()</span></code></a> Add a short summary of all implemented members to a modules docstring.</li>
+</ul>
+</div></blockquote>
+<hr class="docutils" />
+<dl class="function">
+<dt id="hydpy.core.autodoctools.description">
+<code class="descclassname">hydpy.core.autodoctools.</code><code class="descname">description</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/core/autodoctools.html#description"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.core.autodoctools.description" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the first “paragraph” of the docstring of the given object.</p>
+<p>Note that ugly things like multiple whitespaces and newline characters
+are removed:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">hydpy.core</span> <span class="k">import</span> <span class="n">autodoctools</span><span class="p">,</span> <span class="n">objecttools</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">autodoctools</span><span class="o">.</span><span class="n">description</span><span class="p">(</span><span class="n">objecttools</span><span class="o">.</span><span class="n">augmentexcmessage</span><span class="p">)</span>
+<span class="go">&#39;Augment an exception message with additional information while keeping the original traceback.&#39;</span>
+</pre></div>
+</div>
+<p>In case the given object does not define a docstring, the following
+is returned:
+&gt;&gt;&gt; autodoctools.description(type(‘Test’, (), {}))
+‘no description available’</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="hydpy.core.autodoctools.autodoc_basemodel">
+<code class="descclassname">hydpy.core.autodoctools.</code><code class="descname">autodoc_basemodel</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/core/autodoctools.html#autodoc_basemodel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.core.autodoctools.autodoc_basemodel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add an exhaustive docstring to the <cite>__init__</cite> module of a basemodel.</p>
+<p>One just has to write <cite>autodoc_basemodel()</cite> at the bottom of an <cite>__init__</cite>
+module of a basemodel, and all model, parameter and sequence information
+are appended to the modules docstring.  The resulting docstring is suitable
+automatic documentation generation via <cite>Sphinx</cite> and <cite>autodoc</cite>.  Hence
+it helps in constructing HydPy’s online documentation and supports the
+embeded help feature of <cite>Spyder</cite> (to see the result, import the package
+of an arbitrary basemodel, e.g. <cite>from hydpy.models import lland</cite> and
+press <cite>cntr+i</cite> with the cursor placed on <cite>lland</cite> written in the IPython
+console afterwards).</p>
+<p>Note that the resulting documentation will be complete only when the
+modules of the basemodel are named in the standard way, e.g. <cite>lland_model</cite>,
+<cite>lland_control</cite>, <cite>lland_inputs</cite>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="hydpy.core.autodoctools.autodoc_module">
+<code class="descclassname">hydpy.core.autodoctools.</code><code class="descname">autodoc_module</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/core/autodoctools.html#autodoc_module"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.core.autodoctools.autodoc_module" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a short summary of all implemented members to a modules docstring.</p>
+<p>Just write <cite>autodoctools.autodoc_module()</cite> at the very bottom of the
+module.</p>
+<p>Note that function <a class="reference internal" href="#hydpy.core.autodoctools.autodoc_module" title="hydpy.core.autodoctools.autodoc_module"><code class="xref py py-func docutils literal"><span class="pre">autodoc_module()</span></code></a> is not thought to be used for
+modules defining models.  For base models, see function
+<a class="reference internal" href="#hydpy.core.autodoctools.autodoc_basemodel" title="hydpy.core.autodoctools.autodoc_basemodel"><code class="xref py py-func docutils literal"><span class="pre">autodoc_basemodel()</span></code></a> instead.</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="core.html"
+                        title="previous chapter">Core Modules</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="connectiontools.html"
+                        title="next chapter">connectiontools</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/autodoctools.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="connectiontools.html" title="connectiontools"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="core.html" title="Core Modules"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">HydPy 2.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="core.html" >Core Modules</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Christoph Tyralla.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.5.
+    </div>
+  </body>
+</html>

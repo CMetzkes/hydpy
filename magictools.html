@@ -1,0 +1,399 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>magictools &#8212; HydPy 2.0.0 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="modelimports" href="modelimports.html" />
+    <link rel="prev" title="indextools" href="indextools.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="modelimports.html" title="modelimports"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="indextools.html" title="indextools"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">HydPy 2.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="core.html" accesskey="U">Core Modules</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="magictools">
+<span id="id1"></span><h1>magictools<a class="headerlink" href="#magictools" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-hydpy.core.magictools"></span><p>This module implements most of those tools, that involve some tricks to
+simplify using the HydPy framework.</p>
+<p>These tools are primarily designed for features like hiding model
+initialization routines from model users and for allowing readable definitions
+of doctests.  Hence, along with some metaclasses defined in other modules and
+with the cythonization features of module <a class="reference internal" href="modelutils.html#module-hydpy.cythons.modelutils" title="hydpy.cythons.modelutils"><code class="xref py py-mod docutils literal"><span class="pre">modelutils</span></code></a> and
+the documentation features of module <code class="xref py py-mod docutils literal"><span class="pre">autodoctools</span></code>,
+module <a class="reference internal" href="#module-hydpy.core.magictools" title="hydpy.core.magictools"><code class="xref py py-mod docutils literal"><span class="pre">magictools</span></code></a> somehow modifies the Python API a little
+to the advantage of model users and model developers.  Programmers who work
+on the core routines of HydPy and encounter unexpected side effects, should
+first have a look into this module and the other modules mentioned.</p>
+<p>Module <a class="reference internal" href="#module-hydpy.core.magictools" title="hydpy.core.magictools"><code class="xref py py-mod docutils literal"><span class="pre">magictools</span></code></a> implements the following members:</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference internal" href="#hydpy.core.magictools.Tester" title="hydpy.core.magictools.Tester"><code class="xref py py-class docutils literal"><span class="pre">Tester</span></code></a> no description available</li>
+<li><a class="reference internal" href="#hydpy.core.magictools.PrintStyle" title="hydpy.core.magictools.PrintStyle"><code class="xref py py-class docutils literal"><span class="pre">PrintStyle</span></code></a> no description available</li>
+<li><a class="reference internal" href="#hydpy.core.magictools.StdOutErr" title="hydpy.core.magictools.StdOutErr"><code class="xref py py-class docutils literal"><span class="pre">StdOutErr</span></code></a> no description available</li>
+<li><a class="reference internal" href="#hydpy.core.magictools.parameterstep" title="hydpy.core.magictools.parameterstep"><code class="xref py py-func docutils literal"><span class="pre">parameterstep()</span></code></a> Define a parameter time step size within a parameter control file.</li>
+<li><a class="reference internal" href="#hydpy.core.magictools.reverse_model_wildcard_import" title="hydpy.core.magictools.reverse_model_wildcard_import"><code class="xref py py-func docutils literal"><span class="pre">reverse_model_wildcard_import()</span></code></a> Clear the local namespace from a model wildcard import.</li>
+<li><a class="reference internal" href="#hydpy.core.magictools.simulationstep" title="hydpy.core.magictools.simulationstep"><code class="xref py py-func docutils literal"><span class="pre">simulationstep()</span></code></a> Define a simulation time step size for testing purposes within a parameter control file.</li>
+<li><a class="reference internal" href="#hydpy.core.magictools.controlcheck" title="hydpy.core.magictools.controlcheck"><code class="xref py py-func docutils literal"><span class="pre">controlcheck()</span></code></a> no description available</li>
+<li><a class="reference internal" href="#hydpy.core.magictools.printprogress_wrapper_generalized" title="hydpy.core.magictools.printprogress_wrapper_generalized"><code class="xref py py-func docutils literal"><span class="pre">printprogress_wrapper_generalized()</span></code></a> Wrapper for HydPy methods to print when they start when they end.</li>
+<li><a class="reference internal" href="#hydpy.core.magictools.zip_longest" title="hydpy.core.magictools.zip_longest"><code class="xref py py-func docutils literal"><span class="pre">zip_longest()</span></code></a> Return the iterator defined by <cite>zip_longest</cite> or <cite>izip_longest</cite> of module <a class="reference external" href="https://docs.python.org/2.7/library/itertools.html#module-itertools" title="(in Python v2.7)"><code class="xref py py-mod docutils literal"><span class="pre">itertools</span></code></a> under Python 2 and 3 respectively.</li>
+<li><a class="reference internal" href="#hydpy.core.magictools.signature" title="hydpy.core.magictools.signature"><code class="xref py py-func docutils literal"><span class="pre">signature()</span></code></a> Return the signature of the given function (possibly without variable positional and keyword arguments) as a string.</li>
+<li><a class="reference internal" href="#hydpy.core.magictools.printprogress" title="hydpy.core.magictools.printprogress"><code class="xref py py-func docutils literal"><span class="pre">printprogress()</span></code></a> Decorator for wrapping HydPy methods with <a class="reference internal" href="#hydpy.core.magictools.printprogress_wrapper_generalized" title="hydpy.core.magictools.printprogress_wrapper_generalized"><code class="xref py py-func docutils literal"><span class="pre">printprogress_wrapper_generalized()</span></code></a>.</li>
+<li><a class="reference internal" href="#hydpy.core.magictools.progressbar" title="hydpy.core.magictools.progressbar"><code class="xref py py-func docutils literal"><span class="pre">progressbar()</span></code></a> Print a simple progress bar while processing the given iterable.</li>
+</ul>
+</div></blockquote>
+<hr class="docutils" />
+<dl class="class">
+<dt id="hydpy.core.magictools.PrintStyle">
+<em class="property">class </em><code class="descclassname">hydpy.core.magictools.</code><code class="descname">PrintStyle</code><span class="sig-paren">(</span><em>color</em>, <em>font</em>, <em>file=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/core/magictools.html#PrintStyle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.core.magictools.PrintStyle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2.7/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="hydpy.core.magictools.StdOutErr">
+<em class="property">class </em><code class="descclassname">hydpy.core.magictools.</code><code class="descname">StdOutErr</code><span class="sig-paren">(</span><em>indent=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/core/magictools.html#StdOutErr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.core.magictools.StdOutErr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2.7/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dl class="method">
+<dt id="hydpy.core.magictools.StdOutErr.flush">
+<code class="descname">flush</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/core/magictools.html#StdOutErr.flush"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.core.magictools.StdOutErr.flush" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="hydpy.core.magictools.StdOutErr.print_">
+<code class="descname">print_</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/core/magictools.html#StdOutErr.print_"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.core.magictools.StdOutErr.print_" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="hydpy.core.magictools.StdOutErr.write">
+<code class="descname">write</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/core/magictools.html#StdOutErr.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.core.magictools.StdOutErr.write" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="hydpy.core.magictools.Tester">
+<em class="property">class </em><code class="descclassname">hydpy.core.magictools.</code><code class="descname">Tester</code><a class="reference internal" href="_modules/hydpy/core/magictools.html#Tester"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.core.magictools.Tester" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2.7/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dl class="method">
+<dt id="hydpy.core.magictools.Tester.doit">
+<code class="descname">doit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/core/magictools.html#Tester.doit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.core.magictools.Tester.doit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.core.magictools.Tester.filenames">
+<code class="descname">filenames</code><a class="headerlink" href="#hydpy.core.magictools.Tester.filenames" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.core.magictools.Tester.modulenames">
+<code class="descname">modulenames</code><a class="headerlink" href="#hydpy.core.magictools.Tester.modulenames" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="hydpy.core.magictools.controlcheck">
+<code class="descclassname">hydpy.core.magictools.</code><code class="descname">controlcheck</code><span class="sig-paren">(</span><em>controldir='default'</em>, <em>projectdir=None</em>, <em>controlfile=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/core/magictools.html#controlcheck"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.core.magictools.controlcheck" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="hydpy.core.magictools.parameterstep">
+<code class="descclassname">hydpy.core.magictools.</code><code class="descname">parameterstep</code><span class="sig-paren">(</span><em>timestep=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/core/magictools.html#parameterstep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.core.magictools.parameterstep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define a parameter time step size within a parameter control file.</p>
+<dl class="docutils">
+<dt>Argument:</dt>
+<dd><ul class="first last simple">
+<li>timestep(<a class="reference internal" href="timetools.html#hydpy.core.timetools.Period" title="hydpy.core.timetools.Period"><code class="xref py py-class docutils literal"><span class="pre">Period</span></code></a>): Time step size.</li>
+</ul>
+</dd>
+</dl>
+<p>Function <a class="reference internal" href="#hydpy.core.magictools.parameterstep" title="hydpy.core.magictools.parameterstep"><code class="xref py py-func docutils literal"><span class="pre">parameterstep()</span></code></a> should usually be be applied in a line
+immediately behind the model import.  Defining the step size of time
+dependent parameters is a prerequisite to access any model specific
+parameter.</p>
+<p>Note that <a class="reference internal" href="#hydpy.core.magictools.parameterstep" title="hydpy.core.magictools.parameterstep"><code class="xref py py-func docutils literal"><span class="pre">parameterstep()</span></code></a> implements some namespace magic by
+means of the module <a class="reference external" href="https://docs.python.org/2.7/library/inspect.html#module-inspect" title="(in Python v2.7)"><code class="xref py py-mod docutils literal"><span class="pre">inspect</span></code></a>.  This makes things a little
+complicated for framework developers, but it eases the definition of
+parameter control files for framework users.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="hydpy.core.magictools.printprogress">
+<code class="descclassname">hydpy.core.magictools.</code><code class="descname">printprogress</code><span class="sig-paren">(</span><em>printprogress_wrapped</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/core/magictools.html#printprogress"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.core.magictools.printprogress" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator for wrapping HydPy methods with
+<a class="reference internal" href="#hydpy.core.magictools.printprogress_wrapper_generalized" title="hydpy.core.magictools.printprogress_wrapper_generalized"><code class="xref py py-func docutils literal"><span class="pre">printprogress_wrapper_generalized()</span></code></a>.</p>
+<p>Hopefully, all relevant attributes of the wrapped method are maintained.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="hydpy.core.magictools.printprogress_wrapper_generalized">
+<code class="descclassname">hydpy.core.magictools.</code><code class="descname">printprogress_wrapper_generalized</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/core/magictools.html#printprogress_wrapper_generalized"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.core.magictools.printprogress_wrapper_generalized" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper for HydPy methods to print when they start when they end.</p>
+<p>The wrapper is general in its function arguments.  When one uses the
+decorator <a class="reference internal" href="#hydpy.core.magictools.printprogress" title="hydpy.core.magictools.printprogress"><code class="xref py py-func docutils literal"><span class="pre">printprogress()</span></code></a>, the general arguments are replaced
+by the specific ones of the method to be wrapped.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="hydpy.core.magictools.progressbar">
+<code class="descclassname">hydpy.core.magictools.</code><code class="descname">progressbar</code><span class="sig-paren">(</span><em>iterable</em>, <em>length=23</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/core/magictools.html#progressbar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.core.magictools.progressbar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print a simple progress bar while processing the given iterable.</p>
+<p>Function <a class="reference internal" href="#hydpy.core.magictools.progressbar" title="hydpy.core.magictools.progressbar"><code class="xref py py-func docutils literal"><span class="pre">progressbar()</span></code></a> does print the progress bar when option
+<cite>printprogress</cite> is activted:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">hydpy</span> <span class="k">import</span> <span class="n">pub</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pub</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">printprogress</span> <span class="o">=</span> <span class="kc">True</span>
+</pre></div>
+</div>
+<p>You can pass an iterable object.  Say you want to calculate the the sum
+of all integer values from 1 to 100 and print the progress of the
+calculation.  Using function <a class="reference external" href="https://docs.python.org/2.7/library/functions.html#range" title="(in Python v2.7)"><code class="xref py py-func docutils literal"><span class="pre">range()</span></code></a> (which returns a list in
+Python 2 and an iterator in Python3, but both are fine), one just has
+to  interpose function <a class="reference internal" href="#hydpy.core.magictools.progressbar" title="hydpy.core.magictools.progressbar"><code class="xref py py-func docutils literal"><span class="pre">progressbar()</span></code></a>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">hydpy.core.magictools</span> <span class="k">import</span> <span class="n">progressbar</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x_sum</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">progressbar</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">101</span><span class="p">)):</span>
+<span class="gp">... </span>    <span class="n">x_sum</span> <span class="o">+=</span> <span class="n">x</span>
+<span class="go">    |---------------------|</span>
+<span class="go">    ***********************</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x_sum</span>
+<span class="go">5050</span>
+</pre></div>
+</div>
+<p>To prevent possible interim print commands from dismembering the status
+bar, they are delayed until the status bar is complete.  For intermediate
+print outs of each fiftieth calculation, the result looks as follows:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x_sum</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">progressbar</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">101</span><span class="p">)):</span>
+<span class="gp">... </span>    <span class="n">x_sum</span> <span class="o">+=</span> <span class="n">x</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="ow">not</span> <span class="n">x</span> <span class="o">%</span> <span class="mi">50</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x_sum</span><span class="p">)</span>
+<span class="go">    |---------------------|</span>
+<span class="go">    ***********************</span>
+<span class="go">50 1275</span>
+<span class="go">100 5050</span>
+</pre></div>
+</div>
+<p>The number of characters of the progress bar can be changed:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">progressbar</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span> <span class="n">length</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">continue</span>
+<span class="go">    |------------------------------------------------|</span>
+<span class="go">    **************************************************</span>
+</pre></div>
+</div>
+<p>But its maximum number of characters is restricted by the length of the
+given iterable:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">progressbar</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span> <span class="n">length</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">continue</span>
+<span class="go">    |--------|</span>
+<span class="go">    **********</span>
+</pre></div>
+</div>
+<p>The smallest possible progress bar has two characters:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">progressbar</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">)):</span>
+<span class="gp">... </span>    <span class="k">continue</span>
+<span class="go">    ||</span>
+<span class="go">    **</span>
+</pre></div>
+</div>
+<p>For iterables of length one or zero, no progress bar is plottet:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">progressbar</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">)):</span>
+<span class="gp">... </span>    <span class="k">continue</span>
+</pre></div>
+</div>
+<p>The same is True when the <cite>printprogress</cite> option is inactivated:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pub</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">printprogress</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">progressbar</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">)):</span>
+<span class="gp">... </span>    <span class="k">continue</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="hydpy.core.magictools.reverse_model_wildcard_import">
+<code class="descclassname">hydpy.core.magictools.</code><code class="descname">reverse_model_wildcard_import</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/core/magictools.html#reverse_model_wildcard_import"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.core.magictools.reverse_model_wildcard_import" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clear the local namespace from a model wildcard import.</p>
+<p>Calling this method should remove the critical imports into the local
+namespace due the last wildcard import of a certain application model.
+It is thought for securing the successive preperation of different
+types of models via wildcard imports.  See the following example, on
+how it can be applied.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">hydpy.core.magictools</span> <span class="k">import</span> <span class="n">reverse_model_wildcard_import</span>
+</pre></div>
+</div>
+<p>Assume you wildcard import the first version of HydPy-L-Land
+(<a class="reference internal" href="lland_v1.html#module-hydpy.models.lland_v1" title="hydpy.models.lland_v1"><code class="xref py py-mod docutils literal"><span class="pre">lland_v1</span></code></a>):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">hydpy.models.lland_v1</span> <span class="k">import</span> <span class="o">*</span>
+</pre></div>
+</div>
+<p>This for example adds the collection class for handling control
+parameters of <cite>lland_v1</cite> into the local namespace:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ControlParameters</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+<span class="go">control</span>
+</pre></div>
+</div>
+<p>Calling function <a class="reference internal" href="#hydpy.core.magictools.parameterstep" title="hydpy.core.magictools.parameterstep"><code class="xref py py-func docutils literal"><span class="pre">parameterstep()</span></code></a> for example
+prepares the control parameter object
+<code class="xref py py-class docutils literal"><span class="pre">nhru</span></code>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">parameterstep</span><span class="p">(</span><span class="s1">&#39;1d&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nhru</span>
+<span class="go">nhru(-999999)</span>
+</pre></div>
+</div>
+<p>Calling function
+<a class="reference internal" href="#hydpy.core.magictools.reverse_model_wildcard_import" title="hydpy.core.magictools.reverse_model_wildcard_import"><code class="xref py py-func docutils literal"><span class="pre">reverse_model_wildcard_import()</span></code></a> removes both
+objects (and many more, but not all) from the local namespace:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">reverse_model_wildcard_import</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ControlParameters</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">NameError</span>: <span class="n">name &#39;ControlParameters&#39; is not defined</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">nhru</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">NameError</span>: <span class="n">name &#39;nhru&#39; is not defined</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="hydpy.core.magictools.signature">
+<code class="descclassname">hydpy.core.magictools.</code><code class="descname">signature</code><span class="sig-paren">(</span><em>function</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/core/magictools.html#signature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.core.magictools.signature" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the signature of the given function (possibly without variable
+positional and keyword arguments) as a string.</p>
+<p>If available, the result should be determined by function
+<code class="xref py py-func docutils literal"><span class="pre">signature()</span></code> of module <a class="reference external" href="https://docs.python.org/2.7/library/inspect.html#module-inspect" title="(in Python v2.7)"><code class="xref py py-mod docutils literal"><span class="pre">inspect</span></code></a> (Python 3).
+If something wrents wrong, a less general costum made string is
+returned (Python 2).</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="hydpy.core.magictools.simulationstep">
+<code class="descclassname">hydpy.core.magictools.</code><code class="descname">simulationstep</code><span class="sig-paren">(</span><em>timestep</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/core/magictools.html#simulationstep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.core.magictools.simulationstep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define a simulation time step size for testing purposes within a
+parameter control file.</p>
+<dl class="docutils">
+<dt>Argument:</dt>
+<dd><ul class="first last simple">
+<li>timestep(<a class="reference internal" href="timetools.html#hydpy.core.timetools.Period" title="hydpy.core.timetools.Period"><code class="xref py py-class docutils literal"><span class="pre">Period</span></code></a>): Time step size.</li>
+</ul>
+</dd>
+</dl>
+<p>Using <a class="reference internal" href="#hydpy.core.magictools.simulationstep" title="hydpy.core.magictools.simulationstep"><code class="xref py py-func docutils literal"><span class="pre">simulationstep()</span></code></a> only affects the values of time dependent
+parameters, when <cite>pub.timegrids.stepsize</cite> is not defined.  It thus has
+no influence on usual hydpy simulations at all.  Use it just to check
+your parameter control files.  Write it in a line immediately behind
+the one calling <a class="reference internal" href="#hydpy.core.magictools.parameterstep" title="hydpy.core.magictools.parameterstep"><code class="xref py py-func docutils literal"><span class="pre">parameterstep()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="hydpy.core.magictools.zip_longest">
+<code class="descclassname">hydpy.core.magictools.</code><code class="descname">zip_longest</code><span class="sig-paren">(</span><em>*iterables</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/core/magictools.html#zip_longest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.core.magictools.zip_longest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the iterator defined by <cite>zip_longest</cite> or <cite>izip_longest</cite> of
+module <a class="reference external" href="https://docs.python.org/2.7/library/itertools.html#module-itertools" title="(in Python v2.7)"><code class="xref py py-mod docutils literal"><span class="pre">itertools</span></code></a> under Python 2 and 3 respectively.</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="indextools.html"
+                        title="previous chapter">indextools</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="modelimports.html"
+                        title="next chapter">modelimports</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/magictools.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="modelimports.html" title="modelimports"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="indextools.html" title="indextools"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">HydPy 2.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="core.html" >Core Modules</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Christoph Tyralla.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.5.
+    </div>
+  </body>
+</html>

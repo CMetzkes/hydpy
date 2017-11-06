@@ -1,0 +1,1439 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>arma &#8212; HydPy 2.0.0 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="arma_v1" href="arma_v1.html" />
+    <link rel="prev" title="HydPy-A" href="HydPy-A.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="arma_v1.html" title="arma_v1"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="HydPy-A.html" title="HydPy-A"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">HydPy 2.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modelcollection.html" >Model Collection</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="HydPy-A.html" accesskey="U">HydPy-A</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="arma">
+<span id="id1"></span><h1>arma<a class="headerlink" href="#arma" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-hydpy.models.arma"></span><div class="section" id="model-features">
+<h2>Model features<a class="headerlink" href="#model-features" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="hydpy.models.arma.arma_model.Model">
+<em class="property">class </em><code class="descclassname">hydpy.models.arma.arma_model.</code><code class="descname">Model</code><a class="reference internal" href="_modules/hydpy/models/arma/arma_model.html#Model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma.arma_model.Model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="modeltools.html#hydpy.core.modeltools.Model" title="hydpy.core.modeltools.Model"><code class="xref py py-class docutils literal"><span class="pre">hydpy.core.modeltools.Model</span></code></a></p>
+<p>Base model ARMA.</p>
+<dl class="docutils">
+<dt>The following “run methods” are called each simulation step run in the given sequence:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference internal" href="#hydpy.models.arma.arma_model.update_inlets_v1" title="hydpy.models.arma.arma_model.update_inlets_v1"><code class="xref py py-func docutils literal"><span class="pre">update_inlets_v1()</span></code></a> <cite>Update inflow.</cite></li>
+<li><a class="reference internal" href="#hydpy.models.arma.arma_model.calc_qpin_v1" title="hydpy.models.arma.arma_model.calc_qpin_v1"><code class="xref py py-func docutils literal"><span class="pre">calc_qpin_v1()</span></code></a> <cite>Calculate the input discharge portions of the different response functions.</cite></li>
+<li><a class="reference internal" href="#hydpy.models.arma.arma_model.calc_login_v1" title="hydpy.models.arma.arma_model.calc_login_v1"><code class="xref py py-func docutils literal"><span class="pre">calc_login_v1()</span></code></a> <cite>Refresh the input log sequence for the different MA processes.</cite></li>
+<li><a class="reference internal" href="#hydpy.models.arma.arma_model.calc_qma_v1" title="hydpy.models.arma.arma_model.calc_qma_v1"><code class="xref py py-func docutils literal"><span class="pre">calc_qma_v1()</span></code></a> <cite>Calculate the discharge responses of the different MA processes.</cite></li>
+<li><a class="reference internal" href="#hydpy.models.arma.arma_model.calc_qar_v1" title="hydpy.models.arma.arma_model.calc_qar_v1"><code class="xref py py-func docutils literal"><span class="pre">calc_qar_v1()</span></code></a> <cite>Calculate the discharge responses of the different AR processes.</cite></li>
+<li><a class="reference internal" href="#hydpy.models.arma.arma_model.calc_qpout_v1" title="hydpy.models.arma.arma_model.calc_qpout_v1"><code class="xref py py-func docutils literal"><span class="pre">calc_qpout_v1()</span></code></a> <cite>Calculate the ARMA results for the different response functions.</cite></li>
+<li><a class="reference internal" href="#hydpy.models.arma.arma_model.calc_logout_v1" title="hydpy.models.arma.arma_model.calc_logout_v1"><code class="xref py py-func docutils literal"><span class="pre">calc_logout_v1()</span></code></a> <cite>Refresh the log sequence for the different AR processes.</cite></li>
+<li><a class="reference internal" href="#hydpy.models.arma.arma_model.calc_qout_v1" title="hydpy.models.arma.arma_model.calc_qout_v1"><code class="xref py py-func docutils literal"><span class="pre">calc_qout_v1()</span></code></a> <cite>Sum up the results of the different response functions.</cite></li>
+<li><a class="reference internal" href="#hydpy.models.arma.arma_model.update_outlets_v1" title="hydpy.models.arma.arma_model.update_outlets_v1"><code class="xref py py-func docutils literal"><span class="pre">update_outlets_v1()</span></code></a> <cite>Update outflow.</cite></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<span class="target" id="module-hydpy.models.arma.arma_model"></span><dl class="function">
+<dt id="hydpy.models.arma.arma_model.calc_qpin_v1">
+<code class="descclassname">hydpy.models.arma.arma_model.</code><code class="descname">calc_qpin_v1</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/models/arma/arma_model.html#calc_qpin_v1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma.arma_model.calc_qpin_v1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the input discharge portions of the different response
+functions.</p>
+<dl class="docutils">
+<dt>Required derived parameters:</dt>
+<dd><a class="reference internal" href="#hydpy.models.arma.arma_derived.Nmb" title="hydpy.models.arma.arma_derived.Nmb"><code class="xref py py-class docutils literal"><span class="pre">Nmb</span></code></a>
+<a class="reference internal" href="#hydpy.models.arma.arma_derived.MaxQ" title="hydpy.models.arma.arma_derived.MaxQ"><code class="xref py py-class docutils literal"><span class="pre">MaxQ</span></code></a>
+<a class="reference internal" href="#hydpy.models.arma.arma_derived.DiffQ" title="hydpy.models.arma.arma_derived.DiffQ"><code class="xref py py-class docutils literal"><span class="pre">DiffQ</span></code></a></dd>
+<dt>Required flux sequence:</dt>
+<dd><a class="reference internal" href="#hydpy.models.arma.arma_fluxes.QIn" title="hydpy.models.arma.arma_fluxes.QIn"><code class="xref py py-class docutils literal"><span class="pre">QIn</span></code></a></dd>
+<dt>Calculated flux sequences:</dt>
+<dd><a class="reference internal" href="#hydpy.models.arma.arma_fluxes.QPIn" title="hydpy.models.arma.arma_fluxes.QPIn"><code class="xref py py-class docutils literal"><span class="pre">QPIn</span></code></a></dd>
+</dl>
+<p>Examples:</p>
+<blockquote>
+<div><p>Initialize an arma model with three different response functions:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">hydpy.models.arma</span> <span class="k">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parameterstep</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">derived</span><span class="o">.</span><span class="n">nmb</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">derived</span><span class="o">.</span><span class="n">maxq</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">derived</span><span class="o">.</span><span class="n">diffq</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fluxes</span><span class="o">.</span><span class="n">qpin</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="mi">3</span>
+</pre></div>
+</div>
+<p>Define the maximum discharge value of the respective response
+functions and their successive differences:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">derived</span><span class="o">.</span><span class="n">maxq</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">derived</span><span class="o">.</span><span class="n">diffq</span><span class="p">(</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The first six examples are performed for inflow values ranging from
+0 to 12 m³/s:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">hydpy.core.testtools</span> <span class="k">import</span> <span class="n">UnitTest</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">test</span> <span class="o">=</span> <span class="n">UnitTest</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">calc_qpin_v1</span><span class="p">,</span> <span class="n">last_example</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">test</span><span class="o">.</span><span class="n">nexts</span><span class="o">.</span><span class="n">qin</span> <span class="o">=</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">,</span> <span class="mf">6.</span><span class="p">,</span> <span class="mf">12.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">test</span><span class="p">()</span>
+<span class="go">| ex. | nmb |           maxq |      diffq |  qin |           qpin |</span>
+<span class="go">-------------------------------------------------------------------</span>
+<span class="go">|   1 |   3 | 0.0  2.0   6.0 | 2.0    4.0 |  0.0 | 0.0  0.0   0.0 |</span>
+<span class="go">|   2 |   3 | 0.0  2.0   6.0 | 2.0    4.0 |  1.0 | 1.0  0.0   0.0 |</span>
+<span class="go">|   3 |   3 | 0.0  2.0   6.0 | 2.0    4.0 |  2.0 | 2.0  0.0   0.0 |</span>
+<span class="go">|   4 |   3 | 0.0  2.0   6.0 | 2.0    4.0 |  4.0 | 2.0  2.0   0.0 |</span>
+<span class="go">|   5 |   3 | 0.0  2.0   6.0 | 2.0    4.0 |  6.0 | 2.0  4.0   0.0 |</span>
+<span class="go">|   6 |   3 | 0.0  2.0   6.0 | 2.0    4.0 | 12.0 | 2.0  4.0   6.0 |</span>
+</pre></div>
+</div>
+<p>The following two additional examples are just supposed to demonstrate
+method <a class="reference internal" href="#hydpy.models.arma.arma_model.calc_qpin_v1" title="hydpy.models.arma.arma_model.calc_qpin_v1"><code class="xref py py-func docutils literal"><span class="pre">calc_qpin_v1()</span></code></a> also functions properly if there is only
+one response function, wherefore total discharge does not need to be
+divided:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">derived</span><span class="o">.</span><span class="n">nmb</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">derived</span><span class="o">.</span><span class="n">maxq</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">derived</span><span class="o">.</span><span class="n">diffq</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fluxes</span><span class="o">.</span><span class="n">qpin</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">derived</span><span class="o">.</span><span class="n">maxq</span><span class="p">(</span><span class="mf">0.</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">test</span> <span class="o">=</span> <span class="n">UnitTest</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">calc_qpin_v1</span><span class="p">,</span>
+<span class="gp">... </span>                <span class="n">first_example</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">last_example</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">test</span><span class="o">.</span><span class="n">nexts</span><span class="o">.</span><span class="n">qin</span> <span class="o">=</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">12.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">test</span><span class="p">()</span>
+<span class="go">| ex. | nmb | maxq | diffq |  qin | qpin |</span>
+<span class="go">------------------------------------------</span>
+<span class="go">|   7 |   1 |  0.0 | empty |  0.0 |  0.0 |</span>
+<span class="go">|   8 |   1 |  0.0 | empty | 12.0 | 12.0 |</span>
+</pre></div>
+</div>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="hydpy.models.arma.arma_model.calc_login_v1">
+<code class="descclassname">hydpy.models.arma.arma_model.</code><code class="descname">calc_login_v1</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/models/arma/arma_model.html#calc_login_v1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma.arma_model.calc_login_v1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Refresh the input log sequence for the different MA processes.</p>
+<dl class="docutils">
+<dt>Required derived parameters:</dt>
+<dd><a class="reference internal" href="#hydpy.models.arma.arma_derived.Nmb" title="hydpy.models.arma.arma_derived.Nmb"><code class="xref py py-class docutils literal"><span class="pre">Nmb</span></code></a>
+<a class="reference internal" href="#hydpy.models.arma.arma_derived.MA_Order" title="hydpy.models.arma.arma_derived.MA_Order"><code class="xref py py-class docutils literal"><span class="pre">MA_Order</span></code></a></dd>
+<dt>Required flux sequence:</dt>
+<dd><a class="reference internal" href="#hydpy.models.arma.arma_fluxes.QPIn" title="hydpy.models.arma.arma_fluxes.QPIn"><code class="xref py py-class docutils literal"><span class="pre">QPIn</span></code></a></dd>
+<dt>Updated log sequence:</dt>
+<dd><code class="xref py py-class docutils literal"><span class="pre">LogIn</span></code></dd>
+</dl>
+<p>Example:</p>
+<blockquote>
+<div><p>Assume there are three response functions, involving one, two and
+three MA coefficients respectively:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">hydpy.models.arma</span> <span class="k">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parameterstep</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">derived</span><span class="o">.</span><span class="n">nmb</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">derived</span><span class="o">.</span><span class="n">ma_order</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">derived</span><span class="o">.</span><span class="n">ma_order</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fluxes</span><span class="o">.</span><span class="n">qpin</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">logs</span><span class="o">.</span><span class="n">login</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The “memory values” of the different MA processes are defined as
+follows (one row for each process):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">logs</span><span class="o">.</span><span class="n">login</span> <span class="o">=</span> <span class="p">((</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">nan</span><span class="p">,</span> <span class="n">nan</span><span class="p">),</span>
+<span class="gp">... </span>              <span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="n">nan</span><span class="p">),</span>
+<span class="gp">... </span>              <span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>These are the new inflow discharge portions to be included into
+the memories of the different processes:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fluxes</span><span class="o">.</span><span class="n">qpin</span> <span class="o">=</span> <span class="mf">7.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">,</span> <span class="mf">9.0</span>
+</pre></div>
+</div>
+<p>Through applying method <a class="reference internal" href="#hydpy.models.arma.arma_model.calc_login_v1" title="hydpy.models.arma.arma_model.calc_login_v1"><code class="xref py py-func docutils literal"><span class="pre">calc_login_v1()</span></code></a> all values already
+existing are shifted to the right (“into the past”).  Values, which
+are no longer required due to the limited order or the different
+MA processes, are discarded.  The new values are inserted in the
+first column:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">calc_login_v1</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">logs</span><span class="o">.</span><span class="n">login</span>
+<span class="go">login(7.0, nan, nan,</span>
+<span class="go">      8.0, 2.0, nan,</span>
+<span class="go">      9.0, 4.0, 5.0)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="hydpy.models.arma.arma_model.calc_qma_v1">
+<code class="descclassname">hydpy.models.arma.arma_model.</code><code class="descname">calc_qma_v1</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/models/arma/arma_model.html#calc_qma_v1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma.arma_model.calc_qma_v1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the discharge responses of the different MA processes.</p>
+<dl class="docutils">
+<dt>Required derived parameters:</dt>
+<dd><a class="reference internal" href="#hydpy.models.arma.arma_derived.Nmb" title="hydpy.models.arma.arma_derived.Nmb"><code class="xref py py-class docutils literal"><span class="pre">Nmb</span></code></a>
+<a class="reference internal" href="#hydpy.models.arma.arma_derived.MA_Order" title="hydpy.models.arma.arma_derived.MA_Order"><code class="xref py py-class docutils literal"><span class="pre">MA_Order</span></code></a>
+<code class="xref py py-class docutils literal"><span class="pre">MA_Coeffs</span></code></dd>
+<dt>Required log sequence:</dt>
+<dd><code class="xref py py-class docutils literal"><span class="pre">LogIn</span></code></dd>
+<dt>Calculated flux sequence:</dt>
+<dd><a class="reference internal" href="#hydpy.models.arma.arma_fluxes.QMA" title="hydpy.models.arma.arma_fluxes.QMA"><code class="xref py py-class docutils literal"><span class="pre">QMA</span></code></a></dd>
+</dl>
+<p>Examples:</p>
+<blockquote>
+<div><p>Assume there are three response functions, involving one, two and
+three MA coefficients respectively:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">hydpy.models.arma</span> <span class="k">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parameterstep</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">derived</span><span class="o">.</span><span class="n">nmb</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">derived</span><span class="o">.</span><span class="n">ma_order</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">derived</span><span class="o">.</span><span class="n">ma_order</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">derived</span><span class="o">.</span><span class="n">ma_coefs</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">logs</span><span class="o">.</span><span class="n">login</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fluxes</span><span class="o">.</span><span class="n">qma</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="mi">3</span>
+</pre></div>
+</div>
+<p>The coefficients of the different MA processes are stored in
+seperate rows of the 2-dimensional parameter <cite>ma_coefs</cite>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">derived</span><span class="o">.</span><span class="n">ma_coefs</span> <span class="o">=</span> <span class="p">((</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">nan</span><span class="p">,</span> <span class="n">nan</span><span class="p">),</span>
+<span class="gp">... </span>                    <span class="p">(</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="n">nan</span><span class="p">),</span>
+<span class="gp">... </span>                    <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The “memory values” of the different MA processes are defined as
+follows (one row for each process).  The current values are stored
+in first column, the values of the last time step in the second
+column, and so on:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">logs</span><span class="o">.</span><span class="n">login</span> <span class="o">=</span> <span class="p">((</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">nan</span><span class="p">,</span> <span class="n">nan</span><span class="p">),</span>
+<span class="gp">... </span>              <span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="n">nan</span><span class="p">),</span>
+<span class="gp">... </span>              <span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Applying method <a class="reference internal" href="#hydpy.models.arma.arma_model.calc_qma_v1" title="hydpy.models.arma.arma_model.calc_qma_v1"><code class="xref py py-func docutils literal"><span class="pre">calc_qma_v1()</span></code></a> is equivalent to calculating
+the inner product of the different rows of both matrices:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">calc_qma_v1</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fluxes</span><span class="o">.</span><span class="n">qma</span>
+<span class="go">qma(1.0, 2.2, 4.7)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="hydpy.models.arma.arma_model.calc_qar_v1">
+<code class="descclassname">hydpy.models.arma.arma_model.</code><code class="descname">calc_qar_v1</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/models/arma/arma_model.html#calc_qar_v1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma.arma_model.calc_qar_v1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the discharge responses of the different AR processes.</p>
+<dl class="docutils">
+<dt>Required derived parameters:</dt>
+<dd><a class="reference internal" href="#hydpy.models.arma.arma_derived.Nmb" title="hydpy.models.arma.arma_derived.Nmb"><code class="xref py py-class docutils literal"><span class="pre">Nmb</span></code></a>
+<a class="reference internal" href="#hydpy.models.arma.arma_derived.AR_Order" title="hydpy.models.arma.arma_derived.AR_Order"><code class="xref py py-class docutils literal"><span class="pre">AR_Order</span></code></a>
+<code class="xref py py-class docutils literal"><span class="pre">AR_Coeffs</span></code></dd>
+<dt>Required log sequence:</dt>
+<dd><code class="xref py py-class docutils literal"><span class="pre">LogOut</span></code></dd>
+<dt>Calculated flux sequence:</dt>
+<dd><a class="reference internal" href="#hydpy.models.arma.arma_fluxes.QAR" title="hydpy.models.arma.arma_fluxes.QAR"><code class="xref py py-class docutils literal"><span class="pre">QAR</span></code></a></dd>
+</dl>
+<p>Examples:</p>
+<blockquote>
+<div><p>Assume there are four response functions, involving zero, one, two,
+and three AR coefficients respectively:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">hydpy.models.arma</span> <span class="k">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parameterstep</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">derived</span><span class="o">.</span><span class="n">nmb</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">derived</span><span class="o">.</span><span class="n">ar_order</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">derived</span><span class="o">.</span><span class="n">ar_order</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">derived</span><span class="o">.</span><span class="n">ar_coefs</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">logs</span><span class="o">.</span><span class="n">logout</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fluxes</span><span class="o">.</span><span class="n">qar</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="mi">4</span>
+</pre></div>
+</div>
+<p>The coefficients of the different AR processes are stored in
+seperate rows of the 2-dimensional parameter <cite>ma_coefs</cite>.
+Note the special case of the first AR process of zero order
+(first row), which involves no autoregressive memory at all:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">derived</span><span class="o">.</span><span class="n">ar_coefs</span> <span class="o">=</span> <span class="p">((</span><span class="n">nan</span><span class="p">,</span> <span class="n">nan</span><span class="p">,</span> <span class="n">nan</span><span class="p">),</span>
+<span class="gp">... </span>                    <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">nan</span><span class="p">,</span> <span class="n">nan</span><span class="p">),</span>
+<span class="gp">... </span>                    <span class="p">(</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="n">nan</span><span class="p">),</span>
+<span class="gp">... </span>                    <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The “memory values” of the different AR processes are defined as
+follows (one row for each process).  The values of the last time
+step are stored in first column, the values of the last time step
+in the second column, and so on:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">logs</span><span class="o">.</span><span class="n">logout</span> <span class="o">=</span> <span class="p">((</span><span class="n">nan</span><span class="p">,</span> <span class="n">nan</span><span class="p">,</span> <span class="n">nan</span><span class="p">),</span>
+<span class="gp">... </span>               <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">nan</span><span class="p">,</span> <span class="n">nan</span><span class="p">),</span>
+<span class="gp">... </span>               <span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="n">nan</span><span class="p">),</span>
+<span class="gp">... </span>               <span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Applying method <a class="reference internal" href="#hydpy.models.arma.arma_model.calc_qar_v1" title="hydpy.models.arma.arma_model.calc_qar_v1"><code class="xref py py-func docutils literal"><span class="pre">calc_qar_v1()</span></code></a> is equivalent to calculating
+the inner product of the different rows of both matrices:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">calc_qar_v1</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fluxes</span><span class="o">.</span><span class="n">qar</span>
+<span class="go">qar(0.0, 1.0, 2.2, 4.7)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="hydpy.models.arma.arma_model.calc_qpout_v1">
+<code class="descclassname">hydpy.models.arma.arma_model.</code><code class="descname">calc_qpout_v1</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/models/arma/arma_model.html#calc_qpout_v1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma.arma_model.calc_qpout_v1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the ARMA results for the different response functions.</p>
+<dl class="docutils">
+<dt>Required derived parameter:</dt>
+<dd><a class="reference internal" href="#hydpy.models.arma.arma_derived.Nmb" title="hydpy.models.arma.arma_derived.Nmb"><code class="xref py py-class docutils literal"><span class="pre">Nmb</span></code></a></dd>
+<dt>Required flux sequences:</dt>
+<dd><a class="reference internal" href="#hydpy.models.arma.arma_fluxes.QMA" title="hydpy.models.arma.arma_fluxes.QMA"><code class="xref py py-class docutils literal"><span class="pre">QMA</span></code></a>
+<a class="reference internal" href="#hydpy.models.arma.arma_fluxes.QAR" title="hydpy.models.arma.arma_fluxes.QAR"><code class="xref py py-class docutils literal"><span class="pre">QAR</span></code></a></dd>
+<dt>Calculated flux sequence:</dt>
+<dd><a class="reference internal" href="#hydpy.models.arma.arma_fluxes.QPOut" title="hydpy.models.arma.arma_fluxes.QPOut"><code class="xref py py-class docutils literal"><span class="pre">QPOut</span></code></a></dd>
+</dl>
+<p>Examples:</p>
+<blockquote>
+<div><p>Initialize an arma model with three different response functions:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">hydpy.models.arma</span> <span class="k">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parameterstep</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">derived</span><span class="o">.</span><span class="n">nmb</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fluxes</span><span class="o">.</span><span class="n">qma</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fluxes</span><span class="o">.</span><span class="n">qar</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fluxes</span><span class="o">.</span><span class="n">qpout</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="mi">3</span>
+</pre></div>
+</div>
+<p>Define the output values of the MA and of the AR processes
+associated with the three response functions and apply
+method <a class="reference internal" href="#hydpy.models.arma.arma_model.calc_qpout_v1" title="hydpy.models.arma.arma_model.calc_qpout_v1"><code class="xref py py-func docutils literal"><span class="pre">calc_qpout_v1()</span></code></a>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fluxes</span><span class="o">.</span><span class="n">qar</span> <span class="o">=</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">6.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fluxes</span><span class="o">.</span><span class="n">qma</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">calc_qpout_v1</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fluxes</span><span class="o">.</span><span class="n">qpout</span>
+<span class="go">qpout(5.0, 7.0, 9.0)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="hydpy.models.arma.arma_model.calc_logout_v1">
+<code class="descclassname">hydpy.models.arma.arma_model.</code><code class="descname">calc_logout_v1</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/models/arma/arma_model.html#calc_logout_v1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma.arma_model.calc_logout_v1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Refresh the log sequence for the different AR processes.</p>
+<dl class="docutils">
+<dt>Required derived parameters:</dt>
+<dd><a class="reference internal" href="#hydpy.models.arma.arma_derived.Nmb" title="hydpy.models.arma.arma_derived.Nmb"><code class="xref py py-class docutils literal"><span class="pre">Nmb</span></code></a>
+<a class="reference internal" href="#hydpy.models.arma.arma_derived.AR_Order" title="hydpy.models.arma.arma_derived.AR_Order"><code class="xref py py-class docutils literal"><span class="pre">AR_Order</span></code></a></dd>
+<dt>Required flux sequence:</dt>
+<dd><a class="reference internal" href="#hydpy.models.arma.arma_fluxes.QPOut" title="hydpy.models.arma.arma_fluxes.QPOut"><code class="xref py py-class docutils literal"><span class="pre">QPOut</span></code></a></dd>
+<dt>Updated log sequence:</dt>
+<dd><code class="xref py py-class docutils literal"><span class="pre">LogOut</span></code></dd>
+</dl>
+<p>Example:</p>
+<blockquote>
+<div><p>Assume there are four response functions, involving zero, one, two
+and three AR coefficients respectively:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">hydpy.models.arma</span> <span class="k">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parameterstep</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">derived</span><span class="o">.</span><span class="n">nmb</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">derived</span><span class="o">.</span><span class="n">ar_order</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">derived</span><span class="o">.</span><span class="n">ar_order</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fluxes</span><span class="o">.</span><span class="n">qpout</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">logs</span><span class="o">.</span><span class="n">logout</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The “memory values” of the different AR processes are defined as
+follows (one row for each process).  Note the special case of the
+first AR process of zero order (first row), which is why there are
+no autoregressive memory values required:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">logs</span><span class="o">.</span><span class="n">logout</span> <span class="o">=</span> <span class="p">((</span><span class="n">nan</span><span class="p">,</span> <span class="n">nan</span><span class="p">,</span> <span class="n">nan</span><span class="p">),</span>
+<span class="gp">... </span>               <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">nan</span><span class="p">,</span> <span class="n">nan</span><span class="p">),</span>
+<span class="gp">... </span>               <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">nan</span><span class="p">),</span>
+<span class="gp">... </span>               <span class="p">(</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>These are the new outflow discharge portions to be included into
+the memories of the different processes:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fluxes</span><span class="o">.</span><span class="n">qpout</span> <span class="o">=</span> <span class="mf">6.0</span><span class="p">,</span> <span class="mf">7.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">,</span> <span class="mf">9.0</span>
+</pre></div>
+</div>
+<p>Through applying method <a class="reference internal" href="#hydpy.models.arma.arma_model.calc_logout_v1" title="hydpy.models.arma.arma_model.calc_logout_v1"><code class="xref py py-func docutils literal"><span class="pre">calc_logout_v1()</span></code></a> all values already
+existing are shifted to the right (“into the past”).  Values, which
+are no longer required due to the limited order or the different
+AR processes, are discarded.  The new values are inserted in the
+first column:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">calc_logout_v1</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">logs</span><span class="o">.</span><span class="n">logout</span>
+<span class="go">logout(nan, nan, nan,</span>
+<span class="go">       7.0, nan, nan,</span>
+<span class="go">       8.0, 1.0, nan,</span>
+<span class="go">       9.0, 3.0, 4.0)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="hydpy.models.arma.arma_model.calc_qout_v1">
+<code class="descclassname">hydpy.models.arma.arma_model.</code><code class="descname">calc_qout_v1</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/models/arma/arma_model.html#calc_qout_v1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma.arma_model.calc_qout_v1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sum up the results of the different response functions.</p>
+<dl class="docutils">
+<dt>Required derived parameter:</dt>
+<dd><a class="reference internal" href="#hydpy.models.arma.arma_derived.Nmb" title="hydpy.models.arma.arma_derived.Nmb"><code class="xref py py-class docutils literal"><span class="pre">Nmb</span></code></a></dd>
+<dt>Required flux sequences:</dt>
+<dd><a class="reference internal" href="#hydpy.models.arma.arma_fluxes.QPOut" title="hydpy.models.arma.arma_fluxes.QPOut"><code class="xref py py-class docutils literal"><span class="pre">QPOut</span></code></a></dd>
+<dt>Calculated flux sequence:</dt>
+<dd><a class="reference internal" href="#hydpy.models.arma.arma_fluxes.QOut" title="hydpy.models.arma.arma_fluxes.QOut"><code class="xref py py-class docutils literal"><span class="pre">QOut</span></code></a></dd>
+</dl>
+<p>Examples:</p>
+<blockquote>
+<div><p>Initialize an arma model with three different response functions:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">hydpy.models.arma</span> <span class="k">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parameterstep</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">derived</span><span class="o">.</span><span class="n">nmb</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fluxes</span><span class="o">.</span><span class="n">qpout</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="mi">3</span>
+</pre></div>
+</div>
+<p>Define the output values of the three response functions and
+apply method <a class="reference internal" href="#hydpy.models.arma.arma_model.calc_qout_v1" title="hydpy.models.arma.arma_model.calc_qout_v1"><code class="xref py py-func docutils literal"><span class="pre">calc_qout_v1()</span></code></a>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fluxes</span><span class="o">.</span><span class="n">qpout</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">calc_qout_v1</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fluxes</span><span class="o">.</span><span class="n">qout</span>
+<span class="go">qout(6.0)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="hydpy.models.arma.arma_model.update_inlets_v1">
+<code class="descclassname">hydpy.models.arma.arma_model.</code><code class="descname">update_inlets_v1</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/models/arma/arma_model.html#update_inlets_v1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma.arma_model.update_inlets_v1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update inflow.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="hydpy.models.arma.arma_model.update_outlets_v1">
+<code class="descclassname">hydpy.models.arma.arma_model.</code><code class="descname">update_outlets_v1</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/models/arma/arma_model.html#update_outlets_v1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma.arma_model.update_outlets_v1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update outflow.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="parameter-features">
+<h2>Parameter features<a class="headerlink" href="#parameter-features" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="control-parameters">
+<h3>Control parameters<a class="headerlink" href="#control-parameters" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="hydpy.models.arma.arma_control.ControlParameters">
+<em class="property">class </em><code class="descclassname">hydpy.models.arma.arma_control.</code><code class="descname">ControlParameters</code><span class="sig-paren">(</span><em>pars</em>, <em>cls_fastaccess=None</em>, <em>cymodel=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/models/arma/arma_control.html#ControlParameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma.arma_control.ControlParameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="parametertools.html#hydpy.core.parametertools.SubParameters" title="hydpy.core.parametertools.SubParameters"><code class="xref py py-class docutils literal"><span class="pre">hydpy.core.parametertools.SubParameters</span></code></a></p>
+<p>Control parameters of arma, directly defined by the user.</p>
+<dl class="docutils">
+<dt>The following parameter classes are selected:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference internal" href="#hydpy.models.arma.arma_control.Responses" title="hydpy.models.arma.arma_control.Responses"><code class="xref py py-class docutils literal"><span class="pre">Responses</span></code></a> <cite>Assigns different ARMA models to different discharge thresholds.</cite></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<span class="target" id="module-hydpy.models.arma.arma_control"></span><dl class="class">
+<dt id="hydpy.models.arma.arma_control.Responses">
+<em class="property">class </em><code class="descclassname">hydpy.models.arma.arma_control.</code><code class="descname">Responses</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/models/arma/arma_control.html#Responses"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma.arma_control.Responses" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="parametertools.html#hydpy.core.parametertools.Parameter" title="hydpy.core.parametertools.Parameter"><code class="xref py py-class docutils literal"><span class="pre">hydpy.core.parametertools.Parameter</span></code></a></p>
+<p>Assigns different ARMA models to different discharge thresholds.</p>
+<p>Parameter <a class="reference internal" href="#hydpy.models.arma.arma_control.Responses" title="hydpy.models.arma.arma_control.Responses"><code class="xref py py-class docutils literal"><span class="pre">Responses</span></code></a> is not involved in the actual calculations
+during the simulation run.  Instead, it is thought for the intuitive
+handling of different ARMA models.  It can be applied as follows.</p>
+<p>Initially, each new <cite>responses</cite> object is emtpy:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">hydpy.models.arma</span> <span class="k">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parameterstep</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">responses</span>
+<span class="go">responses()</span>
+</pre></div>
+</div>
+<p>One can assign ARMA models as attributes to it:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">responses</span><span class="o">.</span><span class="n">th_0_0</span> <span class="o">=</span> <span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+</pre></div>
+</div>
+<p><cite>th_0_0</cite> stands for a threshold discharge value of 0.0 m³/s, which the
+given ARMA model corresponds to.  For integer discharge values, one can
+omit the decimal digit:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">responses</span><span class="o">.</span><span class="n">th_1</span> <span class="o">=</span> <span class="p">((),</span> <span class="p">(</span><span class="mi">7</span><span class="p">,))</span>
+</pre></div>
+</div>
+<p>One can also omit the leading letters, but not the underscore:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">responses</span><span class="o">.</span><span class="n">th_2_5</span> <span class="o">=</span> <span class="p">([</span><span class="mi">8</span><span class="p">],</span> <span class="nb">range</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">20</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Internally, all threshold keys are brought into the standard format:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">responses</span>
+<span class="go">responses(th_0_0=((1.0, 2.0),</span>
+<span class="go">                  (3.0, 4.0, 6.0)),</span>
+<span class="go">          th_1_0=((),</span>
+<span class="go">                  (7.0,)),</span>
+<span class="go">          th_2_5=((8.0,),</span>
+<span class="go">                  (9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0,</span>
+<span class="go">                   18.0, 19.0)))</span>
+</pre></div>
+</div>
+<p>All ARMA models are available via attribute access and their attribute
+names are made available to function <a class="reference external" href="https://docs.python.org/2.7/library/functions.html#dir" title="(in Python v2.7)"><code class="xref py py-func docutils literal"><span class="pre">dir()</span></code></a>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;th_1_0&#39;</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">responses</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>Note that all iterables containing the AR and MA coefficients are
+converted to tuples, to prevent them from being changed by accident:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">responses</span><span class="o">.</span><span class="n">th_1</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="go">7.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">responses</span><span class="o">.</span><span class="n">th_1_0</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">77</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">TypeError</span>: <span class="n">&#39;tuple&#39; object does not support item assignment</span>
+</pre></div>
+</div>
+<p>Instead, one can delete and or overwrite existing ARMA models:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">del</span> <span class="n">responses</span><span class="o">.</span><span class="n">th_2_5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">responses</span><span class="o">.</span><span class="n">th_1</span> <span class="o">=</span> <span class="p">((),</span> <span class="p">(</span><span class="mi">77</span><span class="p">,))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">responses</span>
+<span class="go">responses(th_0_0=((1.0, 2.0),</span>
+<span class="go">                  (3.0, 4.0, 6.0)),</span>
+<span class="go">          th_1_0=((),</span>
+<span class="go">                  (77.0,)))</span>
+</pre></div>
+</div>
+<p>Names that cannot be identified as threshold values result in an exception:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">responses</span><span class="o">.</span><span class="n">test</span> <span class="o">=</span> <span class="p">((),</span> <span class="p">())</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">AttributeError</span>: <span class="n">To define different response functions for parameter `responses` of element `?`, one has to pass them as keyword arguments or set them as additional attributes.  The used name must meet a specific format (see the documentation for further information).  The given name `test` does not meet this format.</span>
+</pre></div>
+</div>
+<p>Suitable get-related attribute exceptions are also implemented:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">responses</span><span class="o">.</span><span class="n">test</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">AttributeError</span>: <span class="n">Parameter `responses` of element `?` does not have an attribute named `test` and the name `test` is also not a valid threshold value identifier.</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">responses</span><span class="o">.</span><span class="n">_0_1</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">AttributeError</span>: <span class="n">Parameter `responses` of element `?` does not have an attribute attribute named `_0_1` nor an arma model corresponding to a threshold value named `th_0_1`.</span>
+</pre></div>
+</div>
+<p>The above examples show that all AR and MA coefficients are converted to
+floating point values.  It this is not possible or something else goes
+totally wrong during the definition of a new ARMA model, errors like the
+following are raised:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">responses</span><span class="o">.</span><span class="n">th_10</span> <span class="o">=</span> <span class="p">()</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">IndexError</span>: <span class="n">While trying to set a new threshold (th_10) coefficient pair for parameter `responses` of element `?`, the following error occured: tuple index out of range</span>
+</pre></div>
+</div>
+<p>Except for the mentioned conversion to floating point values, there are
+no plausibility checks performed.  You have to use other tools to gain
+plausible coefficients.  The HydPy framework offers the module
+<a class="reference internal" href="iuhtools.html#module-hydpy.auxs.iuhtools" title="hydpy.auxs.iuhtools"><code class="xref py py-mod docutils literal"><span class="pre">iuhtools</span></code></a> for such purposes.</p>
+<p>Prepare one instantaneous unit hydrograph (iuh) based on the
+Translation Diffusion Equation and another one based on the Linear
+Storage Cascade:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">hydpy.auxs.iuhtools</span> <span class="k">import</span> <span class="n">TranslationDiffusionEquation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tde</span> <span class="o">=</span> <span class="n">TranslationDiffusionEquation</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mf">5.</span><span class="p">,</span> <span class="n">u</span><span class="o">=</span><span class="mf">2.</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="mf">4.</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">hydpy.auxs.iuhtools</span> <span class="k">import</span> <span class="n">LinearStorageCascade</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lsc</span> <span class="o">=</span> <span class="n">LinearStorageCascade</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mf">1.</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The following line deletes the coefficients defined above and assigns the
+ARMA approximations of both iuh models:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">responses</span><span class="p">(</span><span class="n">lsc</span><span class="p">,</span> <span class="n">_2</span><span class="o">=</span><span class="n">tde</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>One can change the parameter values of the translation diffusion iuh and
+assign it to the <cite>responses</cite> parameter, without affecting the ARMA
+coefficients of the first tde parametrization:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tde</span><span class="o">.</span><span class="n">u</span> <span class="o">=</span> <span class="mf">1.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">responses</span><span class="o">.</span><span class="n">_5</span> <span class="o">=</span> <span class="n">tde</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">responses</span>
+<span class="go">responses(th_0_0=((1.001744, -0.32693, 0.034286),</span>
+<span class="go">                  (0.050456, 0.199156, 0.04631, -0.004812, -0.00021)),</span>
+<span class="go">          th_2_0=((2.028483, -1.447371, 0.420257, -0.039595, -0.000275),</span>
+<span class="go">                  (0.165732, 0.061819, -0.377523, 0.215754, -0.024597,</span>
+<span class="go">                   -0.002684)),</span>
+<span class="go">          th_5_0=((3.032315, -3.506645, 1.908546, -0.479333, 0.042839,</span>
+<span class="go">                   0.00009),</span>
+<span class="go">                  (0.119252, -0.054959, -0.342744, 0.433585, -0.169102,</span>
+<span class="go">                   0.014189, 0.001967)))</span>
+</pre></div>
+</div>
+<p>One may have noted the Linear Storage Cascade model was passed as
+a positional argument and was assigned to a treshold value of 0.0 m³/s
+automatically, which is the default value.  As each treshold value has to
+be unique, one can pass only one positional argument:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">responses</span><span class="p">(</span><span class="n">tde</span><span class="p">,</span> <span class="n">lsc</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">ValueError</span>: <span class="n">For parameter `responses` of element `?` at most one positional argument is allowed, but `2` are given.</span>
+</pre></div>
+</div>
+<p>Checks for the repeated definition of the same threshold values are also
+performed:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">responses</span><span class="p">(</span><span class="n">tde</span><span class="p">,</span> <span class="n">_0</span><span class="o">=</span><span class="n">lsc</span><span class="p">,</span> <span class="n">_1</span><span class="o">=</span><span class="n">tde</span><span class="p">,</span> <span class="n">_1_0</span><span class="o">=</span><span class="n">lsc</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">ValueError</span>: <span class="n">For parameter `responses` of element `?` `4` arguments have been given but only `2` response functions could be prepared.  Most probably, you defined the same threshold value(s) twice.</span>
+</pre></div>
+</div>
+<p>The number of response functions and the number of the respective AR and
+MA coefficients of a given <cite>responses</cite> parameter can be easily queried:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">responses</span><span class="p">(</span><span class="n">_0</span><span class="o">=</span><span class="p">((</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">),</span>
+<span class="gp">... </span>              <span class="p">(</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">)),</span>
+<span class="gp">... </span>          <span class="n">_1</span><span class="o">=</span><span class="p">((),</span>
+<span class="gp">... </span>              <span class="p">(</span><span class="mf">7.0</span><span class="p">,)))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">responses</span><span class="p">)</span>
+<span class="go">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">responses</span><span class="o">.</span><span class="n">ar_orders</span>
+<span class="go">(2, 0)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">responses</span><span class="o">.</span><span class="n">ma_orders</span>
+<span class="go">(3, 1)</span>
+</pre></div>
+</div>
+<p>The threshold values and AR coefficients and the MA coefficients can all
+be queried as numpy arrays:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">responses</span><span class="o">.</span><span class="n">thresholds</span>
+<span class="go">array([ 0.,  1.])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">responses</span><span class="o">.</span><span class="n">ar_coefs</span>
+<span class="go">array([[  1.,   2.],</span>
+<span class="go">       [ nan,  nan]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">responses</span><span class="o">.</span><span class="n">ma_coefs</span>
+<span class="go">array([[  3.,   4.,   6.],</span>
+<span class="go">       [  7.,  nan,  nan]])</span>
+</pre></div>
+</div>
+<p>Technical notes:</p>
+<p>The implementation of this class is much to tricky for subpackage <cite>models</cite>.
+It should be generalized and moved to the framework core later.</p>
+<p>Furthermore, it would be nice to avoid the <cite>nan</cite> values in the coefficent
+representations.  But this would possibly require to define a specialized
+<cite>arrays in list</cite> type in Cython.</p>
+<dl class="method">
+<dt id="hydpy.models.arma.arma_control.Responses.connect">
+<code class="descname">connect</code><span class="sig-paren">(</span><em>subpars</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/models/arma/arma_control.html#Responses.connect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma.arma_control.Responses.connect" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_control.Responses.thresholds">
+<code class="descname">thresholds</code><a class="headerlink" href="#hydpy.models.arma.arma_control.Responses.thresholds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Threshold values of the response functions.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_control.Responses.ar_orders">
+<code class="descname">ar_orders</code><a class="headerlink" href="#hydpy.models.arma.arma_control.Responses.ar_orders" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of AR coefficients of the different response functions.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_control.Responses.ma_orders">
+<code class="descname">ma_orders</code><a class="headerlink" href="#hydpy.models.arma.arma_control.Responses.ma_orders" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of MA coefficients of the different response functions.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_control.Responses.ar_coefs">
+<code class="descname">ar_coefs</code><a class="headerlink" href="#hydpy.models.arma.arma_control.Responses.ar_coefs" title="Permalink to this definition">¶</a></dt>
+<dd><p>AR coefficients of the different response functions.</p>
+<p>The first row contains the AR coefficients related to the the smallest
+threshold value, the last row contains the AR coefficients related to
+the highest threshold value.  The number of columns depend on the
+highest number of AR coefficients among all response functions.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_control.Responses.ma_coefs">
+<code class="descname">ma_coefs</code><a class="headerlink" href="#hydpy.models.arma.arma_control.Responses.ma_coefs" title="Permalink to this definition">¶</a></dt>
+<dd><p>AR coefficients of the different response functions.</p>
+<p>The first row contains the MA coefficients related to the the smallest
+threshold value, the last row contains the AR coefficients related to
+the highest threshold value.  The number of columns depend on the
+highest number of MA coefficients among all response functions.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_control.Responses.NDIM">
+<code class="descname">NDIM</code><em class="property"> = 0</em><a class="headerlink" href="#hydpy.models.arma.arma_control.Responses.NDIM" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_control.Responses.SPAN">
+<code class="descname">SPAN</code><em class="property"> = (None, None)</em><a class="headerlink" href="#hydpy.models.arma.arma_control.Responses.SPAN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_control.Responses.TIME">
+<code class="descname">TIME</code><em class="property"> = None</em><a class="headerlink" href="#hydpy.models.arma.arma_control.Responses.TIME" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_control.Responses.TYPE">
+<code class="descname">TYPE</code><em class="property"> = float</em><a class="headerlink" href="#hydpy.models.arma.arma_control.Responses.TYPE" title="Permalink to this definition">¶</a></dt>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="derived-parameters">
+<h3>Derived parameters<a class="headerlink" href="#derived-parameters" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="hydpy.models.arma.arma_derived.DerivedParameters">
+<em class="property">class </em><code class="descclassname">hydpy.models.arma.arma_derived.</code><code class="descname">DerivedParameters</code><span class="sig-paren">(</span><em>pars</em>, <em>cls_fastaccess=None</em>, <em>cymodel=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/models/arma/arma_derived.html#DerivedParameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma.arma_derived.DerivedParameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="parametertools.html#hydpy.core.parametertools.SubParameters" title="hydpy.core.parametertools.SubParameters"><code class="xref py py-class docutils literal"><span class="pre">hydpy.core.parametertools.SubParameters</span></code></a></p>
+<p>Derived parameters of arma, indirectly defined by the user.</p>
+<dl class="docutils">
+<dt>The following parameter classes are selected:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference internal" href="#hydpy.models.arma.arma_derived.Nmb" title="hydpy.models.arma.arma_derived.Nmb"><code class="xref py py-class docutils literal"><span class="pre">Nmb</span></code></a> <cite>Number of response functions [-].</cite></li>
+<li><a class="reference internal" href="#hydpy.models.arma.arma_derived.MaxQ" title="hydpy.models.arma.arma_derived.MaxQ"><code class="xref py py-class docutils literal"><span class="pre">MaxQ</span></code></a> <cite>Maximum discharge values of the respective ARMA models [m³/s].</cite></li>
+<li><a class="reference internal" href="#hydpy.models.arma.arma_derived.DiffQ" title="hydpy.models.arma.arma_derived.DiffQ"><code class="xref py py-class docutils literal"><span class="pre">DiffQ</span></code></a> <cite>Differences between the values of :class:`MaxQ</cite> [m³/s].`</li>
+<li><a class="reference internal" href="#hydpy.models.arma.arma_derived.AR_Order" title="hydpy.models.arma.arma_derived.AR_Order"><code class="xref py py-class docutils literal"><span class="pre">AR_Order</span></code></a> <cite>Number of AR coefficients of the different responses [-].</cite></li>
+<li><a class="reference internal" href="#hydpy.models.arma.arma_derived.MA_Order" title="hydpy.models.arma.arma_derived.MA_Order"><code class="xref py py-class docutils literal"><span class="pre">MA_Order</span></code></a> <cite>Number of MA coefficients of the different responses [-].</cite></li>
+<li><a class="reference internal" href="#hydpy.models.arma.arma_derived.AR_Coefs" title="hydpy.models.arma.arma_derived.AR_Coefs"><code class="xref py py-class docutils literal"><span class="pre">AR_Coefs</span></code></a> <cite>AR coefficients of the different responses [-].</cite></li>
+<li><a class="reference internal" href="#hydpy.models.arma.arma_derived.MA_Coefs" title="hydpy.models.arma.arma_derived.MA_Coefs"><code class="xref py py-class docutils literal"><span class="pre">MA_Coefs</span></code></a> <cite>MA coefficients of the different responses [-].</cite></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<span class="target" id="module-hydpy.models.arma.arma_derived"></span><dl class="class">
+<dt id="hydpy.models.arma.arma_derived.Nmb">
+<em class="property">class </em><code class="descclassname">hydpy.models.arma.arma_derived.</code><code class="descname">Nmb</code><a class="reference internal" href="_modules/hydpy/models/arma/arma_derived.html#Nmb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma.arma_derived.Nmb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="parametertools.html#hydpy.core.parametertools.SingleParameter" title="hydpy.core.parametertools.SingleParameter"><code class="xref py py-class docutils literal"><span class="pre">hydpy.core.parametertools.SingleParameter</span></code></a></p>
+<p>Number of response functions [-].</p>
+<p>Example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">hydpy.models.arma</span> <span class="k">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parameterstep</span><span class="p">(</span><span class="s1">&#39;1d&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">responses</span><span class="p">(((</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">),</span> <span class="p">(</span><span class="mf">1.</span><span class="p">,)),</span> <span class="n">th_3</span><span class="o">=</span><span class="p">((</span><span class="mf">1.</span><span class="p">,),</span> <span class="p">(</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">)))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">derived</span><span class="o">.</span><span class="n">nmb</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">derived</span><span class="o">.</span><span class="n">nmb</span>
+<span class="go">nmb(2)</span>
+</pre></div>
+</div>
+<p>Note that updating parameter <cite>nmb</cite> sets the shape of the
+flux sequences <a class="reference internal" href="#hydpy.models.arma.arma_fluxes.QPIn" title="hydpy.models.arma.arma_fluxes.QPIn"><code class="xref py py-class docutils literal"><span class="pre">QPIn</span></code></a>,
+<a class="reference internal" href="#hydpy.models.arma.arma_fluxes.QPOut" title="hydpy.models.arma.arma_fluxes.QPOut"><code class="xref py py-class docutils literal"><span class="pre">QPOut</span></code></a>,
+<a class="reference internal" href="#hydpy.models.arma.arma_fluxes.QMA" title="hydpy.models.arma.arma_fluxes.QMA"><code class="xref py py-class docutils literal"><span class="pre">QMA</span></code></a>, and
+<a class="reference internal" href="#hydpy.models.arma.arma_fluxes.QAR" title="hydpy.models.arma.arma_fluxes.QAR"><code class="xref py py-class docutils literal"><span class="pre">QAR</span></code></a> automatically.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fluxes</span><span class="o">.</span><span class="n">qpin</span>
+<span class="go">qpin(nan, nan)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fluxes</span><span class="o">.</span><span class="n">qpout</span>
+<span class="go">qpout(nan, nan)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fluxes</span><span class="o">.</span><span class="n">qma</span>
+<span class="go">qma(nan, nan)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fluxes</span><span class="o">.</span><span class="n">qar</span>
+<span class="go">qar(nan, nan)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="hydpy.models.arma.arma_derived.Nmb.update">
+<code class="descname">update</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/models/arma/arma_derived.html#Nmb.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma.arma_derived.Nmb.update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_derived.Nmb.NDIM">
+<code class="descname">NDIM</code><em class="property"> = 0</em><a class="headerlink" href="#hydpy.models.arma.arma_derived.Nmb.NDIM" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_derived.Nmb.SPAN">
+<code class="descname">SPAN</code><em class="property"> = (0, None)</em><a class="headerlink" href="#hydpy.models.arma.arma_derived.Nmb.SPAN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_derived.Nmb.TIME">
+<code class="descname">TIME</code><em class="property"> = None</em><a class="headerlink" href="#hydpy.models.arma.arma_derived.Nmb.TIME" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_derived.Nmb.TYPE">
+<code class="descname">TYPE</code><em class="property"> = int</em><a class="headerlink" href="#hydpy.models.arma.arma_derived.Nmb.TYPE" title="Permalink to this definition">¶</a></dt>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="hydpy.models.arma.arma_derived.MaxQ">
+<em class="property">class </em><code class="descclassname">hydpy.models.arma.arma_derived.</code><code class="descname">MaxQ</code><a class="reference internal" href="_modules/hydpy/models/arma/arma_derived.html#MaxQ"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma.arma_derived.MaxQ" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="parametertools.html#hydpy.core.parametertools.MultiParameter" title="hydpy.core.parametertools.MultiParameter"><code class="xref py py-class docutils literal"><span class="pre">hydpy.core.parametertools.MultiParameter</span></code></a></p>
+<p>Maximum discharge values of the respective ARMA models [m³/s].</p>
+<p>Example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">hydpy.models.arma</span> <span class="k">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parameterstep</span><span class="p">(</span><span class="s1">&#39;1d&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">responses</span><span class="p">(((</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">),</span> <span class="p">(</span><span class="mf">1.</span><span class="p">,)),</span> <span class="n">th_3</span><span class="o">=</span><span class="p">((</span><span class="mf">1.</span><span class="p">,),</span> <span class="p">(</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">)))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">derived</span><span class="o">.</span><span class="n">maxq</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">derived</span><span class="o">.</span><span class="n">maxq</span>
+<span class="go">maxq(0.0, 3.0)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="hydpy.models.arma.arma_derived.MaxQ.update">
+<code class="descname">update</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/models/arma/arma_derived.html#MaxQ.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma.arma_derived.MaxQ.update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_derived.MaxQ.NDIM">
+<code class="descname">NDIM</code><em class="property"> = 1</em><a class="headerlink" href="#hydpy.models.arma.arma_derived.MaxQ.NDIM" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_derived.MaxQ.SPAN">
+<code class="descname">SPAN</code><em class="property"> = (0, None)</em><a class="headerlink" href="#hydpy.models.arma.arma_derived.MaxQ.SPAN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_derived.MaxQ.TIME">
+<code class="descname">TIME</code><em class="property"> = None</em><a class="headerlink" href="#hydpy.models.arma.arma_derived.MaxQ.TIME" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_derived.MaxQ.TYPE">
+<code class="descname">TYPE</code><em class="property"> = float</em><a class="headerlink" href="#hydpy.models.arma.arma_derived.MaxQ.TYPE" title="Permalink to this definition">¶</a></dt>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="hydpy.models.arma.arma_derived.DiffQ">
+<em class="property">class </em><code class="descclassname">hydpy.models.arma.arma_derived.</code><code class="descname">DiffQ</code><a class="reference internal" href="_modules/hydpy/models/arma/arma_derived.html#DiffQ"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma.arma_derived.DiffQ" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="parametertools.html#hydpy.core.parametertools.MultiParameter" title="hydpy.core.parametertools.MultiParameter"><code class="xref py py-class docutils literal"><span class="pre">hydpy.core.parametertools.MultiParameter</span></code></a></p>
+<p>Differences between the values of <a class="reference internal" href="#hydpy.models.arma.arma_derived.MaxQ" title="hydpy.models.arma.arma_derived.MaxQ"><code class="xref py py-class docutils literal"><span class="pre">MaxQ</span></code></a> [m³/s].</p>
+<p>Example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">hydpy.models.arma</span> <span class="k">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parameterstep</span><span class="p">(</span><span class="s1">&#39;1d&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">responses</span><span class="p">(((</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">),</span> <span class="p">(</span><span class="mf">1.</span><span class="p">,)),</span> <span class="n">th_3</span><span class="o">=</span><span class="p">((</span><span class="mf">1.</span><span class="p">,),</span> <span class="p">(</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">)))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">derived</span><span class="o">.</span><span class="n">diffq</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">derived</span><span class="o">.</span><span class="n">diffq</span>
+<span class="go">diffq(3.0)</span>
+<span class="go"> &gt;&gt;&gt; responses(((1., 2.), (1.,)))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">derived</span><span class="o">.</span><span class="n">diffq</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">derived</span><span class="o">.</span><span class="n">diffq</span>
+<span class="go">diffq()</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="hydpy.models.arma.arma_derived.DiffQ.update">
+<code class="descname">update</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/models/arma/arma_derived.html#DiffQ.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma.arma_derived.DiffQ.update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_derived.DiffQ.NDIM">
+<code class="descname">NDIM</code><em class="property"> = 1</em><a class="headerlink" href="#hydpy.models.arma.arma_derived.DiffQ.NDIM" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_derived.DiffQ.SPAN">
+<code class="descname">SPAN</code><em class="property"> = (0, None)</em><a class="headerlink" href="#hydpy.models.arma.arma_derived.DiffQ.SPAN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_derived.DiffQ.TIME">
+<code class="descname">TIME</code><em class="property"> = None</em><a class="headerlink" href="#hydpy.models.arma.arma_derived.DiffQ.TIME" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_derived.DiffQ.TYPE">
+<code class="descname">TYPE</code><em class="property"> = float</em><a class="headerlink" href="#hydpy.models.arma.arma_derived.DiffQ.TYPE" title="Permalink to this definition">¶</a></dt>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="hydpy.models.arma.arma_derived.AR_Order">
+<em class="property">class </em><code class="descclassname">hydpy.models.arma.arma_derived.</code><code class="descname">AR_Order</code><a class="reference internal" href="_modules/hydpy/models/arma/arma_derived.html#AR_Order"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma.arma_derived.AR_Order" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="parametertools.html#hydpy.core.parametertools.MultiParameter" title="hydpy.core.parametertools.MultiParameter"><code class="xref py py-class docutils literal"><span class="pre">hydpy.core.parametertools.MultiParameter</span></code></a></p>
+<p>Number of AR coefficients of the different responses [-].</p>
+<p>Example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">hydpy.models.arma</span> <span class="k">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parameterstep</span><span class="p">(</span><span class="s1">&#39;1d&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">responses</span><span class="p">(((</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">),</span> <span class="p">(</span><span class="mf">1.</span><span class="p">,)),</span> <span class="n">th_3</span><span class="o">=</span><span class="p">((</span><span class="mf">1.</span><span class="p">,),</span> <span class="p">(</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">)))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">derived</span><span class="o">.</span><span class="n">ar_order</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">derived</span><span class="o">.</span><span class="n">ar_order</span>
+<span class="go">ar_order(2, 1)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="hydpy.models.arma.arma_derived.AR_Order.update">
+<code class="descname">update</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/models/arma/arma_derived.html#AR_Order.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma.arma_derived.AR_Order.update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_derived.AR_Order.NDIM">
+<code class="descname">NDIM</code><em class="property"> = 1</em><a class="headerlink" href="#hydpy.models.arma.arma_derived.AR_Order.NDIM" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_derived.AR_Order.SPAN">
+<code class="descname">SPAN</code><em class="property"> = (0, None)</em><a class="headerlink" href="#hydpy.models.arma.arma_derived.AR_Order.SPAN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_derived.AR_Order.TIME">
+<code class="descname">TIME</code><em class="property"> = None</em><a class="headerlink" href="#hydpy.models.arma.arma_derived.AR_Order.TIME" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_derived.AR_Order.TYPE">
+<code class="descname">TYPE</code><em class="property"> = int</em><a class="headerlink" href="#hydpy.models.arma.arma_derived.AR_Order.TYPE" title="Permalink to this definition">¶</a></dt>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="hydpy.models.arma.arma_derived.MA_Order">
+<em class="property">class </em><code class="descclassname">hydpy.models.arma.arma_derived.</code><code class="descname">MA_Order</code><a class="reference internal" href="_modules/hydpy/models/arma/arma_derived.html#MA_Order"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma.arma_derived.MA_Order" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="parametertools.html#hydpy.core.parametertools.MultiParameter" title="hydpy.core.parametertools.MultiParameter"><code class="xref py py-class docutils literal"><span class="pre">hydpy.core.parametertools.MultiParameter</span></code></a></p>
+<p>Number of MA coefficients of the different responses [-].</p>
+<p>Example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">hydpy.models.arma</span> <span class="k">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parameterstep</span><span class="p">(</span><span class="s1">&#39;1d&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">responses</span><span class="p">(((</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">),</span> <span class="p">(</span><span class="mf">1.</span><span class="p">,)),</span> <span class="n">th_3</span><span class="o">=</span><span class="p">((</span><span class="mf">1.</span><span class="p">,),</span> <span class="p">(</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">)))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">derived</span><span class="o">.</span><span class="n">ma_order</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">derived</span><span class="o">.</span><span class="n">ma_order</span>
+<span class="go">ma_order(1, 3)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="hydpy.models.arma.arma_derived.MA_Order.update">
+<code class="descname">update</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/models/arma/arma_derived.html#MA_Order.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma.arma_derived.MA_Order.update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_derived.MA_Order.NDIM">
+<code class="descname">NDIM</code><em class="property"> = 1</em><a class="headerlink" href="#hydpy.models.arma.arma_derived.MA_Order.NDIM" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_derived.MA_Order.SPAN">
+<code class="descname">SPAN</code><em class="property"> = (0, None)</em><a class="headerlink" href="#hydpy.models.arma.arma_derived.MA_Order.SPAN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_derived.MA_Order.TIME">
+<code class="descname">TIME</code><em class="property"> = None</em><a class="headerlink" href="#hydpy.models.arma.arma_derived.MA_Order.TIME" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_derived.MA_Order.TYPE">
+<code class="descname">TYPE</code><em class="property"> = int</em><a class="headerlink" href="#hydpy.models.arma.arma_derived.MA_Order.TYPE" title="Permalink to this definition">¶</a></dt>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="hydpy.models.arma.arma_derived.AR_Coefs">
+<em class="property">class </em><code class="descclassname">hydpy.models.arma.arma_derived.</code><code class="descname">AR_Coefs</code><a class="reference internal" href="_modules/hydpy/models/arma/arma_derived.html#AR_Coefs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma.arma_derived.AR_Coefs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="parametertools.html#hydpy.core.parametertools.MultiParameter" title="hydpy.core.parametertools.MultiParameter"><code class="xref py py-class docutils literal"><span class="pre">hydpy.core.parametertools.MultiParameter</span></code></a></p>
+<p>AR coefficients of the different responses [-].</p>
+<p>Example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">hydpy.models.arma</span> <span class="k">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parameterstep</span><span class="p">(</span><span class="s1">&#39;1d&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">responses</span><span class="p">(((</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">),</span> <span class="p">(</span><span class="mf">1.</span><span class="p">,)),</span> <span class="n">th_3</span><span class="o">=</span><span class="p">((</span><span class="mf">1.</span><span class="p">,),</span> <span class="p">(</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">)))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">derived</span><span class="o">.</span><span class="n">ar_coefs</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">derived</span><span class="o">.</span><span class="n">ar_coefs</span>
+<span class="go">ar_coefs(1.0, 2.0,</span>
+<span class="go">         1.0, nan)</span>
+</pre></div>
+</div>
+<p>Note that updating parameter <cite>ar_coefs</cite> sets the shape of the log
+sequence <a class="reference internal" href="#hydpy.models.arma.arma_logs.LogOut" title="hydpy.models.arma.arma_logs.LogOut"><code class="xref py py-class docutils literal"><span class="pre">LogOut</span></code></a> automatically.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">logs</span><span class="o">.</span><span class="n">logout</span>
+<span class="go">logout(nan, nan,</span>
+<span class="go">       nan, nan)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="hydpy.models.arma.arma_derived.AR_Coefs.update">
+<code class="descname">update</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/models/arma/arma_derived.html#AR_Coefs.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma.arma_derived.AR_Coefs.update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_derived.AR_Coefs.NDIM">
+<code class="descname">NDIM</code><em class="property"> = 2</em><a class="headerlink" href="#hydpy.models.arma.arma_derived.AR_Coefs.NDIM" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_derived.AR_Coefs.SPAN">
+<code class="descname">SPAN</code><em class="property"> = (None, None)</em><a class="headerlink" href="#hydpy.models.arma.arma_derived.AR_Coefs.SPAN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_derived.AR_Coefs.TIME">
+<code class="descname">TIME</code><em class="property"> = None</em><a class="headerlink" href="#hydpy.models.arma.arma_derived.AR_Coefs.TIME" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_derived.AR_Coefs.TYPE">
+<code class="descname">TYPE</code><em class="property"> = float</em><a class="headerlink" href="#hydpy.models.arma.arma_derived.AR_Coefs.TYPE" title="Permalink to this definition">¶</a></dt>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="hydpy.models.arma.arma_derived.MA_Coefs">
+<em class="property">class </em><code class="descclassname">hydpy.models.arma.arma_derived.</code><code class="descname">MA_Coefs</code><a class="reference internal" href="_modules/hydpy/models/arma/arma_derived.html#MA_Coefs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma.arma_derived.MA_Coefs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="parametertools.html#hydpy.core.parametertools.MultiParameter" title="hydpy.core.parametertools.MultiParameter"><code class="xref py py-class docutils literal"><span class="pre">hydpy.core.parametertools.MultiParameter</span></code></a></p>
+<p>MA coefficients of the different responses [-].</p>
+<p>Example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">hydpy.models.arma</span> <span class="k">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parameterstep</span><span class="p">(</span><span class="s1">&#39;1d&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">responses</span><span class="p">(((</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">),</span> <span class="p">(</span><span class="mf">1.</span><span class="p">,)),</span> <span class="n">th_3</span><span class="o">=</span><span class="p">((</span><span class="mf">1.</span><span class="p">,),</span> <span class="p">(</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">)))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">derived</span><span class="o">.</span><span class="n">ma_coefs</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">derived</span><span class="o">.</span><span class="n">ma_coefs</span>
+<span class="go">ma_coefs(1.0, nan, nan,</span>
+<span class="go">         1.0, 2.0, 3.0)</span>
+</pre></div>
+</div>
+<p>Note that updating parameter <cite>ar_coefs</cite> sets the shape of the log
+sequence <a class="reference internal" href="#hydpy.models.arma.arma_logs.LogIn" title="hydpy.models.arma.arma_logs.LogIn"><code class="xref py py-class docutils literal"><span class="pre">LogIn</span></code></a> automatically.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">logs</span><span class="o">.</span><span class="n">login</span>
+<span class="go">login(nan, nan, nan,</span>
+<span class="go">      nan, nan, nan)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="hydpy.models.arma.arma_derived.MA_Coefs.update">
+<code class="descname">update</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/models/arma/arma_derived.html#MA_Coefs.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma.arma_derived.MA_Coefs.update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_derived.MA_Coefs.NDIM">
+<code class="descname">NDIM</code><em class="property"> = 2</em><a class="headerlink" href="#hydpy.models.arma.arma_derived.MA_Coefs.NDIM" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_derived.MA_Coefs.SPAN">
+<code class="descname">SPAN</code><em class="property"> = (None, None)</em><a class="headerlink" href="#hydpy.models.arma.arma_derived.MA_Coefs.SPAN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_derived.MA_Coefs.TIME">
+<code class="descname">TIME</code><em class="property"> = None</em><a class="headerlink" href="#hydpy.models.arma.arma_derived.MA_Coefs.TIME" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_derived.MA_Coefs.TYPE">
+<code class="descname">TYPE</code><em class="property"> = float</em><a class="headerlink" href="#hydpy.models.arma.arma_derived.MA_Coefs.TYPE" title="Permalink to this definition">¶</a></dt>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="sequence-features">
+<h2>Sequence features<a class="headerlink" href="#sequence-features" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="flux-sequences">
+<h3>Flux sequences<a class="headerlink" href="#flux-sequences" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="hydpy.models.arma.arma_fluxes.FluxSequences">
+<em class="property">class </em><code class="descclassname">hydpy.models.arma.arma_fluxes.</code><code class="descname">FluxSequences</code><span class="sig-paren">(</span><em>seqs</em>, <em>cls_fastaccess=None</em>, <em>cymodel=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/models/arma/arma_fluxes.html#FluxSequences"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma.arma_fluxes.FluxSequences" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="sequencetools.html#hydpy.core.sequencetools.FluxSequences" title="hydpy.core.sequencetools.FluxSequences"><code class="xref py py-class docutils literal"><span class="pre">hydpy.core.sequencetools.FluxSequences</span></code></a></p>
+<p>Flux sequences of the ARMA model.</p>
+<dl class="docutils">
+<dt>The following sequence classes are selected:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference internal" href="#hydpy.models.arma.arma_fluxes.QIn" title="hydpy.models.arma.arma_fluxes.QIn"><code class="xref py py-class docutils literal"><span class="pre">QIn</span></code></a> <cite>Total inflow [m³/s].</cite></li>
+<li><a class="reference internal" href="#hydpy.models.arma.arma_fluxes.QPIn" title="hydpy.models.arma.arma_fluxes.QPIn"><code class="xref py py-class docutils literal"><span class="pre">QPIn</span></code></a> <cite>Inflow portions corresponding to the different thresholds [m³/s].</cite></li>
+<li><a class="reference internal" href="#hydpy.models.arma.arma_fluxes.QMA" title="hydpy.models.arma.arma_fluxes.QMA"><code class="xref py py-class docutils literal"><span class="pre">QMA</span></code></a> <cite>MA result for the different thresholds [m³/s].</cite></li>
+<li><a class="reference internal" href="#hydpy.models.arma.arma_fluxes.QAR" title="hydpy.models.arma.arma_fluxes.QAR"><code class="xref py py-class docutils literal"><span class="pre">QAR</span></code></a> <cite>AR result for the different thresholds [m³/s].</cite></li>
+<li><a class="reference internal" href="#hydpy.models.arma.arma_fluxes.QPOut" title="hydpy.models.arma.arma_fluxes.QPOut"><code class="xref py py-class docutils literal"><span class="pre">QPOut</span></code></a> <cite>Outflow portions corresponding to the different thresholds [m³/s].</cite></li>
+<li><a class="reference internal" href="#hydpy.models.arma.arma_fluxes.QOut" title="hydpy.models.arma.arma_fluxes.QOut"><code class="xref py py-class docutils literal"><span class="pre">QOut</span></code></a> <cite>Total outflow [m³/s].</cite></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<span class="target" id="module-hydpy.models.arma.arma_fluxes"></span><dl class="class">
+<dt id="hydpy.models.arma.arma_fluxes.QIn">
+<em class="property">class </em><code class="descclassname">hydpy.models.arma.arma_fluxes.</code><code class="descname">QIn</code><a class="reference internal" href="_modules/hydpy/models/arma/arma_fluxes.html#QIn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma.arma_fluxes.QIn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="sequencetools.html#hydpy.core.sequencetools.FluxSequence" title="hydpy.core.sequencetools.FluxSequence"><code class="xref py py-class docutils literal"><span class="pre">hydpy.core.sequencetools.FluxSequence</span></code></a></p>
+<p>Total inflow [m³/s].</p>
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_fluxes.QIn.NDIM">
+<code class="descname">NDIM</code><em class="property"> = 0</em><a class="headerlink" href="#hydpy.models.arma.arma_fluxes.QIn.NDIM" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_fluxes.QIn.NUMERIC">
+<code class="descname">NUMERIC</code><em class="property"> = False</em><a class="headerlink" href="#hydpy.models.arma.arma_fluxes.QIn.NUMERIC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_fluxes.QIn.SPAN">
+<code class="descname">SPAN</code><em class="property"> = (0.0, None)</em><a class="headerlink" href="#hydpy.models.arma.arma_fluxes.QIn.SPAN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="hydpy.models.arma.arma_fluxes.QPIn">
+<em class="property">class </em><code class="descclassname">hydpy.models.arma.arma_fluxes.</code><code class="descname">QPIn</code><a class="reference internal" href="_modules/hydpy/models/arma/arma_fluxes.html#QPIn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma.arma_fluxes.QPIn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="sequencetools.html#hydpy.core.sequencetools.FluxSequence" title="hydpy.core.sequencetools.FluxSequence"><code class="xref py py-class docutils literal"><span class="pre">hydpy.core.sequencetools.FluxSequence</span></code></a></p>
+<p>Inflow portions corresponding to the different thresholds [m³/s].</p>
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_fluxes.QPIn.NDIM">
+<code class="descname">NDIM</code><em class="property"> = 1</em><a class="headerlink" href="#hydpy.models.arma.arma_fluxes.QPIn.NDIM" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_fluxes.QPIn.NUMERIC">
+<code class="descname">NUMERIC</code><em class="property"> = False</em><a class="headerlink" href="#hydpy.models.arma.arma_fluxes.QPIn.NUMERIC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_fluxes.QPIn.SPAN">
+<code class="descname">SPAN</code><em class="property"> = (0.0, None)</em><a class="headerlink" href="#hydpy.models.arma.arma_fluxes.QPIn.SPAN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="hydpy.models.arma.arma_fluxes.QMA">
+<em class="property">class </em><code class="descclassname">hydpy.models.arma.arma_fluxes.</code><code class="descname">QMA</code><a class="reference internal" href="_modules/hydpy/models/arma/arma_fluxes.html#QMA"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma.arma_fluxes.QMA" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="sequencetools.html#hydpy.core.sequencetools.FluxSequence" title="hydpy.core.sequencetools.FluxSequence"><code class="xref py py-class docutils literal"><span class="pre">hydpy.core.sequencetools.FluxSequence</span></code></a></p>
+<p>MA result for the different thresholds [m³/s].</p>
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_fluxes.QMA.NDIM">
+<code class="descname">NDIM</code><em class="property"> = 1</em><a class="headerlink" href="#hydpy.models.arma.arma_fluxes.QMA.NDIM" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_fluxes.QMA.NUMERIC">
+<code class="descname">NUMERIC</code><em class="property"> = False</em><a class="headerlink" href="#hydpy.models.arma.arma_fluxes.QMA.NUMERIC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_fluxes.QMA.SPAN">
+<code class="descname">SPAN</code><em class="property"> = (0.0, None)</em><a class="headerlink" href="#hydpy.models.arma.arma_fluxes.QMA.SPAN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="hydpy.models.arma.arma_fluxes.QAR">
+<em class="property">class </em><code class="descclassname">hydpy.models.arma.arma_fluxes.</code><code class="descname">QAR</code><a class="reference internal" href="_modules/hydpy/models/arma/arma_fluxes.html#QAR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma.arma_fluxes.QAR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="sequencetools.html#hydpy.core.sequencetools.FluxSequence" title="hydpy.core.sequencetools.FluxSequence"><code class="xref py py-class docutils literal"><span class="pre">hydpy.core.sequencetools.FluxSequence</span></code></a></p>
+<p>AR result for the different thresholds [m³/s].</p>
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_fluxes.QAR.NDIM">
+<code class="descname">NDIM</code><em class="property"> = 1</em><a class="headerlink" href="#hydpy.models.arma.arma_fluxes.QAR.NDIM" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_fluxes.QAR.NUMERIC">
+<code class="descname">NUMERIC</code><em class="property"> = False</em><a class="headerlink" href="#hydpy.models.arma.arma_fluxes.QAR.NUMERIC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_fluxes.QAR.SPAN">
+<code class="descname">SPAN</code><em class="property"> = (0.0, None)</em><a class="headerlink" href="#hydpy.models.arma.arma_fluxes.QAR.SPAN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="hydpy.models.arma.arma_fluxes.QPOut">
+<em class="property">class </em><code class="descclassname">hydpy.models.arma.arma_fluxes.</code><code class="descname">QPOut</code><a class="reference internal" href="_modules/hydpy/models/arma/arma_fluxes.html#QPOut"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma.arma_fluxes.QPOut" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="sequencetools.html#hydpy.core.sequencetools.FluxSequence" title="hydpy.core.sequencetools.FluxSequence"><code class="xref py py-class docutils literal"><span class="pre">hydpy.core.sequencetools.FluxSequence</span></code></a></p>
+<p>Outflow portions corresponding to the different thresholds [m³/s].</p>
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_fluxes.QPOut.NDIM">
+<code class="descname">NDIM</code><em class="property"> = 1</em><a class="headerlink" href="#hydpy.models.arma.arma_fluxes.QPOut.NDIM" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_fluxes.QPOut.NUMERIC">
+<code class="descname">NUMERIC</code><em class="property"> = False</em><a class="headerlink" href="#hydpy.models.arma.arma_fluxes.QPOut.NUMERIC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_fluxes.QPOut.SPAN">
+<code class="descname">SPAN</code><em class="property"> = (0.0, None)</em><a class="headerlink" href="#hydpy.models.arma.arma_fluxes.QPOut.SPAN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="hydpy.models.arma.arma_fluxes.QOut">
+<em class="property">class </em><code class="descclassname">hydpy.models.arma.arma_fluxes.</code><code class="descname">QOut</code><a class="reference internal" href="_modules/hydpy/models/arma/arma_fluxes.html#QOut"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma.arma_fluxes.QOut" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="sequencetools.html#hydpy.core.sequencetools.FluxSequence" title="hydpy.core.sequencetools.FluxSequence"><code class="xref py py-class docutils literal"><span class="pre">hydpy.core.sequencetools.FluxSequence</span></code></a></p>
+<p>Total outflow [m³/s].</p>
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_fluxes.QOut.NDIM">
+<code class="descname">NDIM</code><em class="property"> = 0</em><a class="headerlink" href="#hydpy.models.arma.arma_fluxes.QOut.NDIM" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_fluxes.QOut.NUMERIC">
+<code class="descname">NUMERIC</code><em class="property"> = False</em><a class="headerlink" href="#hydpy.models.arma.arma_fluxes.QOut.NUMERIC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_fluxes.QOut.SPAN">
+<code class="descname">SPAN</code><em class="property"> = (0.0, None)</em><a class="headerlink" href="#hydpy.models.arma.arma_fluxes.QOut.SPAN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="log-sequences">
+<h3>Log sequences<a class="headerlink" href="#log-sequences" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="hydpy.models.arma.arma_logs.LogSequences">
+<em class="property">class </em><code class="descclassname">hydpy.models.arma.arma_logs.</code><code class="descname">LogSequences</code><span class="sig-paren">(</span><em>seqs</em>, <em>cls_fastaccess=None</em>, <em>cymodel=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/models/arma/arma_logs.html#LogSequences"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma.arma_logs.LogSequences" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="sequencetools.html#hydpy.core.sequencetools.LogSequences" title="hydpy.core.sequencetools.LogSequences"><code class="xref py py-class docutils literal"><span class="pre">hydpy.core.sequencetools.LogSequences</span></code></a></p>
+<p>Log sequences of the ARMA model.</p>
+<dl class="docutils">
+<dt>The following sequence classes are selected:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference internal" href="#hydpy.models.arma.arma_logs.LogIn" title="hydpy.models.arma.arma_logs.LogIn"><code class="xref py py-class docutils literal"><span class="pre">LogIn</span></code></a> <cite>The recent and the past inflow portions for the application of the different MA processes [m³/s].</cite></li>
+<li><a class="reference internal" href="#hydpy.models.arma.arma_logs.LogOut" title="hydpy.models.arma.arma_logs.LogOut"><code class="xref py py-class docutils literal"><span class="pre">LogOut</span></code></a> <cite>The past outflow portions for the application of the different AR processes [m³/s].</cite></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<span class="target" id="module-hydpy.models.arma.arma_logs"></span><dl class="class">
+<dt id="hydpy.models.arma.arma_logs.LogIn">
+<em class="property">class </em><code class="descclassname">hydpy.models.arma.arma_logs.</code><code class="descname">LogIn</code><a class="reference internal" href="_modules/hydpy/models/arma/arma_logs.html#LogIn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma.arma_logs.LogIn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="sequencetools.html#hydpy.core.sequencetools.LogSequence" title="hydpy.core.sequencetools.LogSequence"><code class="xref py py-class docutils literal"><span class="pre">hydpy.core.sequencetools.LogSequence</span></code></a></p>
+<p>The recent and the past inflow portions for the application of the
+different MA processes [m³/s].</p>
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_logs.LogIn.NDIM">
+<code class="descname">NDIM</code><em class="property"> = 2</em><a class="headerlink" href="#hydpy.models.arma.arma_logs.LogIn.NDIM" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_logs.LogIn.NUMERIC">
+<code class="descname">NUMERIC</code><em class="property"> = False</em><a class="headerlink" href="#hydpy.models.arma.arma_logs.LogIn.NUMERIC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_logs.LogIn.SPAN">
+<code class="descname">SPAN</code><em class="property"> = (0.0, None)</em><a class="headerlink" href="#hydpy.models.arma.arma_logs.LogIn.SPAN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="hydpy.models.arma.arma_logs.LogOut">
+<em class="property">class </em><code class="descclassname">hydpy.models.arma.arma_logs.</code><code class="descname">LogOut</code><a class="reference internal" href="_modules/hydpy/models/arma/arma_logs.html#LogOut"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma.arma_logs.LogOut" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="sequencetools.html#hydpy.core.sequencetools.LogSequence" title="hydpy.core.sequencetools.LogSequence"><code class="xref py py-class docutils literal"><span class="pre">hydpy.core.sequencetools.LogSequence</span></code></a></p>
+<p>The past outflow portions for the application of the
+different AR processes [m³/s].</p>
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_logs.LogOut.NDIM">
+<code class="descname">NDIM</code><em class="property"> = 2</em><a class="headerlink" href="#hydpy.models.arma.arma_logs.LogOut.NDIM" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_logs.LogOut.NUMERIC">
+<code class="descname">NUMERIC</code><em class="property"> = False</em><a class="headerlink" href="#hydpy.models.arma.arma_logs.LogOut.NUMERIC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_logs.LogOut.SPAN">
+<code class="descname">SPAN</code><em class="property"> = (0.0, None)</em><a class="headerlink" href="#hydpy.models.arma.arma_logs.LogOut.SPAN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="inlet-sequences">
+<h3>Inlet sequences<a class="headerlink" href="#inlet-sequences" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="hydpy.models.arma.arma_inlets.InletSequences">
+<em class="property">class </em><code class="descclassname">hydpy.models.arma.arma_inlets.</code><code class="descname">InletSequences</code><span class="sig-paren">(</span><em>seqs</em>, <em>cls_fastaccess=None</em>, <em>cymodel=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/models/arma/arma_inlets.html#InletSequences"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma.arma_inlets.InletSequences" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="sequencetools.html#hydpy.core.sequencetools.LinkSequences" title="hydpy.core.sequencetools.LinkSequences"><code class="xref py py-class docutils literal"><span class="pre">hydpy.core.sequencetools.LinkSequences</span></code></a></p>
+<p>Upstream link sequences of the ARMA model.</p>
+<dl class="docutils">
+<dt>The following sequence classes are selected:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference internal" href="#hydpy.models.arma.arma_inlets.Q" title="hydpy.models.arma.arma_inlets.Q"><code class="xref py py-class docutils literal"><span class="pre">Q</span></code></a> <cite>Abfluss (runoff) [m³/s].</cite></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<span class="target" id="module-hydpy.models.arma.arma_inlets"></span><dl class="class">
+<dt id="hydpy.models.arma.arma_inlets.Q">
+<em class="property">class </em><code class="descclassname">hydpy.models.arma.arma_inlets.</code><code class="descname">Q</code><a class="reference internal" href="_modules/hydpy/models/arma/arma_inlets.html#Q"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma.arma_inlets.Q" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="sequencetools.html#hydpy.core.sequencetools.LinkSequence" title="hydpy.core.sequencetools.LinkSequence"><code class="xref py py-class docutils literal"><span class="pre">hydpy.core.sequencetools.LinkSequence</span></code></a></p>
+<p>Abfluss (runoff) [m³/s].</p>
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_inlets.Q.NDIM">
+<code class="descname">NDIM</code><em class="property"> = 1</em><a class="headerlink" href="#hydpy.models.arma.arma_inlets.Q.NDIM" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_inlets.Q.NUMERIC">
+<code class="descname">NUMERIC</code><em class="property"> = False</em><a class="headerlink" href="#hydpy.models.arma.arma_inlets.Q.NUMERIC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="outlet-sequences">
+<h3>Outlet sequences<a class="headerlink" href="#outlet-sequences" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="hydpy.models.arma.arma_outlets.OutletSequences">
+<em class="property">class </em><code class="descclassname">hydpy.models.arma.arma_outlets.</code><code class="descname">OutletSequences</code><span class="sig-paren">(</span><em>seqs</em>, <em>cls_fastaccess=None</em>, <em>cymodel=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/models/arma/arma_outlets.html#OutletSequences"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma.arma_outlets.OutletSequences" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="sequencetools.html#hydpy.core.sequencetools.LinkSequences" title="hydpy.core.sequencetools.LinkSequences"><code class="xref py py-class docutils literal"><span class="pre">hydpy.core.sequencetools.LinkSequences</span></code></a></p>
+<p>Downstream link sequences of the ARMA model.</p>
+<dl class="docutils">
+<dt>The following sequence classes are selected:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference internal" href="#hydpy.models.arma.arma_outlets.Q" title="hydpy.models.arma.arma_outlets.Q"><code class="xref py py-class docutils literal"><span class="pre">Q</span></code></a> <cite>Abfluss (runoff) [m³/s].</cite></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<span class="target" id="module-hydpy.models.arma.arma_outlets"></span><dl class="class">
+<dt id="hydpy.models.arma.arma_outlets.Q">
+<em class="property">class </em><code class="descclassname">hydpy.models.arma.arma_outlets.</code><code class="descname">Q</code><a class="reference internal" href="_modules/hydpy/models/arma/arma_outlets.html#Q"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.models.arma.arma_outlets.Q" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="sequencetools.html#hydpy.core.sequencetools.LinkSequence" title="hydpy.core.sequencetools.LinkSequence"><code class="xref py py-class docutils literal"><span class="pre">hydpy.core.sequencetools.LinkSequence</span></code></a></p>
+<p>Abfluss (runoff) [m³/s].</p>
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_outlets.Q.NDIM">
+<code class="descname">NDIM</code><em class="property"> = 0</em><a class="headerlink" href="#hydpy.models.arma.arma_outlets.Q.NDIM" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="hydpy.models.arma.arma_outlets.Q.NUMERIC">
+<code class="descname">NUMERIC</code><em class="property"> = False</em><a class="headerlink" href="#hydpy.models.arma.arma_outlets.Q.NUMERIC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">arma</a><ul>
+<li><a class="reference internal" href="#model-features">Model features</a></li>
+<li><a class="reference internal" href="#parameter-features">Parameter features</a><ul>
+<li><a class="reference internal" href="#control-parameters">Control parameters</a></li>
+<li><a class="reference internal" href="#derived-parameters">Derived parameters</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#sequence-features">Sequence features</a><ul>
+<li><a class="reference internal" href="#flux-sequences">Flux sequences</a></li>
+<li><a class="reference internal" href="#log-sequences">Log sequences</a></li>
+<li><a class="reference internal" href="#inlet-sequences">Inlet sequences</a></li>
+<li><a class="reference internal" href="#outlet-sequences">Outlet sequences</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="HydPy-A.html"
+                        title="previous chapter">HydPy-A</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="arma_v1.html"
+                        title="next chapter">arma_v1</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/arma.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="arma_v1.html" title="arma_v1"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="HydPy-A.html" title="HydPy-A"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">HydPy 2.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modelcollection.html" >Model Collection</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="HydPy-A.html" >HydPy-A</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Christoph Tyralla.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.5.
+    </div>
+  </body>
+</html>

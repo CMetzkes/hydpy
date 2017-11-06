@@ -1,0 +1,204 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>statstools &#8212; HydPy 2.0.0 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="validtools" href="validtools.html" />
+    <link rel="prev" title="iuhtools" href="iuhtools.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="validtools.html" title="validtools"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="iuhtools.html" title="iuhtools"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">HydPy 2.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="auxiliaries.html" accesskey="U">Auxiliary Modules</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="statstools">
+<span id="id1"></span><h1>statstools<a class="headerlink" href="#statstools" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-hydpy.auxs.statstools"></span><p>This module implements statistical functionalities frequently used in
+hydrological modelling.</p>
+<p>Module <a class="reference internal" href="#module-hydpy.auxs.statstools" title="hydpy.auxs.statstools"><code class="xref py py-mod docutils literal"><span class="pre">statstools</span></code></a> implements the following members:</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference internal" href="#hydpy.auxs.statstools.calc_mean_time" title="hydpy.auxs.statstools.calc_mean_time"><code class="xref py py-func docutils literal"><span class="pre">calc_mean_time()</span></code></a> Return the weighted mean of the given timepoints.</li>
+<li><a class="reference internal" href="#hydpy.auxs.statstools.calc_mean_time_deviation" title="hydpy.auxs.statstools.calc_mean_time_deviation"><code class="xref py py-func docutils literal"><span class="pre">calc_mean_time_deviation()</span></code></a> Return the weighted deviation of the given timepoints from their mean time.</li>
+</ul>
+</div></blockquote>
+<hr class="docutils" />
+<dl class="function">
+<dt id="hydpy.auxs.statstools.calc_mean_time">
+<code class="descclassname">hydpy.auxs.statstools.</code><code class="descname">calc_mean_time</code><span class="sig-paren">(</span><em>timepoints</em>, <em>weights</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/auxs/statstools.html#calc_mean_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.auxs.statstools.calc_mean_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the weighted mean of the given timepoints.</p>
+<p>With equal given weights, the result is simply the mean of the given
+time points:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">hydpy.auxs.statstools</span> <span class="k">import</span> <span class="n">calc_mean_time</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">calc_mean_time</span><span class="p">(</span><span class="n">timepoints</span><span class="o">=</span><span class="p">[</span><span class="mf">3.</span><span class="p">,</span> <span class="mf">7.</span><span class="p">],</span>
+<span class="gp">... </span>               <span class="n">weights</span><span class="o">=</span><span class="p">[</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">])</span>
+<span class="go">5.0</span>
+</pre></div>
+</div>
+<p>With different weights, the resulting mean time is shifted to the larger
+ones:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">calc_mean_time</span><span class="p">(</span><span class="n">timepoints</span><span class="o">=</span><span class="p">[</span><span class="mf">3.</span><span class="p">,</span> <span class="mf">7.</span><span class="p">],</span>
+<span class="gp">... </span>               <span class="n">weights</span><span class="o">=</span><span class="p">[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">])</span>
+<span class="go">6.0</span>
+</pre></div>
+</div>
+<p>Or, in the most extreme case:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">calc_mean_time</span><span class="p">(</span><span class="n">timepoints</span><span class="o">=</span><span class="p">[</span><span class="mf">3.</span><span class="p">,</span> <span class="mf">7.</span><span class="p">],</span>
+<span class="gp">... </span>               <span class="n">weights</span><span class="o">=</span><span class="p">[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">])</span>
+<span class="go">7.0</span>
+</pre></div>
+</div>
+<p>There will be some checks for input plausibility perfomed, e.g.:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">calc_mean_time</span><span class="p">(</span><span class="n">timepoints</span><span class="o">=</span><span class="p">[</span><span class="mf">3.</span><span class="p">,</span> <span class="mf">7.</span><span class="p">],</span>
+<span class="gp">... </span>               <span class="n">weights</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">])</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">ValueError</span>: <span class="n">While trying to calculate the weighted mean time, the following error occured: For the following objects, at least one value is negative: weights.</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="hydpy.auxs.statstools.calc_mean_time_deviation">
+<code class="descclassname">hydpy.auxs.statstools.</code><code class="descname">calc_mean_time_deviation</code><span class="sig-paren">(</span><em>timepoints</em>, <em>weights</em>, <em>mean_time=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hydpy/auxs/statstools.html#calc_mean_time_deviation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hydpy.auxs.statstools.calc_mean_time_deviation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the weighted deviation of the given timepoints from their mean
+time.</p>
+<p>With equal given weights, the is simply the standard deviation of the
+given time points:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">hydpy.auxs.statstools</span> <span class="k">import</span> <span class="n">calc_mean_time_deviation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">calc_mean_time_deviation</span><span class="p">(</span><span class="n">timepoints</span><span class="o">=</span><span class="p">[</span><span class="mf">3.</span><span class="p">,</span> <span class="mf">7.</span><span class="p">],</span>
+<span class="gp">... </span>                         <span class="n">weights</span><span class="o">=</span><span class="p">[</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">])</span>
+<span class="go">2.0</span>
+</pre></div>
+</div>
+<p>One can pass a precalculated or alternate mean time:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">hydpy.core.objecttools</span> <span class="k">import</span> <span class="n">round_</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">round_</span><span class="p">(</span><span class="n">calc_mean_time_deviation</span><span class="p">(</span><span class="n">timepoints</span><span class="o">=</span><span class="p">[</span><span class="mf">3.</span><span class="p">,</span> <span class="mf">7.</span><span class="p">],</span>
+<span class="gp">... </span>                                <span class="n">weights</span><span class="o">=</span><span class="p">[</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">],</span>
+<span class="gp">... </span>                                <span class="n">mean_time</span><span class="o">=</span><span class="mf">4.</span><span class="p">))</span>
+<span class="go">2.236068</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">round_</span><span class="p">(</span><span class="n">calc_mean_time_deviation</span><span class="p">(</span><span class="n">timepoints</span><span class="o">=</span><span class="p">[</span><span class="mf">3.</span><span class="p">,</span> <span class="mf">7.</span><span class="p">],</span>
+<span class="gp">... </span>                                <span class="n">weights</span><span class="o">=</span><span class="p">[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">]))</span>
+<span class="go">1.732051</span>
+</pre></div>
+</div>
+<p>Or, in the most extreme case:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">calc_mean_time_deviation</span><span class="p">(</span><span class="n">timepoints</span><span class="o">=</span><span class="p">[</span><span class="mf">3.</span><span class="p">,</span> <span class="mf">7.</span><span class="p">],</span>
+<span class="gp">... </span>                         <span class="n">weights</span><span class="o">=</span><span class="p">[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">])</span>
+<span class="go">0.0</span>
+</pre></div>
+</div>
+<p>There will be some checks for input plausibility perfomed, e.g.:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">calc_mean_time_deviation</span><span class="p">(</span><span class="n">timepoints</span><span class="o">=</span><span class="p">[</span><span class="mf">3.</span><span class="p">,</span> <span class="mf">7.</span><span class="p">],</span>
+<span class="gp">... </span>                         <span class="n">weights</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">])</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">ValueError</span>: <span class="n">While trying to calculate the weighted time deviation from mean time, the following error occured: For the following objects, at least one value is negative: weights.</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="iuhtools.html"
+                        title="previous chapter">iuhtools</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="validtools.html"
+                        title="next chapter">validtools</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/statstools.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="validtools.html" title="validtools"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="iuhtools.html" title="iuhtools"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">HydPy 2.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="auxiliaries.html" >Auxiliary Modules</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Christoph Tyralla.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.5.
+    </div>
+  </body>
+</html>
